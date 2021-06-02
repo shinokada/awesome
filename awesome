@@ -24,6 +24,19 @@ fn_check_cmd() {
     fi
 }
 
+# search the main script
+fn_search_main() {
+    # cd into the dir
+
+    # find the same name as the repo OR name.sh
+
+    # if not, as user to input the main script name
+    # or list all non-hidden file without suffix and .sh
+    # to choose from
+
+    # echo the file name
+}
+
 # create a symlink in bin
 fn_create_symlink() {
     # find the name of repo
@@ -44,6 +57,8 @@ fn_install() {
     fn_check_cmd git
     cd $awesome_dir
     url=$1
+    # run fn_search_main to find out the main script
+
     repo=$(basename $1 .git)
     git clone ${url} && fn_create_symlink ${repo} || eixt 1
     echo "${repo} installation completed."
@@ -66,7 +81,17 @@ fn_remove_symlink() {
     fi
     cd $bin_dir
     rm "${1}" || exit 1
-    echo "Removed the symlink."
+    echo "Symlink removed."
+    exit
+}
+
+fn_add_symlink() {
+    if [[ -z $1 ]]; then
+        echo "Specify the repo to remove."
+        exit 1
+    fi
+    fn_create_symlink $1 || exit 1
+    echo "Symlink added."
     exit
 }
 
@@ -120,6 +145,7 @@ fn_main() {
             fn_install $2
             ;;
         "uninstall") fn_uninstall $2 ;;
+        "add") fn_add_symlink $2 ;;
         "remove") fn_remove_symlink $2 ;;
         "update") fn_update $2 ;;
         "list") fn_list ;;
@@ -134,3 +160,9 @@ fn_main() {
 }
 
 fn_main "$@"
+
+# 1.some have different url/main-script
+# e.g. cfenollosa/bashblog has bb.sh as main
+# todotxt/todo.txt-cli has todo.sh
+
+# 2. some main file has .sh
