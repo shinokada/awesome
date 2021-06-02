@@ -12,9 +12,27 @@ Awesome install a package from a GitHub repo on your macOS/Linux.
 
 ### curl
 
+Ubuntu/Debian:
+
 ```sh
 sudo apt install curl
 curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash fn_install
+```
+
+CentOs/Fedora/Redhat:
+
+```sh
+sudo yum install curl
+curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash install
+```
+
+### wget
+
+Ubuntu/Debian:
+
+```sh
+sudo apt install wget
+wget -qO - http://example.com/script.sh | bash install
 ```
 
 ## Usage
@@ -40,6 +58,10 @@ awesome h
 awesome version
 awesome v
 ```
+
+
+## Uninstallation
+
 
 ## Author
 

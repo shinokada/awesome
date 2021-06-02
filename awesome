@@ -12,9 +12,9 @@ fn_checkDir() {
     fi
     if [[ ! -d $1 ]]; then
         mkdir $1
+        echo "$1 directory is created."
         exit
     fi
-    echo "You have $1 directory."
 }
 
 fn_check_cmd() {
@@ -30,6 +30,7 @@ fn_create_symlink() {
     repo_name=$1
     # add a symlink
     ln -sf "${awesome_dir}/${repo_name}/${repo_name}" "${bin_dir}/${repo_name}"
+    exit
 }
 
 # fn_install run git clone and create a symlink

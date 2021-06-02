@@ -18,9 +18,10 @@ fn_checkDir() {
     fi
     if [[ ! -d $1 ]]; then
         mkdir $1
+        echo "$1 directory is created."
         exit
     fi
-    echo "You have $1 directory."
+
 }
 
 fn_check_cmd() {
@@ -39,7 +40,7 @@ fn_create_symlink() {
 }
 
 # fn_install run git clone and create a symlink
-fn_install() {
+install() {
     fn_checkDir $awesome_dir
     fn_checkDir $bin_dir
     fn_check_cmd git
@@ -52,7 +53,7 @@ fn_install() {
 }
 
 # fn_uninstall removes a symlink and repo
-fn_uninstall() {
+uninstall() {
     cd $awesome_dir
     repo="awesome"
     rm -rf ${repo} && rm "${bin_dir}/${repo}" || exit 1
