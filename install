@@ -65,16 +65,17 @@ fn_say() {
     echo "Say hi"
 }
 
-# fn_main() {
-#     if (($# > 0)); then
-#         case $1 in
-#         "install")
-#             fn_install $2
-#             ;;
-#         "uninstall") fn_uninstall $2 ;;
-#         esac
-#     fi
-# }
+fn_main() {
+    if (($# > 0)); then
+        case $1 in
+        "install")
+            fn_install $2
+            ;;
+        "uninstall") fn_uninstall $2 ;;
+        "say") fn_say ;;
+        esac
+    fi
+}
 
-# fn_main "$@"
-fn_say
+fn_main "$@"
+# fn_say
