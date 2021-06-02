@@ -77,3 +77,4 @@ fn_say() {
 # }
 
 # fn_main "$@"
+fn_say
