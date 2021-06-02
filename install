@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+awesome_dir="~/awesome"
+bin_dir="~/bin"
+
 fn_checkDir() {
     if [[ -z $1 ]]; then
         echo "Specify the directory."
@@ -11,6 +14,8 @@ fn_checkDir() {
 }
 
 fn_install() {
+    cd ${awesome_dir}
+
     echo "from install script."
     exit
 }
