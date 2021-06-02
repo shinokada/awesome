@@ -16,14 +16,14 @@ Ubuntu/Debian:
 
 ```sh
 sudo apt install curl
-curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash fn_install
+curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
 ```
 
 CentOs/Fedora/Redhat:
 
 ```sh
 sudo yum install curl
-curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash install
+curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
 ```
 
 ### wget
@@ -32,7 +32,14 @@ Ubuntu/Debian:
 
 ```sh
 sudo apt install wget
-wget -qO - http://example.com/script.sh | bash install
+wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
+```
+
+CentOs/Fedora/Redhat:
+
+```sh
+sudo yum install curl
+wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
 ```
 
 ## Usage

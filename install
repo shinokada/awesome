@@ -53,7 +53,7 @@ fn_install() {
 }
 
 # fn_uninstall removes a symlink and repo
-fu_uninstall() {
+fn_uninstall() {
     cd $awesome_dir
     repo="awesome"
     rm -rf ${repo} && rm "${bin_dir}/${repo}" || exit 1
