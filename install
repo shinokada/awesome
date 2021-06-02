@@ -60,6 +60,10 @@ fn_uninstall() {
     echo "You can remove $HOME/awesome directory."
 }
 
+fn_say() {
+    echo "Say hi"
+}
+
 # fn_main() {
 #     if (($# > 0)); then
 #         case $1 in
