@@ -1,8 +1,16 @@
 #!/usr/bin/env bash
 
-awesome_dir="~/awesome"
-bin_dir="~/bin"
+set -e
+version="0.0.2"
+awesome_dir="$HOME/awesome"
+bin_dir="$HOME/bin"
 
+# create $HOME/awesome dir
+# create $HOME/bin dir
+# git clone shinokada/awesome
+# create a symlink in bin
+
+# check if awesome dir exist. if not create it and add $HOME/awesome path to config file
 fn_checkDir() {
     if [[ -z $1 ]]; then
         echo "Specify the directory."
@@ -10,16 +18,57 @@ fn_checkDir() {
     fi
     if [[ ! -d $1 ]]; then
         mkdir $1
+        exit
+    fi
+    echo "You have $1 directory."
+}
+
+fn_check_cmd() {
+    if [ ! "$(command -v $1)" ]; then
+        echo "Please install $1"
+        exit 1
     fi
 }
 
-fn_install() {
-    cd ${awesome_dir}
-
-    echo "from install script."
-    exit
+# create a symlink in bin
+fn_create_symlink() {
+    # find the name of repo
+    repo_name=$1
+    # add a symlink
+    ln -sf "${awesome_dir}/${repo_name}/${repo_name}" "${bin_dir}/${repo_name}"
 }
 
-fn_checkDir $awesome_dir
-fn_checkDir $bin_dir
-fn_install
+# fn_install run git clone and create a symlink
+fn_install() {
+    fn_checkDir $awesome_dir
+    fn_checkDir $bin_dir
+    fn_check_cmd git
+    cd $awesome_dir
+    url="https://github.com/shinokada/awesome.git"
+    repo="awesome"
+    git clone ${url} && fn_create_symlink ${repo} || eixt 1
+    echo "${repo} installation completed."
+    echo "Try ${repo} -h or which ${repo}."
+}
+
+# fn_uninstall removes a symlink and repo
+fn_uninstall() {
+    cd $awesome_dir
+    repo="awesome"
+    rm -rf ${repo} && rm "${bin_dir}/${repo}" || exit 1
+    echo "Unintalled ${repo}."
+    echo "You can remove $HOME/awesome directory."
+}
+
+# fn_main() {
+#     if (($# > 0)); then
+#         case $1 in
+#         "install")
+#             fn_install $2
+#             ;;
+#         "uninstall") fn_uninstall $2 ;;
+#         esac
+#     fi
+# }
+
+# fn_main "$@"

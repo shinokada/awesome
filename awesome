@@ -12,6 +12,7 @@ fn_checkDir() {
     fi
     if [[ ! -d $1 ]]; then
         mkdir $1
+        exit
     fi
     echo "You have $1 directory."
 }
@@ -28,17 +29,22 @@ fn_create_symlink() {
     # find the name of repo
     repo_name=$1
     # add a symlink
-    ln -sf "${awesome_dir}/${repo_name}/${repo_name}"
+    ln -sf "${awesome_dir}/${repo_name}/${repo_name}" "${bin_dir}/${repo_name}"
 }
 
 # fn_install run git clone and create a symlink
 fn_install() {
+    if [[ -z $1 ]]; then
+        echo "You need to specify the GitHub repo URL."
+        exit 1
+    fi
     fn_checkDir $awesome_dir
     fn_checkDir $bin_dir
     fn_check_cmd git
     cd $awesome_dir
-    repo=basename $1 .git
-    git clone $1 && fn_create_symlink ${repo} || eixt 1
+    url=$1
+    repo=$(basename $1 .git)
+    git clone ${url} && fn_create_symlink ${repo} || eixt 1
     echo "${repo} installation completed."
     echo "Try ${repo} -h or which ${repo}."
 }
@@ -53,15 +59,26 @@ fn_uninstall() {
 
 # fn_remove removes a symlink
 fn_remove_symlink() {
-    rm "${bin_dir}/${repo}" || exit 1
+    if [[ -z $1 ]]; then
+        echo "Specify the repo to remove."
+        exit 1
+    fi
+    cd $bin_dir
+    rm "${1}" || exit 1
+    echo "Removed the symlink."
     exit
 }
 
 # fn_update run git pull
 fn_update() {
-    cd $1
+    cd "$awesome_dir/${1}"
     git pull || exit 1
-    echo "Updated."
+    exit
+}
+
+# fn_list list installed packages
+fn_list() {
+    ls $awesome_dir
     exit
 }
 
@@ -96,12 +113,15 @@ EOF
 }
 
 fn_main() {
-    if [ $# -eq 1 ]; then
+    if (($# > 0)); then
         case $1 in
-        "install") fn_install ;;
-        "uninstall") fn_uninstall ;;
-        "remove") fn_remove_symlink ;;
-        "update") fn_update ;;
+        "install")
+            fn_install $2
+            ;;
+        "uninstall") fn_uninstall $2 ;;
+        "remove") fn_remove_symlink $2 ;;
+        "update") fn_update $2 ;;
+        "list") fn_list ;;
         "-h") fn_help ;;
         "-v" | --version) echo "${version}" ;;
         "--help") fn_help ;;
