@@ -11,7 +11,8 @@ fn_checkDir() {
 }
 
 fn_install() {
-
+    echo "from install script."
+    exit
 }
 
 fn_checkDir $awesome_dir

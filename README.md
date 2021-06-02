@@ -14,7 +14,7 @@ Awesome install a package from a GitHub repo on your macOS/Linux.
 
 ```sh
 sudo apt install curl
-curl -s https://github.com/script.sh | bash
+curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash
 ```
 
 ## Usage
