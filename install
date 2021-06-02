@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+fn_checkDir() {
+    if [[ -z $1 ]]; then
+        echo "Specify the directory."
+        exit 1
+    fi
+    if [[ ! -d $1 ]]; then
+        mkdir $1
+    fi
+}
+
+fn_install() {
+
+}
+
+fn_checkDir $awesome_dir
+fn_checkDir $bin_dir
+fn_install

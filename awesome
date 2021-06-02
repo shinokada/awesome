@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+
+set -e
+version="0.0.1"
+awesome_dir="~/awesome"
+bin_dir="~/bin"
+# check if awesome dir exist. if not create it and add $HOME/awesome path to config file
+fn_checkDir() {
+    if [[ -z $1 ]]; then
+        echo "Specify the directory."
+        exit 1
+    fi
+    if [[ ! -d $1 ]]; then
+        mkdir $1
+    fi
+}
+
+fn_check_cmd() {
+    if [ ! "$(command -v $1)" ]; then
+        echo "Please install $1"
+        exit 1
+    fi
+}
+
+# create a symlink in bin
+fn_create_symlink() {
+    # find the name of repo
+    repo_name=$1
+    # add a symlink
+    ln -sf "${awesome_dir}/${repo_name}/${repo_name}"
+}
+
+# fn_install run git clone and create a symlink
+fn_install() {
+    cd $awesome_dir
+    repo=basename $1 .git
+    git clone $1 && fn_create_symlink ${repo} || eixt 1
+    echo "${repo} installation completed."
+    echo "Try ${repo} -h or which ${repo}."
+}
+
+# fn_uninstall removes a symlink and repo
+fn_uninstall() {
+    cd $awesome_dir
+    repo=$1
+    rm -rf ${repo} && rm "${bin_dir}/${repo}" || exit 1
+    echo "Unintalled ${repo}."
+}
+
+# fn_remove removes a symlink
+fn_remove_symlink() {
+    rm "${bin_dir}/${repo}" || exit 1
+    exit
+}
+
+# fn_update run git pull
+fn_update() {
+    cd $1
+    git pull || exit 1
+    echo "Updated."
+    exit
+}
+
+fn_help() {
+    cat <<EOF
+Description: Awesome install a package from a GitHub repo on your macOS/Linux.
+
+Usage: awesome [-h] [command]
+    install    install a package from a GitHub repo and create a symlink in ~/bin
+    uninstall  uninstall a package and remove a symlink
+    remove-sym remove a package symlink 
+    update     check an update and install a new package
+    -h, --help show this help message and exit"
+
+Examples:
+    Install a package
+    awesome install https://github.com/shinokada/gitstart.git
+
+    Uninstall a package
+    awesome uninstall gitstart
+
+    Update a package
+    awesome update gitstart
+
+    Remove a symlink
+    awesome remove gitstart
+
+    Show this help
+    awesome -h
+EOF
+    exit
+}
+
+fn_main() {
+    if [ $# -eq 1 ]; then
+        case $1 in
+        "install") fn_install ;;
+        "uninstall") fn_uninstall ;;
+        "remove") fn_remove_symlink ;;
+        "update") fn_update ;;
+        "-h") fn_help ;;
+        "--help") fn_help ;;
+        esac
+    else
+        fn_help
+        exit
+    fi
+}
+
+fn_checkDir $awesome_dir
+fn_checkDir $bin_dir
+fn_check_cmd git
+fn_main "$@"
