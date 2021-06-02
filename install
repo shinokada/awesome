@@ -40,7 +40,7 @@ fn_create_symlink() {
 }
 
 # fn_install run git clone and create a symlink
-install() {
+fn_install() {
     fn_checkDir $awesome_dir
     fn_checkDir $bin_dir
     fn_check_cmd git
@@ -53,7 +53,7 @@ install() {
 }
 
 # fn_uninstall removes a symlink and repo
-uninstall() {
+fu_uninstall() {
     cd $awesome_dir
     repo="awesome"
     rm -rf ${repo} && rm "${bin_dir}/${repo}" || exit 1
@@ -69,10 +69,14 @@ fn_main() {
     if (($# > 0)); then
         case $1 in
         "install")
-            fn_install $2
+            fn_install
             ;;
-        "uninstall") fn_uninstall $2 ;;
-        "say") fn_say ;;
+        "uninstall")
+            fn_uninstall
+            ;;
+        "say")
+            fn_say
+            ;;
         esac
     fi
 }
