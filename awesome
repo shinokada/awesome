@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-version="0.0.3"
+version="0.0.4"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 # check if awesome dir exist. if not create it and add $HOME/awesome path to config file
@@ -26,13 +26,15 @@ fn_check_cmd() {
 # search the main script
 fn_search_main() {
     repo=$1
-    cd $repo || return
+    # repo_name=basename $(find . -name ${repo})
+    cd "$awesome_dir/$repo" || return
     IFS= read -r -d '' repo < <(find . '(' -name "${repo##*/}" -o -name "${repo##*/}.sh" ')' -print0)
     if [[ $repo ]]; then
-        printf '%s\n' "$repo"
+        printf '%s\n' $(basename $repo)
     else
         return 1
     fi
+    echo $repo_name
 }
 
 # create a symlink in bin. repo_name and file_name can be different
@@ -40,6 +42,9 @@ fn_create_symlink() {
     # find the name of repo
     base_name=$1
     repo_name=$2
+    # echo $base_name
+    # echo $repo_name
+    # exit
     # echo '${awesome_dir}/${base_name}/${repo_name}'
     # add a symlink
     ln -sf "${awesome_dir}/$1/$2" "${bin_dir}/$2"
@@ -58,29 +63,29 @@ fn_install() {
     fn_check_cmd git
     cd "$awesome_dir" || return
     url=$1
-    echo "Cloning ..."
-    git clone $url || exit 1
+    # echo "Cloning ..."
+    # git clone $url || exit 1
+    # echo "Done cloning."
     repo_base=$(basename "$1" .git)
+    git clone "${url}" || exit
     # run fn_search_main to find out the main script
-    # file_name=$(fn_search_main ${repo_base})
+    file_name=$(fn_search_main ${repo_base})
     # echo "Creating a symlink ..."
     # fn_create_symlink $repo_base $file_name || eixt
-    { git clone "${url}" && fn_create_symlink "${repo}"; } || exit
+    fn_create_symlink "${repo_base}" "${file_name}" || exit
     echo "${repo} installation completed." >&2
     echo "Try ${repo} -h or which ${repo}." >&2
-    # echo "hi"
-    # echo $main
-    # exit
-    # git clone ${url} && fn_create_symlink ${repo} || eixt 1
 }
 
 # fn_uninstall removes a symlink and repo
 fn_uninstall() {
     cd "$awesome_dir" || exit
     repo=$1
-    rm -rf "${repo}" && fn_remove_symlink ${repo} || exit
-    # && rm "${bin_dir}/${repo}" || exit
-    echo "Unintalled ${repo}."
+    echo "Removing the $repo directory ..."
+    rm -rf "${repo}" || exit
+    echo "$repo directory removed."
+    fn_remove_symlink ${repo} || exit
+    exit
 }
 
 # fn_remove removes a symlink
