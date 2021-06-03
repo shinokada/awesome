@@ -6,19 +6,19 @@ bin_dir="$HOME/bin"
 # check if awesome dir exist. if not create it and add $HOME/awesome path to config file
 fn_checkDir() {
     if [[ -z $1 ]]; then
-        echo "Specify the directory."
+        echo "Specify the directory." >&2
         exit
     fi
     if [[ ! -d $1 ]]; then
-        mkdir $1
-        echo "$1 directory is created."
+        mkdir "$1"
+        echo "$1 directory is created." >&2
         exit
     fi
 }
 
 fn_check_cmd() {
-    if [ ! "$(command -v $1)" ]; then
-        echo "Please install $1"
+    if [ ! "$(command -v "$1")" ]; then
+        echo "Please install $1" >&2
         exit 1
     fi
 }
@@ -26,16 +26,13 @@ fn_check_cmd() {
 # search the main script
 fn_search_main() {
     repo=$1
-    # cd into the dir
-    cd $repo
-    # find the same name as the repo OR name.sh
-    repo_name=basename $(find . -name ${repo})
-    # if not, as user to input the main script name
-    # or list all non-hidden file without suffix and .sh
-    # to choose from
-
-    # echo the file name
-    echo $repo_name
+    cd $repo || return
+    IFS= read -r -d '' repo < <(find . '(' -name "${repo##*/}" -o -name "${repo##*/}.sh" ')' -print0)
+    if [[ $repo ]]; then
+        printf '%s\n' "$repo"
+    else
+        return 1
+    fi
 }
 
 # create a symlink in bin. repo_name and file_name can be different
@@ -53,35 +50,35 @@ fn_create_symlink() {
 # fn_install run git clone and create a symlink
 fn_install() {
     if [[ -z $1 ]]; then
-        echo "You need to specify the GitHub repo URL."
+        echo "You need to specify the GitHub repo URL." >&2
         exit 1
     fi
-    fn_checkDir $awesome_dir
-    fn_checkDir $bin_dir
+    fn_checkDir "$awesome_dir"
+    fn_checkDir "$bin_dir"
     fn_check_cmd git
-    cd $awesome_dir
+    cd "$awesome_dir" || return
     url=$1
     echo "Cloning ..."
     git clone $url || exit 1
-    repo_base=$(basename $1 .git)
+    repo_base=$(basename "$1" .git)
     # run fn_search_main to find out the main script
-    file_name=$(fn_search_main ${repo_base})
-    echo "Creating a symlink ..."
-    fn_create_symlink $repo_base $file_name || eixt
+    # file_name=$(fn_search_main ${repo_base})
+    # echo "Creating a symlink ..."
+    # fn_create_symlink $repo_base $file_name || eixt
+    { git clone "${url}" && fn_create_symlink "${repo}"; } || exit
+    echo "${repo} installation completed." >&2
+    echo "Try ${repo} -h or which ${repo}." >&2
     # echo "hi"
     # echo $main
     # exit
     # git clone ${url} && fn_create_symlink ${repo} || eixt 1
-    echo "${repo_base} installation completed."
-    echo "Try $repo_base -h or which ${repo}."
 }
 
 # fn_uninstall removes a symlink and repo
 fn_uninstall() {
-    cd $awesome_dir
+    cd "$awesome_dir" || exit
     repo=$1
-    rm -rf ${repo} || exit
-    fn_remove_symlink ${repo} || exit
+    rm -rf "${repo}" && fn_remove_symlink ${repo} || exit
     # && rm "${bin_dir}/${repo}" || exit
     echo "Unintalled ${repo}."
 }
@@ -89,36 +86,36 @@ fn_uninstall() {
 # fn_remove removes a symlink
 fn_remove_symlink() {
     if [[ -z $1 ]]; then
-        echo "Specify the repo to remove."
-        exit
+        echo "Specify the repo to remove." >&2
+        exit 1
     fi
     echo "Removing the symlink ..."
-    cd $bin_dir
+    cd "$bin_dir" || exit
     rm "${1}" || exit
-    echo "Symlink removed."
+    echo "Symlink removed." >&2
     exit
 }
 
 fn_add_symlink() {
     if [[ -z $1 ]]; then
-        echo "Specify the repo to remove."
-        exit
+        echo "Specify the repo to remove." >&2
+        exit 1
     fi
-    fn_create_symlink $1 || exit
-    echo "Symlink added."
+    fn_create_symlink "$1" || exit
+    echo "Symlink added." >&2
     exit
 }
 
 # fn_update run git pull
 fn_update() {
-    cd "$awesome_dir/${1}"
+    cd "$awesome_dir/${1}" || exit
     git pull || exit
     exit
 }
 
 # fn_list list installed packages
 fn_list() {
-    ls $awesome_dir
+    ls "$awesome_dir"
     exit
 }
 
@@ -156,12 +153,12 @@ fn_main() {
     if (($# > 0)); then
         case $1 in
         "install")
-            fn_install $2
+            fn_install "$2"
             ;;
-        "uninstall") fn_uninstall $2 ;;
-        "add") fn_add_symlink $2 ;;
-        "remove") fn_remove_symlink $2 ;;
-        "update") fn_update $2 ;;
+        "uninstall") fn_uninstall "$2" ;;
+        "add") fn_add_symlink "$2" ;;
+        "remove") fn_remove_symlink "$2" ;;
+        "update") fn_update "$2" ;;
         "list") fn_list ;;
         "-h") fn_help ;;
         "-v" | --version) echo "${version}" ;;
