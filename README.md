@@ -47,6 +47,8 @@ wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install | ba
 ```sh
 # Install a github repo
 awesome install https://github.com/shinokada/cleanit.git
+# OR using URL
+awesome install https://github.com/shinokada/cleanit
 
 # Remove a symlink and repo
 awesome uninstall cleanit
@@ -66,9 +68,11 @@ awesome version
 awesome v
 ```
 
-
 ## Uninstallation
 
+```sh
+curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s uninstall
+```
 
 ## Author
 

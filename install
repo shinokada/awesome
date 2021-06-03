@@ -5,11 +5,6 @@ version="0.0.2"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 
-# create $HOME/awesome dir
-# create $HOME/bin dir
-# git clone shinokada/awesome
-# create a symlink in bin
-
 # check if awesome dir exist. if not create it and add $HOME/awesome path to config file
 fn_checkDir() {
     if [[ -z $1 ]]; then
@@ -56,13 +51,9 @@ fn_install() {
 fn_uninstall() {
     cd $awesome_dir
     repo="awesome"
-    rm -rf ${repo} && rm "${bin_dir}/${repo}" || exit 1
-    echo "Unintalled ${repo}."
+    rm -rf ${repo} && rm "${bin_dir}/${repo}" || exit
+    echo "Uninstalled ${repo}."
     echo "You can remove $HOME/awesome directory."
-}
-
-fn_say() {
-    echo "Say hi"
 }
 
 fn_main() {
@@ -85,4 +76,3 @@ fn_main() {
 }
 
 fn_main "$@"
-# fn_say
