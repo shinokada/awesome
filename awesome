@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 
-set -e
-version="0.0.2"
+version="0.0.3"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 # check if awesome dir exist. if not create it and add $HOME/awesome path to config file
 fn_checkDir() {
     if [[ -z $1 ]]; then
         echo "Specify the directory."
-        exit 1
+        exit
     fi
     if [[ ! -d $1 ]]; then
         mkdir $1
@@ -26,23 +25,28 @@ fn_check_cmd() {
 
 # search the main script
 fn_search_main() {
+    repo=$1
     # cd into the dir
-
+    cd $repo
     # find the same name as the repo OR name.sh
-
+    repo_name=basename $(find . -name ${repo})
     # if not, as user to input the main script name
     # or list all non-hidden file without suffix and .sh
     # to choose from
 
     # echo the file name
+    echo $repo_name
 }
 
-# create a symlink in bin
+# create a symlink in bin. repo_name and file_name can be different
 fn_create_symlink() {
     # find the name of repo
-    repo_name=$1
+    base_name=$1
+    repo_name=$2
+    # echo '${awesome_dir}/${base_name}/${repo_name}'
     # add a symlink
-    ln -sf "${awesome_dir}/${repo_name}/${repo_name}" "${bin_dir}/${repo_name}"
+    ln -sf "${awesome_dir}/$1/$2" "${bin_dir}/$2"
+    echo "Created a symlink."
     exit
 }
 
@@ -57,19 +61,28 @@ fn_install() {
     fn_check_cmd git
     cd $awesome_dir
     url=$1
+    echo "Cloning ..."
+    git clone $url || exit 1
+    repo_base=$(basename $1 .git)
     # run fn_search_main to find out the main script
-
-    repo=$(basename $1 .git)
-    git clone ${url} && fn_create_symlink ${repo} || eixt 1
-    echo "${repo} installation completed."
-    echo "Try ${repo} -h or which ${repo}."
+    file_name=$(fn_search_main ${repo_base})
+    echo "Creating a symlink ..."
+    fn_create_symlink $repo_base $file_name || eixt
+    # echo "hi"
+    # echo $main
+    # exit
+    # git clone ${url} && fn_create_symlink ${repo} || eixt 1
+    echo "${repo_base} installation completed."
+    echo "Try $repo_base -h or which ${repo}."
 }
 
 # fn_uninstall removes a symlink and repo
 fn_uninstall() {
     cd $awesome_dir
     repo=$1
-    rm -rf ${repo} && rm "${bin_dir}/${repo}" || exit 1
+    rm -rf ${repo} || exit
+    fn_remove_symlink ${repo} || exit
+    # && rm "${bin_dir}/${repo}" || exit
     echo "Unintalled ${repo}."
 }
 
@@ -77,10 +90,11 @@ fn_uninstall() {
 fn_remove_symlink() {
     if [[ -z $1 ]]; then
         echo "Specify the repo to remove."
-        exit 1
+        exit
     fi
+    echo "Removing the symlink ..."
     cd $bin_dir
-    rm "${1}" || exit 1
+    rm "${1}" || exit
     echo "Symlink removed."
     exit
 }
@@ -88,9 +102,9 @@ fn_remove_symlink() {
 fn_add_symlink() {
     if [[ -z $1 ]]; then
         echo "Specify the repo to remove."
-        exit 1
+        exit
     fi
-    fn_create_symlink $1 || exit 1
+    fn_create_symlink $1 || exit
     echo "Symlink added."
     exit
 }
@@ -98,7 +112,7 @@ fn_add_symlink() {
 # fn_update run git pull
 fn_update() {
     cd "$awesome_dir/${1}"
-    git pull || exit 1
+    git pull || exit
     exit
 }
 
