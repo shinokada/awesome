@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-version="0.0.4"
+version="0.0.5"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 # check if awesome dir exist. if not create it and add $HOME/awesome path to config file
@@ -69,6 +69,7 @@ fn_install() {
     repo_base=$(basename "$1" .git)
     git clone "${url}" || exit
     # run fn_search_main to find out the main script
+    # todo if you can't find the same file name as the directory, show the tree to select the main file.
     file_name=$(fn_search_main ${repo_base})
     # echo "Creating a symlink ..."
     # fn_create_symlink $repo_base $file_name || eixt
@@ -145,6 +146,9 @@ Examples:
     Update a package
     awesome update gitstart
 
+    Show installed packages
+    awesome list
+
     Remove a symlink
     awesome remove gitstart
 
@@ -157,10 +161,10 @@ EOF
 fn_main() {
     if (($# > 0)); then
         case $1 in
-        "install")
+        install)
             fn_install "$2"
             ;;
-        "uninstall") fn_uninstall "$2" ;;
+        uninstall) fn_uninstall "$2" ;;
         "add") fn_add_symlink "$2" ;;
         "remove") fn_remove_symlink "$2" ;;
         "update") fn_update "$2" ;;
@@ -168,6 +172,7 @@ fn_main() {
         "-h") fn_help ;;
         "-v" | --version) echo "${version}" ;;
         "--help") fn_help ;;
+        *) fn_help ;;
         esac
     else
         fn_help

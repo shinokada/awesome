@@ -1,8 +1,10 @@
-# Awesome
+# A Simple Shell Script Manager Awesome
 
 ## Overview
 
-Awesome install a package from a GitHub repo on your macOS/Linux.
+Awesome installs a shell script package from a GitHub repo on your macOS/Linux.
+
+Shell script can be bash, lua, node, perl, php, python, python3, ruby, and more.
 
 ## Requirement
 
@@ -27,6 +29,7 @@ curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash 
 ```
 
 ### wget
+https://asciinema.org/a/14?t=25&speed=2&theme=solarized-dark
 
 Ubuntu/Debian:
 
@@ -44,6 +47,8 @@ wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install | ba
 
 ## Usage
 
+Select any script from [Aweseom-shell](https://github.com/alebcay/awesome-shell) and run `awesome intall <URL>`.
+
 ```sh
 # Install a github repo
 awesome install https://github.com/shinokada/cleanit.git
@@ -59,13 +64,16 @@ awesome remove cleanit
 # Update a repo
 awesome update cleanit
 
+# Show installed packages
+awesome list
+
 # help
-awesome help
-awesome h
+awesome --help
+awesome -h
 
 # version
-awesome version
-awesome v
+awesome --version
+awesome -v
 ```
 
 ## Uninstallation

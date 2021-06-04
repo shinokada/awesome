@@ -1,27 +1,25 @@
 #!/usr/bin/env bash
 
-set -e
-version="0.0.2"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 
 # check if awesome dir exist. if not create it and add $HOME/awesome path to config file
 fn_checkDir() {
     if [[ -z $1 ]]; then
-        echo "Specify the directory."
+        echo "Specify the directory." >&2
         exit 1
     fi
     if [[ ! -d $1 ]]; then
-        mkdir $1
-        echo "$1 directory is created."
+        mkdir "$1"
+        echo "$1 directory is created." >&2
         exit
     fi
 
 }
 
 fn_check_cmd() {
-    if [ ! "$(command -v $1)" ]; then
-        echo "Please install $1"
+    if [ ! "$(command -v "$1")" ]; then
+        echo "Please install $1" >&2
         exit 1
     fi
 }
@@ -34,25 +32,39 @@ fn_create_symlink() {
     ln -sf "${awesome_dir}/${repo_name}/${repo_name}" "${bin_dir}/${repo_name}"
 }
 
+fn_confirm() {
+    local dir=$1
+    read -rp "Do you want to remove ${dir}? yes/y or no/n   " PANS
+
+    ans=$(echo "$PANS" | cut -c 1-1 | tr "[:lower:]" "[:upper:]")
+
+    echo "$ans"
+}
+
 # fn_install run git clone and create a symlink
 fn_install() {
-    fn_checkDir $awesome_dir
-    fn_checkDir $bin_dir
+    fn_checkDir "$awesome_dir"
+    fn_checkDir "$bin_dir"
     fn_check_cmd git
-    cd $awesome_dir
+    cd "$awesome_dir" || exit
     url="https://github.com/shinokada/awesome.git"
     repo="awesome"
-    git clone ${url} && fn_create_symlink ${repo} || eixt 1
+    { git clone "${url}" && fn_create_symlink "${repo}"; } || eixt
     echo "${repo} installation completed."
     echo "Try ${repo} -h or which ${repo}."
 }
 
-# fn_uninstall removes a symlink and repo
+# fn_uninstall removes the awesome symlink and repo
 fn_uninstall() {
-    cd $awesome_dir
+    echo "Removing awesome link from ~/bin directory."
+    cd "$awesome_dir" || exit
     repo="awesome"
-    rm -rf ${repo} && rm "${bin_dir}/${repo}" || exit
-    echo "Uninstalled ${repo}."
+    rm -rf "${repo}" && rm "${bin_dir}/${repo}" || exit
+
+    if [[ $(fn_confirm "awesome directory") = "Y" ]]; then
+        rm -rf "$awesome_dir"
+        echo "Uninstalled ${repo}."
+    fi
     echo "You can remove $HOME/awesome directory."
 }
 
