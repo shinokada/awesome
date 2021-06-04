@@ -71,7 +71,7 @@ fn_uninstall() {
         confirm_symlink=$(fn_confirm "remove all symlinks in bin directory")
         if [[ $confirm_symlink = "Y" ]]; then
             for link in $links; do
-                unlink "$link"
+                # unlink "$link"
                 # echo $link
                 echo "Removed the ${link} symlink."
             done
