@@ -8,7 +8,7 @@ fn_confirm() {
 }
 
 fn_test1() {
-    confirm_symlink=$(fn_confirm 'remove all symlinks in bin directory')
+    confirm_symlink=$(fn_confirm remove)
     if [[ "$confirm_symlink" = "Y" ]]; then
 
         echo "Removed the symlink."
