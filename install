@@ -39,7 +39,10 @@ fn_confirm() {
 }
 
 fn_find_symlinks() {
-    find "$bin_dir" -type l
+    IFS=$'\n'
+    paths=($(find "$bin_dir" -type l))
+    unset IFS
+    echo "$paths"
 }
 
 # fn_install run git clone and create a symlink
@@ -66,7 +69,7 @@ fn_uninstall() {
     echo "Finding symlinks ..."
     links=$(fn_find_symlinks)
     echo $links
-    if [[ -n $links ]]; then
+    if ((${#links[@]} > 0)); then
         # confirm if you want to remove all symlinks in bin dir
         confirm_symlink=$(fn_confirm "remove all symlinks in bin directory")
         if [[ $confirm_symlink = "Y" ]]; then
