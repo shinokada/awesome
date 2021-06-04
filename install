@@ -32,7 +32,7 @@ fn_create_symlink() {
 }
 
 fn_confirm() {
-    local dir=$1
+    local dir="$1"
     read -rp "Do you want to ${dir}? yes/y or no/n   " PANS
     ans=$(echo "$PANS" | cut -c 1-1 | tr "[:lower:]" "[:upper:]")
     echo "$ans"
@@ -60,11 +60,12 @@ fn_uninstall() {
     echo "Removing awesome repo from ~/awesome dir and a symlink from ~/bin directory."
     cd "$awesome_dir" || exit
     repo="awesome"
-    rm -rf "${repo}" && rm "${bin_dir}/${repo}" || exit
+    # rm -rf "${repo}" && rm "${bin_dir}/${repo}" || exit
     echo "Removed awesome dir and symlink."
     # check all symlinks to awesome dir in ~/bin dir
     echo "Finding symlinks ..."
     links=$(fn_find_symlinks)
+    echo $links
     if [[ -n $links ]]; then
         # confirm if you want to remove all symlinks in bin dir
         confirm_symlink=$(fn_confirm "remove all symlinks in bin directory")
@@ -81,7 +82,7 @@ fn_uninstall() {
     # confirm if a user want to remove ~/awesome dir
     confirm_remove=$(fn_confirm "remove awesome directory")
     if [[ $confirm_remove = "Y" ]]; then
-        rm -rf "$awesome_dir"
+        # rm -rf "$awesome_dir"
         echo "Uninstalled ${repo} directory."
     fi
     exit
