@@ -7,3 +7,23 @@ install() {
 uninstall() {
     echo "uninstalling ..."
 }
+
+echo "test 2"
+
+fn_main() {
+    if [ $# -eq 1 ]; then
+        case $1 in
+        "install")
+            install
+            ;;
+        "uninstall")
+            uninstall
+            ;;
+        esac
+    else
+        echo "M... something wrong."
+        exit 1
+    fi
+}
+
+fn_main "$@"
