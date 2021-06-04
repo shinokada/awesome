@@ -9,11 +9,11 @@ fn_find_symlinks() {
 
 fn_test1() {
     mapfile -t links < <(fn_find_symlinks)
-    echo "${#links[@]}"
-    if [ "${#links[@]}" -gt 1 ]; then
-        echo "2 is greater than 1."
+    echo "Number of symlinks: ${#links[@]}"
+    if [ "${#links[@]}" -gt 0 ]; then
+        echo "${#links[@]} is greater than 1."
     else
-        echo " 2 is not greater than 1."
+        echo " ${#links[@]} is not greater than 0."
     fi
 }
 
