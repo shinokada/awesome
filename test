@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+fn_test1() {
+    if [ 2 -gt 1 ]; then
+        echo "2 is greater than 1."
+    else
+        echo " 2 is not greater than 1."
+    fi
+}
+
+fn_main() {
+    if [ $# -eq 1 ]; then
+        case $1 in
+        "test")
+            fn_test1
+            ;;
+        esac
+    else
+        echo "Something wrong."
+        exit 1
+    fi
+}
+
+fn_main "$@"
