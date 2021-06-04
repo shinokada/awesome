@@ -2,7 +2,7 @@
 
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
-# version="0.0.10"
+# version="0.0.11"
 
 # check if awesome dir exist. if not create it and add $HOME/awesome path to config file
 fn_checkDir() {
@@ -69,10 +69,10 @@ fn_uninstall() {
     echo "Finding symlinks ..."
     links=$(fn_find_symlinks)
     echo ${#links[@]}
-    if ((${#links[@]} > 0)); then
+    if ((1 > 0)); then
         # confirm if you want to remove all symlinks in bin dir
-        # confirm_symlink=$(fn_confirm "remove all symlinks in bin directory")
-        if [[ $(fn_confirm "remove all symlinks in bin directory") = "Y" ]]; then
+        confirm_symlink=$(fn_confirm "remove all symlinks in bin directory")
+        if [[ "$confirm_symlink" = "Y" ]]; then
             for link in $links; do
                 # unlink "$link"
                 # echo $link
@@ -85,8 +85,8 @@ fn_uninstall() {
     echo "No more symlinks."
 
     # confirm if a user want to remove ~/awesome dir
-    # confirm_remove=$(fn_confirm "remove awesome directory")
-    if [[ $(fn_confirm "remove awesome directory") = "Y" ]]; then
+    confirm_remove=$(fn_confirm "remove awesome directory")
+    if [[ "$confirm_remove" = "Y" ]]; then
         # rm -rf "$awesome_dir"
         echo "Uninstalled ${repo} directory."
     else
