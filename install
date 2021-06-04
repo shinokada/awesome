@@ -2,7 +2,7 @@
 
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
-# version="0.1.0"
+# version="0.1.1"
 
 echo "$BASH_VERSION"
 if ((BASH_VERSINFO[0] < 4)); then
@@ -55,18 +55,16 @@ fn_install() {
     echo "Try ${repo} -h or which ${repo}."
 }
 
-# Removes the awesome symlink and repo
+# Removes the awesome symlinks and dir
 fn_uninstall() {
-    # check all symlinks to awesome dir in ~/bin dir
     echo "Finding symlinks ..."
     mapfile -t links < <(fn_find_symlinks)
     for link in "${links[@]}"; do
-        # unlink "$link"
-        # echo $link
+        unlink "$link"
         echo "Removed the ${link} symlink."
     done
-    echo "Uninstalling awesome directory..."
-    # rm -rf "$awesome_dir"
+    echo "Uninstalling awesome directory ..."
+    rm -rf "$awesome_dir"
     echo "Uninstalled awesome directory."
     exit
 }
