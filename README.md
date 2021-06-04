@@ -82,6 +82,12 @@ awesome --version
 awesome -v
 ```
 
+## Some libraries
+
+- [has](https://github.com/kdabir/has): helps you check presence of various command line tools and their versions on path
+- [ddgr](https://github.com/jarun/ddgr) : DuckDuckGo from the terminal
+- [desk](https://github.com/jamesob/desk): Lightweight workspace manager for the shell.
+- 
 
 ## Author
 

@@ -41,13 +41,14 @@ fn_search_main() {
 fn_create_symlink() {
     # find the name of repo
     base_name=$1
-    repo_name=$2
-    # echo $base_name
+    repo_name=$(basename $2)
+    filename="${repo_name%.*}"
+    echo $filename
     # echo $repo_name
     # exit
     # echo '${awesome_dir}/${base_name}/${repo_name}'
     # add a symlink
-    ln -sf "${awesome_dir}/$1/$2" "${bin_dir}/$2"
+    ln -sf "${awesome_dir}/$1/$2" "${bin_dir}/$filename"
     echo "Created a symlink."
     exit
 }
@@ -161,17 +162,15 @@ EOF
 fn_main() {
     if (($# > 0)); then
         case $1 in
-        install)
-            fn_install "$2"
-            ;;
+        install) fn_install "$2" ;;
         uninstall) fn_uninstall "$2" ;;
-        "add") fn_add_symlink "$2" ;;
-        "remove") fn_remove_symlink "$2" ;;
-        "update") fn_update "$2" ;;
-        "list") fn_list ;;
-        "-h") fn_help ;;
-        "-v" | --version) echo "${version}" ;;
-        "--help") fn_help ;;
+        add) fn_add_symlink "$2" ;;
+        remove) fn_remove_symlink "$2" ;;
+        update) fn_update "$2" ;;
+        list) fn_list ;;
+        -h) fn_help ;;
+        -v | --version) echo "${version}" ;;
+        --help) fn_help ;;
         *) fn_help ;;
         esac
     else
