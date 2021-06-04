@@ -9,6 +9,7 @@ fn_confirm() {
 
 fn_test1() {
     confirm_symlink=$(fn_confirm remove)
+    echo "$confirm_symlink"
     if [[ "$confirm_symlink" = "Y" ]]; then
 
         echo "Removed the symlink."
