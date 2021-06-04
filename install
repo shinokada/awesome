@@ -2,7 +2,7 @@
 
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
-# version="0.0.17"
+# version="0.1.0"
 
 echo "$BASH_VERSION"
 if ((BASH_VERSINFO[0] < 4)); then
@@ -37,13 +37,6 @@ fn_create_symlink() {
     ln -sf "${awesome_dir}/${repo_name}/${repo_name}" "${bin_dir}/${repo_name}"
 }
 
-fn_confirm() {
-    local dir="$1"
-    read -rp "Do you want to ${dir}? yes/y or no/n   " PANS
-    ans=$(echo "$PANS" | cut -c 1-1 | tr "[:lower:]" "[:upper:]")
-    echo "$ans"
-}
-
 fn_find_symlinks() {
     paths=$(find "$bin_dir" -type l)
     echo "$paths"
@@ -64,42 +57,17 @@ fn_install() {
 
 # Removes the awesome symlink and repo
 fn_uninstall() {
-    echo "bin_dir is: $bin_dir"
     # check all symlinks to awesome dir in ~/bin dir
     echo "Finding symlinks ..."
-    # links=($(fn_find_symlinks))
     mapfile -t links < <(fn_find_symlinks)
-    # echo "links are : ${links[@]}"
-    echo "${#links[@]}"
-    if [ "${#links[@]}" -gt 0 ]; then
-        echo "${#links[@]} is greater than 0."
-    else
-        echo " ${#links[@]} is not greater than 0."
-    fi
-    if [ "${#links[@]}" -gt 0 ]; then
-        # confirm if you want to remove all symlinks in bin dir
-        # confirm_symlink=$(fn_confirm "remove all symlinks in bin directory")
-        # if [[ "$confirm_symlink" = "Y" ]]; then
-        #     for link in "${links[@]}"; do
-        #         # unlink "$link"
-        #         # echo $link
-        #         echo "Removed the ${link} symlink."
-        #     done
-        # fi
-        echo "${#links[@]} is greater than 0."
-    else
-        echo "in else statement."
-    fi
-    echo "No more symlinks."
-
-    # confirm if a user want to remove ~/awesome dir
-    confirm_remove=$(fn_confirm "remove awesome directory")
-    if [[ "$confirm_remove" = "Y" ]]; then
-        # rm -rf "$awesome_dir"
-        echo "Uninstalled awesome directory."
-    else
-        echo "remove awesome else statement."
-    fi
+    for link in "${links[@]}"; do
+        # unlink "$link"
+        # echo $link
+        echo "Removed the ${link} symlink."
+    done
+    echo "Uninstalling awesome directory..."
+    # rm -rf "$awesome_dir"
+    echo "Uninstalled awesome directory."
     exit
 }
 
@@ -111,9 +79,6 @@ fn_main() {
             ;;
         "uninstall")
             fn_uninstall
-            ;;
-        "say")
-            fn_say
             ;;
         esac
     else
