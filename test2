@@ -13,10 +13,10 @@ echo "test 2"
 fn_main() {
     if [ $# -eq 1 ]; then
         case $1 in
-        "install")
+        "minstall")
             install
             ;;
-        "uninstall")
+        "muninstall")
             uninstall
             ;;
         esac
