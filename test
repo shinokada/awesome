@@ -1,7 +1,16 @@
 #!/usr/bin/env bash
 
+bin_dir="$HOME/bin"
+
+fn_find_symlinks() {
+    paths=$(find "$bin_dir" -type l)
+    echo "$paths"
+}
+
 fn_test1() {
-    if [ 2 -gt 1 ]; then
+    mapfile -t links < <(fn_find_symlinks)
+    echo "${#links[@]}"
+    if [ "${#links[@]}" -gt 1 ]; then
         echo "2 is greater than 1."
     else
         echo " 2 is not greater than 1."
