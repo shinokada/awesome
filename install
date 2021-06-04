@@ -2,8 +2,12 @@
 
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
-# version="0.0.16"
+# version="0.0.17"
 
+if ((BASH_VERSINFO[0] < 4)); then
+    printf '%s\n' "Error: This requires Bash v4.0 or higher. You have version $BASH_VERSION." 1>&2
+    exit 2
+fi
 # check if awesome dir exist. if not create it and add $HOME/awesome path to config file
 fn_checkDir() {
     if [[ -z $1 ]]; then
@@ -21,10 +25,6 @@ fn_check_cmd() {
         echo "Please install $1" >&2
         exit
     fi
-}
-
-fn_bash() {
-    echo "Install Bash > v4.4"
 }
 
 # create a symlink in bin
@@ -47,7 +47,7 @@ fn_find_symlinks() {
     echo "$paths"
 }
 
-# fn_install run git clone and create a symlink
+# Run git clone and create a symlink
 fn_install() {
     fn_checkDir "$awesome_dir"
     fn_checkDir "$bin_dir"
@@ -60,14 +60,9 @@ fn_install() {
     echo "Try ${repo} -h or which ${repo}."
 }
 
-# fn_uninstall removes the awesome symlink and repo
+# Removes the awesome symlink and repo
 fn_uninstall() {
     echo "bin_dir is: $bin_dir"
-    # echo "Removing awesome repo from ~/awesome dir and a symlink from ~/bin directory."
-    # cd "$awesome_dir" || exit
-    # repo="awesome"
-    # # rm -rf "${repo}" && rm "${bin_dir}/${repo}" || exit
-    # echo "Removed awesome dir and symlink."
     # check all symlinks to awesome dir in ~/bin dir
     echo "Finding symlinks ..."
     # links=($(fn_find_symlinks))
