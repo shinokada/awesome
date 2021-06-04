@@ -72,6 +72,11 @@ fn_uninstall() {
     # echo "links are : ${links[@]}"
     echo "${#links[@]}"
     if [ "${#links[@]}" -gt 0 ]; then
+        echo "${#links[@]} is greater than 1."
+    else
+        echo " ${#links[@]} is not greater than 0."
+    fi
+    if [ "${#links[@]}" -gt 0 ]; then
         # confirm if you want to remove all symlinks in bin dir
         confirm_symlink=$(fn_confirm "remove all symlinks in bin directory")
         if [[ "$confirm_symlink" = "Y" ]]; then
