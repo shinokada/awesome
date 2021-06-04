@@ -62,6 +62,7 @@ fn_install() {
 
 # fn_uninstall removes the awesome symlink and repo
 fn_uninstall() {
+    echo "bin_dir is: $bin_dir"
     # echo "Removing awesome repo from ~/awesome dir and a symlink from ~/bin directory."
     # cd "$awesome_dir" || exit
     # repo="awesome"
