@@ -2,18 +2,19 @@
 
 bin_dir="$HOME/bin"
 
-fn_find_symlinks() {
-    paths=$(find "$bin_dir" -type l)
-    echo "$paths"
+fn_confirm() {
+    local dir="$1"
+    read -rp "Do you want to ${dir}? yes/y or no/n   " PANS
+    ans=$(echo "$PANS" | cut -c 1-1 | tr "[:lower:]" "[:upper:]")
+    echo "$ans"
 }
 
 fn_test1() {
-    mapfile -t links < <(fn_find_symlinks)
-    echo "Number of symlinks: ${#links[@]}"
-    if [ "${#links[@]}" -gt 0 ]; then
-        echo "${#links[@]} is greater than 1."
-    else
-        echo " ${#links[@]} is not greater than 0."
+    confirm_symlink=$(fn_confirm "remove all symlinks in bin directory")
+    if [[ "$confirm_symlink" = "Y" ]]; then
+        for link in "${links[@]}"; do
+            echo "Removed the ${link} symlink."
+        done
     fi
 }
 
