@@ -23,6 +23,8 @@ uninstall() {
 echo "test 2"
 
 fn_main() {
+    echo "in the main"
+    echo $1
     if [ $# -eq 1 ]; then
         case $1 in
         "minstall")
