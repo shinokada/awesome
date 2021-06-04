@@ -2,7 +2,7 @@
 
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
-# version="0.0.14"
+# version="0.0.15"
 
 # check if awesome dir exist. if not create it and add $HOME/awesome path to config file
 fn_checkDir() {
@@ -44,12 +44,6 @@ fn_confirm() {
 
 fn_find_symlinks() {
     paths=$(find "$bin_dir" -type l)
-    # for link in $paths; do
-    #     # unlink "$link"
-    #     # echo $link
-    #     echo "Link is the ${link} symlink."
-    # done
-
     echo "$paths"
 }
 
@@ -68,21 +62,22 @@ fn_install() {
 
 # fn_uninstall removes the awesome symlink and repo
 fn_uninstall() {
-    echo "Removing awesome repo from ~/awesome dir and a symlink from ~/bin directory."
-    cd "$awesome_dir" || exit
-    repo="awesome"
-    # rm -rf "${repo}" && rm "${bin_dir}/${repo}" || exit
-    echo "Removed awesome dir and symlink."
+    # echo "Removing awesome repo from ~/awesome dir and a symlink from ~/bin directory."
+    # cd "$awesome_dir" || exit
+    # repo="awesome"
+    # # rm -rf "${repo}" && rm "${bin_dir}/${repo}" || exit
+    # echo "Removed awesome dir and symlink."
     # check all symlinks to awesome dir in ~/bin dir
     echo "Finding symlinks ..."
-    links=($(fn_find_symlinks))
-    echo "links are : ${links[@]}"
+    # links=($(fn_find_symlinks))
+    mapfile -t links < <(fn_find_symlinks)
+    # echo "links are : ${links[@]}"
     echo "${#links[@]}"
-    if [[ "${#links[@]}" -gt 0 ]]; then
+    if (("${#links[@]}" > 0)); then
         # confirm if you want to remove all symlinks in bin dir
         confirm_symlink=$(fn_confirm "remove all symlinks in bin directory")
         if [[ "$confirm_symlink" = "Y" ]]; then
-            for link in $links; do
+            for link in "${links[@]}"; do
                 # unlink "$link"
                 # echo $link
                 echo "Removed the ${link} symlink."
@@ -97,7 +92,7 @@ fn_uninstall() {
     confirm_remove=$(fn_confirm "remove awesome directory")
     if [[ "$confirm_remove" = "Y" ]]; then
         # rm -rf "$awesome_dir"
-        echo "Uninstalled ${repo} directory."
+        echo "Uninstalled awesome directory."
     else
         echo "remove awesome else statement."
     fi
