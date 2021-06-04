@@ -2,6 +2,7 @@
 
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
+# version="0.0.6"
 
 # check if awesome dir exist. if not create it and add $HOME/awesome path to config file
 fn_checkDir() {
@@ -66,8 +67,6 @@ fn_uninstall() {
     links=$(fn_find_symlinks)
     if [[ -n $links ]]; then
         # confirm if you want to remove all symlinks in bin dir
-        # fn_confirm "remove all symlinks in bin directory"
-        # exit
         confirm_symlink=$(fn_confirm "remove all symlinks in bin directory")
         if [[ $confirm_symlink = "Y" ]]; then
             for link in $links; do
