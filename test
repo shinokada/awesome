@@ -8,6 +8,11 @@ fn_confirm() {
 }
 
 fn_test1() {
+    echo "checking.."
+    if [[ $(fn_confirm crud) = "Y" ]]; then
+        echo "confirmed 1."
+    fi
+    fn_confirm remove
     confirm_symlink=$(fn_confirm remove)
     echo "$confirm_symlink"
     if [[ "$confirm_symlink" = "Y" ]]; then
