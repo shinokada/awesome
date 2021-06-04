@@ -68,7 +68,8 @@ fn_uninstall() {
         # confirm if you want to remove all symlinks in bin dir
         # fn_confirm "remove all symlinks in bin directory"
         # exit
-        if [[ $(fn_confirm "remove all symlinks in bin directory") = "Y" ]]; then
+        confirm_symlink=$(fn_confirm "remove all symlinks in bin directory")
+        if [[ $confirm_symlink = "Y" ]]; then
             for link in $links; do
                 unlink "$link"
                 # echo $link
@@ -79,7 +80,8 @@ fn_uninstall() {
     echo "No more symlinks."
 
     # confirm if a user want to remove ~/awesome dir
-    if [[ $(fn_confirm "remove awesome directory") = "Y" ]]; then
+    confirm_remove=$(fn_confirm "remove awesome directory")
+    if [[ $confirm_remove = "Y" ]]; then
         rm -rf "$awesome_dir"
         echo "Uninstalled ${repo} directory."
     fi
