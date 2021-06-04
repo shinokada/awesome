@@ -4,10 +4,12 @@ awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 # version="0.0.17"
 
+echo "$BASH_VERSION"
 if ((BASH_VERSINFO[0] < 4)); then
     printf '%s\n' "Error: This requires Bash v4.0 or higher. You have version $BASH_VERSION." 1>&2
     exit 2
 fi
+
 # check if awesome dir exist. if not create it and add $HOME/awesome path to config file
 fn_checkDir() {
     if [[ -z $1 ]]; then
@@ -43,8 +45,7 @@ fn_confirm() {
 }
 
 fn_find_symlinks() {
-    paths=$(find "$bin_dir" -type l)
-    echo "$paths"
+    $(find "$bin_dir" -type l)
 }
 
 # Run git clone and create a symlink
