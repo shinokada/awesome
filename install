@@ -72,20 +72,21 @@ fn_uninstall() {
     # echo "links are : ${links[@]}"
     echo "${#links[@]}"
     if [ "${#links[@]}" -gt 0 ]; then
-        echo "${#links[@]} is greater than 1."
+        echo "${#links[@]} is greater than 0."
     else
         echo " ${#links[@]} is not greater than 0."
     fi
     if [ "${#links[@]}" -gt 0 ]; then
         # confirm if you want to remove all symlinks in bin dir
-        confirm_symlink=$(fn_confirm "remove all symlinks in bin directory")
-        if [[ "$confirm_symlink" = "Y" ]]; then
-            for link in "${links[@]}"; do
-                # unlink "$link"
-                # echo $link
-                echo "Removed the ${link} symlink."
-            done
-        fi
+        # confirm_symlink=$(fn_confirm "remove all symlinks in bin directory")
+        # if [[ "$confirm_symlink" = "Y" ]]; then
+        #     for link in "${links[@]}"; do
+        #         # unlink "$link"
+        #         # echo $link
+        #         echo "Removed the ${link} symlink."
+        #     done
+        # fi
+        echo "${#links[@]} is greater than 0."
     else
         echo "in else statement."
     fi
