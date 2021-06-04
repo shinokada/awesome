@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-version="0.0.7"
+version="0.0.8"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 # check if awesome dir exist. if not create it and add $HOME/awesome path to config file
