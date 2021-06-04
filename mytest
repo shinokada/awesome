@@ -1,7 +1,19 @@
 #!/usr/bin/env bash
 
+readme() {
+    echo "starting ..."
+    read -rp "Do you want to continue? yes/y or no/n   " PANS
+    ans=$(echo "$PANS" | cut -c 1-1 | tr "[:lower:]" "[:upper:]")
+    if [[ "$ans" = "Y" ]]; then
+        echo "confirmed 1."
+    fi
+    echo "done"
+}
+
 install() {
     echo "installing ..."
+    readme
+    echo "done"
 }
 
 uninstall() {
