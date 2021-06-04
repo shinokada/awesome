@@ -45,7 +45,8 @@ fn_confirm() {
 }
 
 fn_find_symlinks() {
-    $(find "$bin_dir" -type l)
+    paths=$(find "$bin_dir" -type l)
+    echo "$paths"
 }
 
 # Run git clone and create a symlink
