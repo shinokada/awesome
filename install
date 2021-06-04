@@ -2,7 +2,7 @@
 
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
-# version="0.0.11"
+# version="0.0.13"
 
 # check if awesome dir exist. if not create it and add $HOME/awesome path to config file
 fn_checkDir() {
@@ -23,6 +23,10 @@ fn_check_cmd() {
     fi
 }
 
+fn_bash() {
+    echo "Install Bash > v4.4"
+}
+
 # create a symlink in bin
 fn_create_symlink() {
     # find the name of repo
@@ -39,9 +43,13 @@ fn_confirm() {
 }
 
 fn_find_symlinks() {
-    IFS=$'\n'
-    paths=($(find "$bin_dir" -type l))
-    unset IFS
+    paths=$(find "$bin_dir" -type l)
+    # for link in $paths; do
+    #     # unlink "$link"
+    #     # echo $link
+    #     echo "Link is the ${link} symlink."
+    # done
+
     echo "$paths"
 }
 
@@ -67,9 +75,10 @@ fn_uninstall() {
     echo "Removed awesome dir and symlink."
     # check all symlinks to awesome dir in ~/bin dir
     echo "Finding symlinks ..."
-    links=$(fn_find_symlinks)
-    echo ${#links[@]}
-    if ((1 > 0)); then
+    links=($(fn_find_symlinks))
+    # echo "links are : ${link[@]}"
+    # echo "${#links[@]}"
+    if [[ "${#links[@]}" -gt 0 ]]; then
         # confirm if you want to remove all symlinks in bin dir
         confirm_symlink=$(fn_confirm "remove all symlinks in bin directory")
         if [[ "$confirm_symlink" = "Y" ]]; then
