@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-bin_dir="$HOME/bin"
-
 fn_confirm() {
     local dir="$1"
     read -rp "Do you want to ${dir}? yes/y or no/n   " PANS
@@ -10,11 +8,11 @@ fn_confirm() {
 }
 
 fn_test1() {
-    confirm_symlink=$(fn_confirm "remove all symlinks in bin directory")
+    confirm_symlink=$(fn_confirm 'remove all symlinks in bin directory')
     if [[ "$confirm_symlink" = "Y" ]]; then
-        for link in "${links[@]}"; do
-            echo "Removed the ${link} symlink."
-        done
+
+        echo "Removed the symlink."
+
     fi
 }
 
