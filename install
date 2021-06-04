@@ -7,20 +7,18 @@ bin_dir="$HOME/bin"
 fn_checkDir() {
     if [[ -z $1 ]]; then
         echo "Specify the directory." >&2
-        exit 1
+        exit
     fi
     if [[ ! -d $1 ]]; then
         mkdir "$1"
         echo "$1 directory is created." >&2
-        exit
     fi
-
 }
 
 fn_check_cmd() {
     if [ ! "$(command -v "$1")" ]; then
         echo "Please install $1" >&2
-        exit 1
+        exit
     fi
 }
 
@@ -35,9 +33,7 @@ fn_create_symlink() {
 fn_confirm() {
     local dir=$1
     read -rp "Do you want to ${dir}? yes/y or no/n   " PANS
-
     ans=$(echo "$PANS" | cut -c 1-1 | tr "[:lower:]" "[:upper:]")
-
     echo "$ans"
 }
 
