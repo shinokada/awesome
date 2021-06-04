@@ -45,6 +45,12 @@ sudo yum install curl
 wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
 ```
 
+## Uninstallation
+
+```sh
+curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s uninstall
+```
+
 ## Usage
 
 Select any script from [Aweseom-shell](https://github.com/alebcay/awesome-shell) and run `awesome intall <URL>`.
@@ -76,11 +82,6 @@ awesome --version
 awesome -v
 ```
 
-## Uninstallation
-
-```sh
-curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s uninstall
-```
 
 ## Author
 

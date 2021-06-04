@@ -34,11 +34,15 @@ fn_create_symlink() {
 
 fn_confirm() {
     local dir=$1
-    read -rp "Do you want to remove ${dir}? yes/y or no/n   " PANS
+    read -rp "Do you want to ${dir}? yes/y or no/n   " PANS
 
     ans=$(echo "$PANS" | cut -c 1-1 | tr "[:lower:]" "[:upper:]")
 
     echo "$ans"
+}
+
+fn_find_symlinks() {
+    find "$bin_dir" -type l
 }
 
 # fn_install run git clone and create a symlink
@@ -56,16 +60,25 @@ fn_install() {
 
 # fn_uninstall removes the awesome symlink and repo
 fn_uninstall() {
-    echo "Removing awesome link from ~/bin directory."
+    echo "Removing awesome repo from ~/awesome dir and a symlink from ~/bin directory."
     cd "$awesome_dir" || exit
     repo="awesome"
     rm -rf "${repo}" && rm "${bin_dir}/${repo}" || exit
+    # check all symlinks to awesome dir in ~/bin dir
+    if fn_find_symlinks; then
+        # confirm if you want to remove all symlinks in bin dir
+        if [[ $(fn_confirm "remove all symlinks in bin directory") = "Y" ]]; then
+            rm -rf "$awesome_dir"
+            echo "Uninstalled ${repo}."
+        fi
+    fi
 
-    if [[ $(fn_confirm "awesome directory") = "Y" ]]; then
+    # confirm if a user want to remove ~/awesome dir
+    if [[ $(fn_confirm "remove awesome directory") = "Y" ]]; then
         rm -rf "$awesome_dir"
         echo "Uninstalled ${repo}."
     fi
-    echo "You can remove $HOME/awesome directory."
+    exit
 }
 
 fn_main() {
