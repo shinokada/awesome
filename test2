@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+install() {
+    echo "installing ..."
+}
+
+uninstall() {
+    echo "uninstalling ..."
+}

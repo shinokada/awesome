@@ -48,7 +48,7 @@ wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install | ba
 ## Uninstallation
 
 ```sh
-curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s uninstall
+bash -c "$(curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install; uninstall)"
 ```
 
 ## Usage
