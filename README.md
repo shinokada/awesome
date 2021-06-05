@@ -2,9 +2,14 @@
 
 ## Overview
 
-The `awesome` is a simple script package manager. Awesome installs a shell script package from a GitHub repo on your macOS/Linux.
+The `awesome` is a simple shell script package manager. Awesome installs a shell script package from a GitHub repo on your macOS/Linux.
 
  It creates the `~/awesome` directory and the `~/bin` directory if they don't exist. When you install a script package in the `~/awesome` directory and, it creates a symlink in the `~/bin` directory.
+
+## Why?
+
+- Some scripts don't have Homebrew installation. (macOS/Linux)
+- Make an easy installation.
 
 ## Installation
 
@@ -60,20 +65,26 @@ The script name can have an extension, `.sh`.
 
 ```sh
 # Install a github repo
+awesome -i https://github.com/shinokada/cleanit.git
 awesome install https://github.com/shinokada/cleanit.git
+
 # OR using URL
+awesome -i https://github.com/shinokada/cleanit
 awesome install https://github.com/shinokada/cleanit
 
 # Remove a symlink and repo
+awesome -u cleanit
 awesome uninstall cleanit
 
 # Remove a symlink but not uninstall
+awesome -r cleanit
 awesome remove cleanit
 
 # Update a repo
 awesome update cleanit
 
 # Show installed packages
+awesome ls
 awesome list
 
 # help
@@ -92,8 +103,26 @@ awesome -v
 - [desk](https://github.com/jamesob/desk): Lightweight workspace manager for the shell.
 - [gitstart](https://github.com/shinokada/gitstart): GitHub repository automation.
 - [gitig](https://github.com/shinokada/gitig): Fix a gitignore problem.
+- [googler](https://github.com/jarun/googler): Google Search, Google Site Search, Google News from the terminal
+- [hhighlighter](https://github.com/paoloantinori/hhighlighter): Colorize words in a command output
 - [backpack_install](https://github.com/shinokada/backpack_install): Backpack for Laravel installer.
-- [manop](https://github.com/shinokada/manop): Man page description and option viewer
+- [hr](https://github.com/paoloantinori/hhighlighter): <hr /> for your terminal
+- [manop](https://github.com/shinokada/manop): Man page description and option viewer.
+- [shml](https://github.com/odb/shml): A shell framework for faster and easier script development.
+- [slugify](https://github.com/benlinton/slugify): A bash command that converts filenames and directories to a web friendly format.
+- [spark](https://github.com/holman/spark): 
+▁▂▃▅▂▇ in your shell
+- [spot](https://github.com/rauchg/spot): Tiny file search utility
+- [v](https://github.com/rupa/v): z for vim.
+
+## How to develop for awesome package manager
+
+
+
+## Todos
+
+- add `awesome install tldr-sh-client tldr`. The repo name is different from the main sh file.
+
 
 ## Author
 

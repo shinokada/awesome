@@ -162,15 +162,14 @@ EOF
 fn_main() {
     if (($# > 0)); then
         case $1 in
-        install) fn_install "$2" ;;
-        uninstall) fn_uninstall "$2" ;;
-        add) fn_add_symlink "$2" ;;
-        remove) fn_remove_symlink "$2" ;;
+        -i | install) fn_install "$2" ;;
+        -u | uninstall) fn_uninstall "$2" ;;
+        -a | add) fn_add_symlink "$2" ;;
+        -r | remove) fn_remove_symlink "$2" ;;
         update) fn_update "$2" ;;
-        list) fn_list ;;
-        -h) fn_help ;;
+        ls | list) fn_list ;;
+        -h | --help) fn_help ;;
         -v | --version) echo "${version}" ;;
-        --help) fn_help ;;
         *) fn_help ;;
         esac
     else
