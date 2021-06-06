@@ -32,17 +32,25 @@ fn_check_cmd() {
     fi
 }
 
+fn_confirmRemove() {
+    local package=$1
+    read -rp "Do you want to remove $package? yes/y or no/n   " PANS
+
+    ans=$(echo "$PANS" | cut -c 1-1 | tr "[:lower:]" "[:upper:]")
+
+    echo $ans
+}
+
 # search the main script. if $2 is provided use it as script_name otherwise use $1 as script_name
 fn_search_main() {
     repo=$1
-    # repo_name=basename $(find . -name ${repo})
     cd "$awesome_dir/$repo" || return
     if [[ -n $2 ]]; then
         script_name=$2
-        IFS= read -r -d '' repo < <(find . '(' -name "${script_name##*/}" -o -name "${script_name##*/}.sh" ')' -print0)
     else
-        IFS= read -r -d '' repo < <(find . '(' -name "${repo##*/}" -o -name "${repo##*/}.sh" ')' -print0)
+        script_name="$repo"
     fi
+    IFS= read -r -d '' repo < <(find . '(' -name "${script_name##*/}" -o -name "${script_name##*/}.sh" ')' -print0)
 
     if [[ $repo ]]; then
         printf '%s\n' $(basename $repo)
@@ -72,6 +80,50 @@ fn_src_path() {
     echo "${src_path%/*}"
 }
 
+fn_remove_dir() {
+    repo=$1
+    src_path=$2
+    # confirm
+    if [[ $(fn_confirmRemove "$src_path") = "Y" ]]; then
+        echo "Removing the ${src_path} directory ..."
+        rm -rf "${src_path}" || exit
+        echo "$repo directory removed."
+    fi
+    return
+}
+
+# fn_remove removes a symlink
+fn_remove_symlink() {
+    if [[ -z $1 ]]; then
+        echo "Specify the repo to remove." >&2
+        exit 1
+    fi
+    repo=$1
+    src_path=$2
+
+    # check if the dir exist || exit
+    if [[ $(fn_confirmRemove "$src_path") = "Y" ]]; then
+        echo "Removing the ${src_path} symlink ..."
+        fn_remove_symlink ${src_path} || exit
+        echo "$repo symlink removed."
+    fi
+    echo "Removing the symlink ..."
+    cd "$bin_dir" || exit
+    rm "${1}" || exit
+    echo "Symlink removed." >&2
+    exit
+}
+
+fn_add_symlink() {
+    if [[ -z $1 ]]; then
+        echo "Specify the repo to remove." >&2
+        exit 1
+    fi
+    fn_create_symlink "$1" || exit
+    echo "Symlink added." >&2
+    exit
+}
+
 # fn_install run git clone and create a symlink
 fn_install() {
     fn_checkOrmkdir "$awesome_dir"
@@ -97,7 +149,6 @@ fn_install() {
     git clone "${url}" || exit
     echo "Cloning done."
     # run fn_search_main to find out the main script
-    # todo if you can't find the same file name as the directory, show the tree to select the main file.
     file_name=$(fn_search_main ${repo_base} ${script_name}) || exit 1
     # echo "Creating a symlink ..."
     # fn_create_symlink $repo_base $file_name || eixt
@@ -110,44 +161,15 @@ fn_install() {
 fn_uninstall() {
     cd "$awesome_dir" || exit
     repo=$1
-
     # find the realpath (source)
-    # src_path=$(realpath "$HOME/bin/${repo}")
-    # echo "${src_path%/*}"
     src_path=$(fn_src_path "$repo")
     echo "src path: $src_path"
     # use realpath to find the real dir
     fn_checkDir "$src_path"
-    echo "Removing the ${src_path} directory ..."
-    rm -rf "${src_path}" || exit
-    echo "$repo directory removed."
-    fn_remove_symlink ${src_path} || exit
-    exit
-}
-
-# fn_remove removes a symlink
-fn_remove_symlink() {
-    if [[ -z $1 ]]; then
-        echo "Specify the repo to remove." >&2
-        exit 1
-    fi
-
-    # check if the dir exist || exit
-
-    echo "Removing the symlink ..."
-    cd "$bin_dir" || exit
-    rm "${1}" || exit
-    echo "Symlink removed." >&2
-    exit
-}
-
-fn_add_symlink() {
-    if [[ -z $1 ]]; then
-        echo "Specify the repo to remove." >&2
-        exit 1
-    fi
-    fn_create_symlink "$1" || exit
-    echo "Symlink added." >&2
+    # remove a dir
+    fn_remove_dir "$repo" "$src_path"
+    # remove a symlink
+    fn_remove_symlink "$repo" "$src_path"
     exit
 }
 
@@ -170,11 +192,10 @@ Description: Awesome install a package from a GitHub repo on your macOS/Linux.
 
 Usage: awesome [-h] [command]
     -i | install   installs a package from a GitHub repo and create a symlink in ~/bin
-    -u | uninstall uninstalls a package and remove a symlink
-    remove-sym remove a package symlink 
+    rm             uninstalls a package and remove a symlink
     ls | list      lists awesome packages
-    -a | add       adds a symlink
-    -r | remove    removes a symlink
+    link           adds a symlink
+    unlink         remove a package symlink 
     update         checks an update and install a new package
     -h, --help     shows this help message and exit"
 
@@ -204,10 +225,10 @@ fn_main() {
     if (($# > 0)); then
         case $1 in
         -i | install) fn_install "$2" "$3" ;;
-        -u | uninstall) fn_uninstall "$2" ;;
-        -a | add) fn_add_symlink "$2" ;;
-        -r | remove) fn_remove_symlink "$2" ;;
-        update) fn_update "$2" ;;
+        rm) fn_uninstall "$2" ;;
+        link) fn_add_symlink "$2" ;;
+        unlink) fn_remove_symlink "$2" ;;
+        -u | update) fn_update "$2" ;;
         ls | list) fn_list ;;
         -h | --help) fn_help ;;
         -v | --version) echo "${version}" ;;
