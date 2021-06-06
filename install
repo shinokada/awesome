@@ -56,7 +56,7 @@ fn_install() {
     cd "$awesome_dir" || exit
     url="https://github.com/shinokada/awesome.git"
     repo="awesome"
-    { git clone "${url}" && fn_create_symlink "${repo}"; } || eixt
+    { git clone "${url}" && fn_create_symlink "${repo}"; } || exit
     echo "${repo} installation completed."
     echo "Try ${repo} -h or which ${repo}."
 }

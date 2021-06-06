@@ -4,7 +4,7 @@ version="0.1.1"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 # check if awesome dir exist. if not create it and add $HOME/awesome path to config file
-fn_checkDir() {
+fn_checkOrmkdir() {
     if [[ -z $1 ]]; then
         echo "Specify the directory." >&2
         exit
@@ -12,6 +12,15 @@ fn_checkDir() {
     if [[ ! -d $1 ]]; then
         mkdir "$1"
         echo "$1 directory is created." >&2
+        return
+    fi
+}
+
+fn_checkDir() {
+    if [[ -d $1 ]]; then
+        return
+    else
+        echo "Ooops! $1 doesn't exist." >&2
         exit
     fi
 }
@@ -23,18 +32,23 @@ fn_check_cmd() {
     fi
 }
 
-# search the main script
+# search the main script. if $2 is provided use it as script_name otherwise use $1 as script_name
 fn_search_main() {
     repo=$1
     # repo_name=basename $(find . -name ${repo})
     cd "$awesome_dir/$repo" || return
-    IFS= read -r -d '' repo < <(find . '(' -name "${repo##*/}" -o -name "${repo##*/}.sh" ')' -print0)
+    if [[ -n $2 ]]; then
+        script_name=$2
+        IFS= read -r -d '' repo < <(find . '(' -name "${script_name##*/}" -o -name "${script_name##*/}.sh" ')' -print0)
+    else
+        IFS= read -r -d '' repo < <(find . '(' -name "${repo##*/}" -o -name "${repo##*/}.sh" ')' -print0)
+    fi
+
     if [[ $repo ]]; then
         printf '%s\n' $(basename $repo)
     else
         return 1
     fi
-    echo $repo_name
 }
 
 # create a symlink in bin. repo_name and file_name can be different
@@ -53,25 +67,38 @@ fn_create_symlink() {
     exit
 }
 
+fn_src_path() {
+    src_path=$(realpath "$HOME/bin/$1")
+    echo "${src_path%/*}"
+}
+
 # fn_install run git clone and create a symlink
 fn_install() {
+    fn_checkOrmkdir "$awesome_dir"
+    fn_checkOrmkdir "$bin_dir"
+    fn_check_cmd git
+
     if [[ -z $1 ]]; then
         echo "You need to specify the GitHub repo URL." >&2
         exit 1
+    else
+        url=$1
     fi
-    fn_checkDir "$awesome_dir"
-    fn_checkDir "$bin_dir"
-    fn_check_cmd git
+    repo_base=$(basename "$url" .git)
+
+    if [[ -n $2 ]]; then
+        script_name=$2
+    else
+        script_name="$repo_base"
+    fi
+
     cd "$awesome_dir" || return
-    url=$1
-    # echo "Cloning ..."
-    # git clone $url || exit 1
-    # echo "Done cloning."
-    repo_base=$(basename "$1" .git)
+    echo "Cloning ..."
     git clone "${url}" || exit
+    echo "Cloning done."
     # run fn_search_main to find out the main script
     # todo if you can't find the same file name as the directory, show the tree to select the main file.
-    file_name=$(fn_search_main ${repo_base})
+    file_name=$(fn_search_main ${repo_base} ${script_name}) || exit 1
     # echo "Creating a symlink ..."
     # fn_create_symlink $repo_base $file_name || eixt
     fn_create_symlink "${repo_base}" "${file_name}" || exit
@@ -83,10 +110,18 @@ fn_install() {
 fn_uninstall() {
     cd "$awesome_dir" || exit
     repo=$1
-    echo "Removing the $repo directory ..."
-    rm -rf "${repo}" || exit
+
+    # find the realpath (source)
+    # src_path=$(realpath "$HOME/bin/${repo}")
+    # echo "${src_path%/*}"
+    src_path=$(fn_src_path "$repo")
+    echo "src path: $src_path"
+    # use realpath to find the real dir
+    fn_checkDir "$src_path"
+    echo "Removing the ${src_path} directory ..."
+    rm -rf "${src_path}" || exit
     echo "$repo directory removed."
-    fn_remove_symlink ${repo} || exit
+    fn_remove_symlink ${src_path} || exit
     exit
 }
 
@@ -96,6 +131,9 @@ fn_remove_symlink() {
         echo "Specify the repo to remove." >&2
         exit 1
     fi
+
+    # check if the dir exist || exit
+
     echo "Removing the symlink ..."
     cd "$bin_dir" || exit
     rm "${1}" || exit
@@ -131,11 +169,14 @@ fn_help() {
 Description: Awesome install a package from a GitHub repo on your macOS/Linux.
 
 Usage: awesome [-h] [command]
-    install    install a package from a GitHub repo and create a symlink in ~/bin
-    uninstall  uninstall a package and remove a symlink
+    -i | install   installs a package from a GitHub repo and create a symlink in ~/bin
+    -u | uninstall uninstalls a package and remove a symlink
     remove-sym remove a package symlink 
-    update     check an update and install a new package
-    -h, --help show this help message and exit"
+    ls | list      lists awesome packages
+    -a | add       adds a symlink
+    -r | remove    removes a symlink
+    update         checks an update and install a new package
+    -h, --help     shows this help message and exit"
 
 Examples:
     Install a package
@@ -162,7 +203,7 @@ EOF
 fn_main() {
     if (($# > 0)); then
         case $1 in
-        -i | install) fn_install "$2" ;;
+        -i | install) fn_install "$2" "$3" ;;
         -u | uninstall) fn_uninstall "$2" ;;
         -a | add) fn_add_symlink "$2" ;;
         -r | remove) fn_remove_symlink "$2" ;;

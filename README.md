@@ -121,8 +121,8 @@ awesome -v
 
 ## Todos
 
-- add `awesome install tldr-sh-client tldr`. The repo name is different from the main sh file.
-
+- tldr-sh-client has tldr as the main script
+- add `awesome -u tldr` to uninstall symlink and symlink destination. Use `realpath tldr` to find the source and remove the dir.
 
 ## Author
 
