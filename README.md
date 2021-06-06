@@ -64,6 +64,16 @@ The script name can have an extension, `.sh`.
 ## Usage
 
 ```sh
+-i | install installs a package from a GitHub repo and create a symlink in ~/bin
+rm           uninstalls a package and remove a symlink
+ls | list    lists awesome packages
+link         adds a symlink
+unlink       remove a package symlink 
+-u | update  checks an update and install a new package
+-h, --help   shows this help message and exit"
+```
+
+```sh
 # Install a github repo
 awesome -i https://github.com/shinokada/cleanit.git
 awesome install https://github.com/shinokada/cleanit.git
@@ -73,19 +83,23 @@ awesome -i https://github.com/shinokada/cleanit
 awesome install https://github.com/shinokada/cleanit
 
 # Remove a symlink and repo
-awesome -u cleanit
-awesome uninstall cleanit
-
-# Remove a symlink but not uninstall
-awesome -r cleanit
-awesome remove cleanit
-
-# Update a repo
-awesome update cleanit
+awesome rm cleanit
 
 # Show installed packages
 awesome ls
 awesome list
+
+# Remove a symlink but not uninstall
+awesome unlink cleanit
+
+# Add a symlink
+awesome link cleanit
+
+# Update a repo
+awesome update cleanit
+awesome -u cleanit
+
+
 
 # help
 awesome --help

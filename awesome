@@ -191,13 +191,13 @@ fn_help() {
 Description: Awesome install a package from a GitHub repo on your macOS/Linux.
 
 Usage: awesome [-h] [command]
-    -i | install   installs a package from a GitHub repo and create a symlink in ~/bin
-    rm             uninstalls a package and remove a symlink
-    ls | list      lists awesome packages
-    link           adds a symlink
-    unlink         remove a package symlink 
-    update         checks an update and install a new package
-    -h, --help     shows this help message and exit"
+    -i | install installs a package from a GitHub repo and create a symlink in ~/bin
+    rm           uninstalls a package and remove a symlink
+    ls | list    lists awesome packages
+    link         adds a symlink
+    unlink       remove a package symlink 
+    -u | update  checks an update and install a new package
+    -h, --help   shows this help message and exit"
 
 Examples:
     Install a package
@@ -226,10 +226,10 @@ fn_main() {
         case $1 in
         -i | install) fn_install "$2" "$3" ;;
         rm) fn_uninstall "$2" ;;
+        ls | list) fn_list ;;
         link) fn_add_symlink "$2" ;;
         unlink) fn_remove_symlink "$2" ;;
         -u | update) fn_update "$2" ;;
-        ls | list) fn_list ;;
         -h | --help) fn_help ;;
         -v | --version) echo "${version}" ;;
         *) fn_help ;;
