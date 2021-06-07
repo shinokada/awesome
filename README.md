@@ -53,6 +53,14 @@ wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install | ba
 curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install > tmp1 && bash tmp1 uninstall && rm tmp1
 ```
 
+## Update
+
+Update awesome:
+
+```sh
+awesome update awesome
+```
+
 ## Limitations
 
 A GitHub repository must have the same script name.

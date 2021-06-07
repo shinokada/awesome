@@ -1,9 +1,61 @@
 #!/usr/bin/env bash
 
-version="0.1.1"
+version="0.1.2"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
-# check if awesome dir exist. if not create it and add $HOME/awesome path to config file
+repo_link=""
+repo_name=""
+script_name=""
+git_user=""
+
+# Find repo name and script name from
+# shinokada/gitstart
+# raylee/tldr-sh-client tldr
+# https://github.com/raylee/tldr-sh-client.git tldr
+# https://github.com/raylee/tldr-sh-client tldr
+fn_repo_script() {
+    local link_arg script_arg
+    link_arg=$1
+    script_arg=$2
+    if [[ $link_arg =~ "@" ]]; then
+        # if link_arg has @ it is like git@github.com:shinokada/cleanit.git
+        echo "Please use URL or https, not ssh."
+        exit
+    fi
+    if [[ -z $script_arg ]]; then
+        # no $2 so it must be the form of
+        # shinokada/gitstart has the same repo_name and script_name
+        # or https://github.com/shinokada/cleanit
+        # or https://github.com/shinokada/cleanit.git
+        git_user=$(basename "${link_arg%/*}")
+        repo_name=$(basename "${link_arg##*/}" .git)
+        # repo_name="${link_arg##*/}"
+        script_name=$(basename "${link_arg##*/}" .git)
+        # script_name="${link_arg##*/}"
+        if [[ $link_arg =~ https://github.com/ ]]; then
+            repo_link="$link_arg"
+        else
+            repo_link="https://github.com/${link_arg}"
+        fi
+    else
+        slash_num=$(echo "$link_arg" | grep -o "/" | wc -l)
+        if (("$slash_num" == 1)); then
+            # one / so it must be raylee/tldr-sh-client tldr
+            git_user="${link_arg%/*}"
+            repo_name="${link_arg##*/}"
+            script_name="$script_arg"
+            repo_link="https://github.com/${link_arg}"
+        else
+            # it must be https://github.com/raylee/tldr-sh-client.git tldr
+            git_user=$(basename "${link_arg%/*}")
+            repo_name=$(basename "$link_arg" .git)
+            script_name="$script_arg"
+            repo_link="$link_arg"
+        fi
+    fi
+}
+
+# Create a awesome dir if it doesn't exist.
 fn_checkOrmkdir() {
     if [[ -z $1 ]]; then
         echo "Specify the directory." >&2
@@ -16,6 +68,7 @@ fn_checkOrmkdir() {
     fi
 }
 
+# Return 0 or 1 depending a dir exists or not
 fn_checkDir() {
     if [[ -d $1 ]]; then
         return
@@ -25,6 +78,7 @@ fn_checkDir() {
     fi
 }
 
+# Return 0 or 1 depending a command exists or not
 fn_check_cmd() {
     if [ ! "$(command -v "$1")" ]; then
         echo "Please install $1" >&2
@@ -32,6 +86,7 @@ fn_check_cmd() {
     fi
 }
 
+# Return Y or N after asking a question.
 fn_confirmRemove() {
     local package=$1
     read -rp "Do you want to remove $package? yes/y or no/n   " PANS
@@ -41,45 +96,49 @@ fn_confirmRemove() {
     echo $ans
 }
 
-# search the main script. if $2 is provided use it as script_name otherwise use $1 as script_name
+# Outputs the main script name. if $2 is provided use it as script_name otherwise use $1 as script_name
 fn_search_main() {
     repo=$1
-    cd "$awesome_dir/$repo" || return
-    if [[ -n $2 ]]; then
-        script_name=$2
-    else
-        script_name="$repo"
-    fi
-    IFS= read -r -d '' repo < <(find . '(' -name "${script_name##*/}" -o -name "${script_name##*/}.sh" ')' -print0)
+    if [[ -d "$awesome_dir/$repo" ]]; then
+        echo "found it"
+        cd "$awesome_dir/$repo" || return
+        if [[ -n $2 ]]; then
+            script_name=$2
+        else
+            script_name="$repo"
+        fi
+        IFS= read -r -d '' repo < <(find . '(' -name "${script_name##*/}" -o -name "${script_name##*/}.sh" ')' -print0)
 
-    if [[ $repo ]]; then
-        printf '%s\n' $(basename $repo)
+        if [[ $repo ]]; then
+            printf '%s\n' $(basename $repo)
+        else
+            return 1
+        fi
     else
-        return 1
+        echo "The repo and script names are different. For example, tldr-sh-client/tldr." >&2
+        echo "Use, for example:" >&2
+        echo "awesome link tldr-sh-client tldr" >&2
+        exit 1
     fi
+    echo "outside"
 }
 
-# create a symlink in bin. repo_name and file_name can be different
+# Create a symlink in bin. repo_name and file_name can be different
 fn_create_symlink() {
-    # find the name of repo
-    base_name=$1
-    repo_name=$(basename $2)
-    filename="${repo_name%.*}"
-    echo $filename
-    # echo $repo_name
-    # exit
-    # echo '${awesome_dir}/${base_name}/${repo_name}'
     # add a symlink
-    ln -sf "${awesome_dir}/$1/$2" "${bin_dir}/$filename"
+    ln -sf "${awesome_dir}/$1/$2" "${bin_dir}/$2"
     echo "Created a symlink."
     exit
 }
 
+# Outputs the path to the src
 fn_src_path() {
     src_path=$(realpath "$HOME/bin/$1")
+    # echo "$src_path"
     echo "${src_path%/*}"
 }
 
+# Run rm after a confirmation
 fn_remove_dir() {
     repo=$1
     src_path=$2
@@ -92,68 +151,81 @@ fn_remove_dir() {
     return
 }
 
-# fn_remove removes a symlink
+# Run rm a symlink
 fn_remove_symlink() {
     if [[ -z $1 ]]; then
         echo "Specify the repo to remove." >&2
         exit 1
     fi
     repo=$1
-    src_path=$2
+    # src_path=$2
 
     # check if the dir exist || exit
-    if [[ $(fn_confirmRemove "$src_path") = "Y" ]]; then
-        echo "Removing the ${src_path} symlink ..."
-        fn_remove_symlink ${src_path} || exit
-        echo "$repo symlink removed."
+    if [[ $(fn_confirmRemove symlink) = "Y" ]]; then
+        echo "Removing the symlink ..."
+        cd "$bin_dir" || exit
+        rm "${repo}" || exit
+        echo "Symlink removed."
     fi
-    echo "Removing the symlink ..."
-    cd "$bin_dir" || exit
-    rm "${1}" || exit
-    echo "Symlink removed." >&2
     exit
 }
 
+# Add a symlink
 fn_add_symlink() {
     if [[ -z $1 ]]; then
         echo "Specify the repo to remove." >&2
         exit 1
-    fi
-    fn_create_symlink "$1" || exit
-    echo "Symlink added." >&2
-    exit
-}
-
-# fn_install run git clone and create a symlink
-fn_install() {
-    fn_checkOrmkdir "$awesome_dir"
-    fn_checkOrmkdir "$bin_dir"
-    fn_check_cmd git
-
-    if [[ -z $1 ]]; then
-        echo "You need to specify the GitHub repo URL." >&2
-        exit 1
     else
-        url=$1
+        repo_base=$1
     fi
-    repo_base=$(basename "$url" .git)
-
+    # repo_base=$(basename "$url" .git)
     if [[ -n $2 ]]; then
         script_name=$2
     else
         script_name="$repo_base"
     fi
+    # check if repo_name exists in awesome dir
+    echo "Searching ..."
+    # echo "repo-base $repo_base"
+    # echo "script-name: $script_name"
+    if [[ $(ls "$awesome_dir") =~ $script_name ]]; then
+        # exit
+        file_name=$(fn_search_main "$repo_base" "$script_name") || exit 1
+        echo "$file_name"
+        # if not exit with warning
+        # show awesome dir
+        # link repo_name/script_name
+        fn_create_symlink "${repo_base}" "${script_name}" || exit
+        # fn_create_symlink "$1" || exit
+        echo "Symlink added." >&2
+    else
+        echo "No $script_name in $awesome_dir"
+        exit 1
 
+    fi
+    # echo "$script_name"
+
+    exit
+}
+
+# fn_install run git clone and create a symlink
+fn_install() {
+    if [[ -z $1 ]]; then
+        echo "You need to specify the GitHub repo URL." >&2
+        exit 1
+    fi
+    # set $git_user, $repo_name, $script_name, and $repo_link
+    fn_repo_script "$1" "$2"
+    # echo "git-user: $git_user"
+    # echo "repo-name: $repo_name"
+    # echo "script-name: $script_name"
+    # echo "repo-link: $repo_link"
     cd "$awesome_dir" || return
     echo "Cloning ..."
-    git clone "${url}" || exit
+    git clone "${repo_link}" || exit
     echo "Cloning done."
-    # run fn_search_main to find out the main script
-    file_name=$(fn_search_main ${repo_base} ${script_name}) || exit 1
-    # echo "Creating a symlink ..."
-    # fn_create_symlink $repo_base $file_name || eixt
-    fn_create_symlink "${repo_base}" "${file_name}" || exit
-    echo "${repo} installation completed." >&2
+    fn_create_symlink "${repo_name}" "${script_name}" || exit
+    echo "${repo_name}/${script_name} installation completed." >&2
     echo "Try ${repo} -h or which ${repo}." >&2
 }
 
@@ -163,21 +235,33 @@ fn_uninstall() {
     repo=$1
     # find the realpath (source)
     src_path=$(fn_src_path "$repo")
-    echo "src path: $src_path"
+
     # use realpath to find the real dir
     fn_checkDir "$src_path"
+    # fn_checkDir "${src_path%/*}"
+    echo "src path: $src_path"
+    echo "repo: $repo"
     # remove a dir
     fn_remove_dir "$repo" "$src_path"
     # remove a symlink
-    fn_remove_symlink "$repo" "$src_path"
+    fn_remove_symlink "$repo"
     exit
 }
 
-# fn_update run git pull
+# fn_update takes a script name (like tldr, not a repo name tldr-sh-client) and run git pull
 fn_update() {
-    cd "$awesome_dir/${1}" || exit
-    git pull || exit
-    exit
+    repo=$1
+    # find the real repo name by checking the ~/bin directory using realpath
+    if [[ $(ls "$bin_dir") =~ $repo ]]; then
+        # script=$1
+        cd "$awesome_dir/${1}" || exit
+        git config pull.ff only || exit
+        echo "$repo updated."
+        exit
+    else
+        echo "You don't have ${repo}." >&2
+        exit 2
+    fi
 }
 
 # fn_list list installed packages
@@ -201,19 +285,28 @@ Usage: awesome [-h] [command]
 
 Examples:
     Install a package
+    awesome -i shinokada/gitstart
+    awesome -i shinokada/gitstart.git
+    awesome -i raylee/tldr-sh-client tldr
+    awesome -i https://github.com/raylee/tldr-sh-client tldr
     awesome install https://github.com/shinokada/gitstart.git
 
     Uninstall a package
-    awesome uninstall gitstart
+    awesome rm gitstart
 
     Update a package
+    awesome -u gitstart
     awesome update gitstart
 
     Show installed packages
+    awesome ls
     awesome list
 
     Remove a symlink
-    awesome remove gitstart
+    awesome unlink gitstart
+
+    Create a symlink
+    awesome link gitstart
 
     Show this help
     awesome -h
@@ -227,7 +320,7 @@ fn_main() {
         -i | install) fn_install "$2" "$3" ;;
         rm) fn_uninstall "$2" ;;
         ls | list) fn_list ;;
-        link) fn_add_symlink "$2" ;;
+        link) fn_add_symlink "$2" "$3" ;;
         unlink) fn_remove_symlink "$2" ;;
         -u | update) fn_update "$2" ;;
         -h | --help) fn_help ;;
@@ -240,10 +333,7 @@ fn_main() {
     fi
 }
 
+fn_checkOrmkdir "$awesome_dir"
+fn_checkOrmkdir "$bin_dir"
+fn_check_cmd git
 fn_main "$@"
-
-# 1.some have different url/main-script
-# e.g. cfenollosa/bashblog has bb.sh as main
-# todotxt/todo.txt-cli has todo.sh
-
-# 2. some main file has .sh
