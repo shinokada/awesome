@@ -1,20 +1,27 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2034
 
 # Find repo name and script name from
 # shinokada/gitstart
 # raylee/tldr-sh-client tldr
 # https://github.com/raylee/tldr-sh-client.git tldr
 # https://github.com/raylee/tldr-sh-client tldr
-fn_repo_script() {
+repo_script() {
     local link_arg script_arg
     link_arg=$1
     script_arg=$2
+    slash_num=$(echo "$link_arg" | grep -o "/" | wc -l)
     if [[ $link_arg =~ "@" ]]; then
         # if link_arg has @ it is like git@github.com:shinokada/cleanit.git
-        echo "Please use URL or https, not ssh."
-        exit
+        echo "Please use URL or https, not ssh." >&2
+        exit 1
     fi
     if [[ -z $script_arg ]]; then
+        # check if it has a / if not exit
+        if ((slash_num < 1)); then
+            echo "Not valid parameter." >&2
+            exit 1
+        fi
         # no $2 so it must be the form of
         # shinokada/gitstart has the same repo_name and script_name
         # or https://github.com/shinokada/cleanit
@@ -30,7 +37,7 @@ fn_repo_script() {
             repo_link="https://github.com/${link_arg}"
         fi
     else
-        slash_num=$(echo "$link_arg" | grep -o "/" | wc -l)
+
         if (("$slash_num" == 1)); then
             # one / so it must be raylee/tldr-sh-client tldr
             git_user="${link_arg%/*}"
@@ -45,5 +52,14 @@ fn_repo_script() {
             repo_link="$link_arg"
         fi
     fi
-    echo "$git_user" "$repo_name" "$script_name" "$repo_link"
+}
+
+check_link() {
+    if [[ -L "$HOME/bin/$1" ]]; then
+        # echo "It's a link!"
+        return
+    else
+        echo "There is no $1 link in $HOME/bin dir."
+        exit 1
+    fi
 }

@@ -3,57 +3,12 @@
 version="0.1.2"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
-repo_link=""
-repo_name=""
-script_name=""
-git_user=""
+# repo_link=""
+# repo_name=""
+# script_name=""
+# git_user=""
 
-# Find repo name and script name from
-# shinokada/gitstart
-# raylee/tldr-sh-client tldr
-# https://github.com/raylee/tldr-sh-client.git tldr
-# https://github.com/raylee/tldr-sh-client tldr
-fn_repo_script() {
-    local link_arg script_arg
-    link_arg=$1
-    script_arg=$2
-    if [[ $link_arg =~ "@" ]]; then
-        # if link_arg has @ it is like git@github.com:shinokada/cleanit.git
-        echo "Please use URL or https, not ssh."
-        exit
-    fi
-    if [[ -z $script_arg ]]; then
-        # no $2 so it must be the form of
-        # shinokada/gitstart has the same repo_name and script_name
-        # or https://github.com/shinokada/cleanit
-        # or https://github.com/shinokada/cleanit.git
-        git_user=$(basename "${link_arg%/*}")
-        repo_name=$(basename "${link_arg##*/}" .git)
-        # repo_name="${link_arg##*/}"
-        script_name=$(basename "${link_arg##*/}" .git)
-        # script_name="${link_arg##*/}"
-        if [[ $link_arg =~ https://github.com/ ]]; then
-            repo_link="$link_arg"
-        else
-            repo_link="https://github.com/${link_arg}"
-        fi
-    else
-        slash_num=$(echo "$link_arg" | grep -o "/" | wc -l)
-        if (("$slash_num" == 1)); then
-            # one / so it must be raylee/tldr-sh-client tldr
-            git_user="${link_arg%/*}"
-            repo_name="${link_arg##*/}"
-            script_name="$script_arg"
-            repo_link="https://github.com/${link_arg}"
-        else
-            # it must be https://github.com/raylee/tldr-sh-client.git tldr
-            git_user=$(basename "${link_arg%/*}")
-            repo_name=$(basename "$link_arg" .git)
-            script_name="$script_arg"
-            repo_link="$link_arg"
-        fi
-    fi
-}
+source lib
 
 # Create a awesome dir if it doesn't exist.
 fn_checkOrmkdir() {
@@ -123,14 +78,6 @@ fn_search_main() {
     echo "outside"
 }
 
-# Create a symlink in bin. repo_name and file_name can be different
-fn_create_symlink() {
-    # add a symlink
-    ln -sf "${awesome_dir}/$1/$2" "${bin_dir}/$2"
-    echo "Created a symlink."
-    exit
-}
-
 # Outputs the path to the src
 fn_src_path() {
     src_path=$(realpath "$HOME/bin/$1")
@@ -150,6 +97,16 @@ fn_remove_dir() {
     fi
     return
 }
+
+# Create a symlink in bin. repo_name and file_name can be different
+fn_create_symlink() {
+    # add a symlink
+    ln -sf "${awesome_dir}/$1/$2" "${bin_dir}/$2"
+    echo "Created a symlink."
+    exit
+}
+
+# check if a link exist in ~/bin
 
 # Run rm a symlink
 fn_remove_symlink() {
@@ -215,11 +172,13 @@ fn_install() {
         exit 1
     fi
     # set $git_user, $repo_name, $script_name, and $repo_link
-    fn_repo_script "$1" "$2"
+    repo_script "$1" "$2"
+    # read -r git_user repo_name script_name repo_link < <(repo_script "$1" "$2")
     # echo "git-user: $git_user"
     # echo "repo-name: $repo_name"
     # echo "script-name: $script_name"
     # echo "repo-link: $repo_link"
+    # exit
     cd "$awesome_dir" || return
     echo "Cloning ..."
     git clone "${repo_link}" || exit
@@ -233,6 +192,9 @@ fn_install() {
 fn_uninstall() {
     cd "$awesome_dir" || exit
     repo=$1
+    # check if there is a (sym)link in ~/bin dir
+    check_link "$repo"
+    # exit
     # find the realpath (source)
     src_path=$(fn_src_path "$repo")
 
@@ -336,4 +298,7 @@ fn_main() {
 fn_checkOrmkdir "$awesome_dir"
 fn_checkOrmkdir "$bin_dir"
 fn_check_cmd git
+# repo_script shinokada/gitstart
+# read -r var1 var2 var3 var4 < <(repo_script shinokada/gitstart)
+
 fn_main "$@"
