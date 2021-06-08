@@ -4,8 +4,7 @@ version="0.2.2"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 
-source_dir=$(pwd)
-source "$source_dir/lib"
+source "$awesome_dir/lib"
 
 # Return Y or N after asking a question.
 fn_confirmRemove() {
