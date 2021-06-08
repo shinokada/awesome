@@ -101,7 +101,8 @@ check_link() {
 # fn_list list installed symlinks from bin dir
 fn_list() {
     # ls "$awesome_dir"
-    find "$1" -type l -exec basename {} +
+    find "$1" -type l -exec basename -a {} +
+    # find "$1" -type l
     exit
 }
 
