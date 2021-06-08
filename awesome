@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-version="0.2.3"
+version="0.2.4"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 
@@ -175,7 +175,7 @@ fn_update() {
     if [[ $(ls "$bin_dir") =~ $repo ]]; then
         # script=$1
         cd "$awesome_dir/${1}" || exit
-        git config pull.ff only || exit
+        git pull || exit
         echo "$repo updated."
         exit
     else
