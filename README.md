@@ -139,7 +139,13 @@ awesome -v
 
 ## How to develop for awesome package manager
 
+## Test
 
+Run:
+
+```sh
+shellspec -s bash
+```
 
 ## Todos
 

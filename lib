@@ -54,12 +54,47 @@ repo_script() {
     fi
 }
 
+# Create a awesome dir if it doesn't, exit 1.
+checkOrmkdir() {
+    if [[ -z $1 ]]; then
+        echo "Specify the directory." >&2
+        exit 1
+    fi
+    if [[ ! -d $1 ]]; then
+        mkdir "$1"
+        echo "$1 directory is created." >&1
+        return
+    else
+        # echo "You have $1 dir."
+        return
+    fi
+}
+
+# Return 0 or 1 depending a dir exists or not
+checkDir() {
+    if [[ -d $1 ]]; then
+        return
+    else
+        echo "Ooops! $1 doesn't exist." >&2
+        exit 1
+    fi
+}
+
+# Return 0 or 1 depending a command exists or not
+check_cmd() {
+    if [ ! "$(command -v "$1")" ]; then
+        echo "Please install $1" >&2
+        exit 1
+    fi
+}
+
+# this check a symlink in a bin dir
 check_link() {
-    if [[ -L "$HOME/bin/$1" ]]; then
+    if [[ -L "$2/$1" ]]; then
         # echo "It's a link!"
         return
     else
-        echo "There is no $1 link in $HOME/bin dir."
+        echo "There is no $1 link in $2 dir."
         exit 1
     fi
 }

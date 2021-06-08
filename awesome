@@ -3,43 +3,16 @@
 version="0.1.2"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
-# repo_link=""
-# repo_name=""
-# script_name=""
-# git_user=""
 
 source lib
 
-# Create a awesome dir if it doesn't exist.
-fn_checkOrmkdir() {
-    if [[ -z $1 ]]; then
-        echo "Specify the directory." >&2
-        exit
-    fi
-    if [[ ! -d $1 ]]; then
-        mkdir "$1"
-        echo "$1 directory is created." >&2
-        return
-    fi
-}
-
-# Return 0 or 1 depending a dir exists or not
-fn_checkDir() {
-    if [[ -d $1 ]]; then
-        return
-    else
-        echo "Ooops! $1 doesn't exist." >&2
-        exit
-    fi
-}
-
-# Return 0 or 1 depending a command exists or not
-fn_check_cmd() {
-    if [ ! "$(command -v "$1")" ]; then
-        echo "Please install $1" >&2
-        exit 1
-    fi
-}
+# # Return 0 or 1 depending a command exists or not
+# fn_check_cmd() {
+#     if [ ! "$(command -v "$1")" ]; then
+#         echo "Please install $1" >&2
+#         exit 1
+#     fi
+# }
 
 # Return Y or N after asking a question.
 fn_confirmRemove() {
@@ -75,7 +48,6 @@ fn_search_main() {
         echo "awesome link tldr-sh-client tldr" >&2
         exit 1
     fi
-    echo "outside"
 }
 
 # Outputs the path to the src
@@ -193,14 +165,14 @@ fn_uninstall() {
     cd "$awesome_dir" || exit
     repo=$1
     # check if there is a (sym)link in ~/bin dir
-    check_link "$repo"
+    check_link "$repo" "$HOME/bin/"
     # exit
     # find the realpath (source)
     src_path=$(fn_src_path "$repo")
 
     # use realpath to find the real dir
-    fn_checkDir "$src_path"
-    # fn_checkDir "${src_path%/*}"
+    checkDir "$src_path"
+    # checkDir "${src_path%/*}"
     echo "src path: $src_path"
     echo "repo: $repo"
     # remove a dir
@@ -295,9 +267,9 @@ fn_main() {
     fi
 }
 
-fn_checkOrmkdir "$awesome_dir"
-fn_checkOrmkdir "$bin_dir"
-fn_check_cmd git
+checkOrmkdir "$awesome_dir"
+checkOrmkdir "$bin_dir"
+check_cmd git
 # repo_script shinokada/gitstart
 # read -r var1 var2 var3 var4 < <(repo_script shinokada/gitstart)
 
