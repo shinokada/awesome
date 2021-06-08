@@ -13,15 +13,13 @@ The `awesome` is a simple shell script package manager. Awesome installs a shell
 
 ## Installation
 
-### curl
+Installing awesome:
 
 ```sh
 curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
 ```
 
-### wget
-
-https://asciinema.org/a/14?t=25&speed=2&theme=solarized-dark
+or
 
 ```sh
 wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
@@ -29,9 +27,13 @@ wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install | ba
 
 ## Uninstallation
 
+Uninstalling awesome:
+
 ```sh
 curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install > tmp1 && bash tmp1 uninstall && rm tmp1
 ```
+
+or
 
 ```sh
 wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install > tmp1 && bash tmp1 uninstall && rm tmp1
