@@ -1,10 +1,10 @@
-# A Simple Shell Script Manager Awesome
+# A Simple Shell Script Package Manager - Awesome
 
 ## Overview
 
 The `awesome` is a simple shell script package manager. Awesome installs a shell script package from a GitHub repo on your macOS/Linux.
 
- It creates the `~/awesome` directory and the `~/bin` directory if they don't exist. When you install a script package in the `~/awesome` directory and, it creates a symlink in the `~/bin` directory.
+ It creates the `~/awesome` directory and the `~/bin` directory if they don't exist. When you install a package, it will clone it in the `~/awesome` directory. It creates a symlink in the `~/bin` directory.
 
 ## Why?
 
@@ -61,34 +61,32 @@ Update awesome:
 awesome update awesome
 ```
 
-## Limitations
-
-A GitHub repository must have the same script name.
-
-For example, a GitHub repo, https://github.com/shinokada/cleanit has a script name `cleanit`.
-
-The script name can have an extension, `.sh`.
-
 ## Usage
 
 ```sh
--i | install installs a package from a GitHub repo and create a symlink in ~/bin
-rm           uninstalls a package and remove a symlink
-ls | list    lists awesome packages
-link         adds a symlink
-unlink       remove a package symlink 
--u | update  checks an update and install a new package
--h, --help   shows this help message and exit"
+-i | install   installs a package from a GitHub repo and create a symlink in ~/bin
+rm             uninstalls a package and remove a symlink
+ls | list      lists awesome packages
+link           adds a symlink
+unlink         remove a package symlink
+-u | update    checks an update and install a new package
+-v | --version shows version
+-h, --help     shows this help message and exit"
 ```
 
 ```sh
-# Install a github repo
-awesome -i https://github.com/shinokada/cleanit.git
-awesome install https://github.com/shinokada/cleanit.git
 
-# OR using URL
+# Installing a repo using user/repo
+awesome -i shinokada/gitstart
+# Installing a repo using user/repo.git
+awesome -i shinokada/gitstart.git
+# Installing a repo whose main script is different from the repo name
+awesome -i raylee/tldr-sh-client tldr
+# Same as above but using https
 awesome -i https://github.com/shinokada/cleanit
-awesome install https://github.com/shinokada/cleanit
+awesome -i https://github.com/raylee/tldr-sh-client tldr
+# Installing a repo using install option instead of -i
+awesome install https://github.com/shinokada/gitstart.git
 
 # Remove a symlink and repo
 awesome rm cleanit
@@ -107,8 +105,6 @@ awesome link cleanit
 awesome update cleanit
 awesome -u cleanit
 
-
-
 # help
 awesome --help
 awesome -h
@@ -118,7 +114,7 @@ awesome --version
 awesome -v
 ```
 
-## Some libraries
+## Some libraries you can install
 
 - [has](https://github.com/kdabir/has): helps you check presence of various command line tools and their versions on path.
 - [ddgr](https://github.com/jarun/ddgr): DuckDuckGo from the terminal.
@@ -137,7 +133,6 @@ awesome -v
 - [spot](https://github.com/rauchg/spot): Tiny file search utility
 - [v](https://github.com/rupa/v): z for vim.
 
-## How to develop for awesome package manager
 
 ## Test
 
