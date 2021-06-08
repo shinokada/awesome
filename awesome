@@ -13,7 +13,7 @@ fn_confirmRemove() {
 
     ans=$(echo "$PANS" | cut -c 1-1 | tr "[:lower:]" "[:upper:]")
 
-    echo $ans
+    echo "$ans"
 }
 
 # Outputs the main script name. if $2 is provided use it as script_name otherwise use $1 as script_name
@@ -30,7 +30,7 @@ fn_search_main() {
         IFS= read -r -d '' repo < <(find . '(' -name "${script_name##*/}" -o -name "${script_name##*/}.sh" ')' -print0)
 
         if [[ $repo ]]; then
-            printf '%s\n' $(basename $repo)
+            printf '%s\n' "$(basename "$repo")"
         else
             return 1
         fi
