@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-version="0.2.2"
+version="0.2.3"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 
