@@ -15,17 +15,7 @@ The `awesome` is a simple shell script package manager. Awesome installs a shell
 
 ### curl
 
-Ubuntu/Debian:
-
 ```sh
-sudo apt install curl
-curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
-```
-
-CentOs/Fedora/Redhat:
-
-```sh
-sudo yum install curl
 curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
 ```
 
@@ -33,17 +23,7 @@ curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash 
 
 https://asciinema.org/a/14?t=25&speed=2&theme=solarized-dark
 
-Ubuntu/Debian:
-
 ```sh
-sudo apt install wget
-wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
-```
-
-CentOs/Fedora/Redhat:
-
-```sh
-sudo yum install curl
 wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
 ```
 
