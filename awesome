@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2154
 
 version="0.2.4"
 awesome_dir="$HOME/awesome"
@@ -130,13 +131,7 @@ fn_install() {
     fi
     # set $git_user, $repo_name, $script_name, and $repo_link
     repo_script "$1" "$2"
-    # read -r git_user repo_name script_name repo_link < <(repo_script "$1" "$2")
-    # echo "git-user: $git_user"
-    # echo "repo-name: $repo_name"
-    # echo "script-name: $script_name"
-    # echo "repo-link: $repo_link"
-    # exit
-    cd "$awesome_dir" || return
+    cd "$awesome_dir" || exit
     echo "Cloning ..."
     git clone "${repo_link}" || exit
     echo "Cloning done."
