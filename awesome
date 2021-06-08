@@ -6,14 +6,6 @@ bin_dir="$HOME/bin"
 
 source lib
 
-# # Return 0 or 1 depending a command exists or not
-# fn_check_cmd() {
-#     if [ ! "$(command -v "$1")" ]; then
-#         echo "Please install $1" >&2
-#         exit 1
-#     fi
-# }
-
 # Return Y or N after asking a question.
 fn_confirmRemove() {
     local package=$1
@@ -52,7 +44,8 @@ fn_search_main() {
 
 # Outputs the path to the src
 fn_src_path() {
-    src_path=$(realpath "$HOME/bin/$1")
+    # src_path=$(realpath "$HOME/bin/$1")
+    src_path=$1
     # echo "$src_path"
     echo "${src_path%/*}"
 }
@@ -168,7 +161,8 @@ fn_uninstall() {
     check_link "$repo" "$HOME/bin/"
     # exit
     # find the realpath (source)
-    src_path=$(fn_src_path "$repo")
+    path=$(realpath "$HOME/bin/$repo")
+    src_path=$(fn_src_path "$path")
 
     # use realpath to find the real dir
     checkDir "$src_path"
@@ -196,12 +190,6 @@ fn_update() {
         echo "You don't have ${repo}." >&2
         exit 2
     fi
-}
-
-# fn_list list installed packages
-fn_list() {
-    ls "$awesome_dir"
-    exit
 }
 
 fn_help() {
@@ -253,7 +241,7 @@ fn_main() {
         case $1 in
         -i | install) fn_install "$2" "$3" ;;
         rm) fn_uninstall "$2" ;;
-        ls | list) fn_list ;;
+        ls | list) fn_list "$bin_dir" ;;
         link) fn_add_symlink "$2" "$3" ;;
         unlink) fn_remove_symlink "$2" ;;
         -u | update) fn_update "$2" ;;

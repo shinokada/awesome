@@ -63,17 +63,16 @@ checkOrmkdir() {
     if [[ ! -d $1 ]]; then
         mkdir "$1"
         echo "$1 directory is created." >&1
-        return
+        return 0
     else
-        # echo "You have $1 dir."
-        return
+        return 0
     fi
 }
 
 # Return 0 or 1 depending a dir exists or not
 checkDir() {
     if [[ -d $1 ]]; then
-        return
+        return 0
     else
         echo "Ooops! $1 doesn't exist." >&2
         exit 1
@@ -92,9 +91,16 @@ check_cmd() {
 check_link() {
     if [[ -L "$2/$1" ]]; then
         # echo "It's a link!"
-        return
+        return 0
     else
         echo "There is no $1 link in $2 dir."
         exit 1
     fi
+}
+
+# fn_list list installed symlinks from bin dir
+fn_list() {
+    # ls "$awesome_dir"
+    find "$1" -type l -exec basename {} +
+    exit
 }

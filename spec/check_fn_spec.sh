@@ -22,7 +22,6 @@ Describe 'Tests for check functions.'
         After 'cleanup'
         It 'outputs the status of 0.'
             When run checkOrmkdir "$dir"
-            The stdout should eq "You have $dir dir."
             The status should eq 0
         End
     End
@@ -43,22 +42,44 @@ Describe 'Tests for check functions.'
         End
     End
 
-    Describe 'Testing check_link().'
-        # filename=$(openssl rand -hex 4)
-        # file="$HOME/awesome/$filename"
-        # link="$HOME/bin/my-link"
+    Describe 'Testing fn_list().'
         # setup() {
         #     touch "$file"
         #     ln -s "$file" "$link"
         # }
         # cleanup() {
         #     return
-        #     # rm -rf "$file"
-        #     # rm "$link"
+        #     rm -rf "$file"
+        #     rm "$link"
         # }
-        # It 'outputs the status of 0.'
-        #     When run check_link "my-link" "$HOME/bin"
-        #     The status should eq 0
+        # It 'outputs the status of 1.'
+        #     When run fn_list "$dirname"
+        #     The value "$repo_name" should eq 'gitstart'
         # End
+    End
+
+    Describe 'Testing check_link().'
+        filename=$(openssl rand -hex 4)
+        awesome_dir="/tmp/awesome"
+        file="$awesome_dir/$filename"
+        bin_dir="/tmp/bin"
+        link="$bin_dir/my-link"
+        setup() {
+            mkdir "$awesome_dir"
+            touch "$file"
+            mkdir "$bin_dir"
+            ln -s "$file" "$link"
+        }
+        cleanup() {
+            rm -rf "$bin_dir"
+            rm -rf "$awesome_dir"
+            # rm "$link"
+        }
+        Before 'setup'
+        After 'cleanup'
+        It 'outputs the status of 0.'
+            When run check_link "my-link" "$bin_dir"
+            The status should eq 0
+        End
     End
 End
