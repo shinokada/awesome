@@ -42,14 +42,6 @@ fn_search_main() {
     fi
 }
 
-# Outputs the path to the src
-fn_src_path() {
-    # src_path=$(realpath "$HOME/bin/$1")
-    src_path=$1
-    # echo "$src_path"
-    echo "${src_path%/*}"
-}
-
 # Run rm after a confirmation
 fn_remove_dir() {
     repo=$1
@@ -162,7 +154,7 @@ fn_uninstall() {
     # exit
     # find the realpath (source)
     path=$(realpath "$HOME/bin/$repo")
-    src_path=$(fn_src_path "$path")
+    src_path=$(src_path "$path")
 
     # use realpath to find the real dir
     checkDir "$src_path"
