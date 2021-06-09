@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-version="0.2.4"
+version="0.2.5"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 
-source "$awesome_dir/awesome/lib"
+script_path=$(realpath "$(which awesome)")
+script_dir="${script_path%/*}"
+source "$script_dir/lib"
 
 # Return Y or N after asking a question.
 fn_confirmRemove() {
