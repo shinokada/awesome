@@ -47,6 +47,11 @@ fn_search_main() {
 fn_remove_dir() {
     repo=$1
     src_path=$2
+    # exit if the src_path is $HOME/awesome
+    if [[ $src_path == "$HOME/awesome" ]]; then
+        echo "We don't $HOME/awesome directory. If you want to uninstall, please read the README."
+        exit 1
+    fi
     # confirm
     if [[ $(fn_confirmRemove "$src_path") = "Y" ]]; then
         echo "Removing the ${src_path} directory ..."
