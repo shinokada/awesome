@@ -99,7 +99,7 @@ check_link() {
 }
 
 # fn_list list installed symlinks from bin dir
-fn_list() {
+symlink_names() {
     # ls "$awesome_dir"
     find "$1" -type l -exec basename -a {} +
     # find "$1" -type l
@@ -113,3 +113,18 @@ src_path() {
     # echo "$src_path"
     echo "${src_path%/*}"
 }
+
+# list all alias names from command alias
+alias_names() {
+    alias | cut -d= -f1
+}
+
+# list all symlink names from ~/bin dir
+# symlink_names() {
+
+# }
+
+# check if $1 is in the alias_names or symlink_names
+# alias_check() {
+
+# }

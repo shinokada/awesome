@@ -62,9 +62,9 @@ Describe 'Tests for check functions.'
         BeforeAll 'setup'
         AfterAll 'cleanup'
 
-        Describe 'Testing fn_list().'
+        Describe 'Testing symlink_names().'
             It 'outputs the my-link.'
-                When run fn_list "$bin_dir"
+                When run symlink_names "$bin_dir"
                 The stdout should eq "my-link"
                 The status should eq 0
             End
