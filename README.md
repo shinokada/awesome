@@ -119,6 +119,13 @@ awesome -v
 - [spot](https://github.com/rauchg/spot): Tiny file search utility
 - [v](https://github.com/rupa/v): z for vim.
 
+## How to create a script for Awesome
+
+- Use `#!/usr/bin/env script-name` at the beginning.
+- No `.sh` file extension for the main script
+- Recommend to have the same repo and main script name. e.g. `shinokada/gitstart` has `gitstart`.
+- Add `-h| --help` option.
+- Your command start with your main script name.
 
 ## Test
 
