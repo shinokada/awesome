@@ -150,7 +150,7 @@ You can try it for `perl-example.pl`, `python-example.py`, `ruby-example.rb`.
 - [googler](https://github.com/jarun/googler): Google Search, Google Site Search, Google News from the terminal
 - [hhighlighter](https://github.com/paoloantinori/hhighlighter): Colorize words in a command output
 - [backpack_install](https://github.com/shinokada/backpack_install): Backpack for Laravel installer.
-- [hr](https://github.com/paoloantinori/hhighlighter): <hr /> for your terminal
+- [hr](https://github.com/paoloantinori/hhighlighter): hr for your terminal
 - [manop](https://github.com/shinokada/manop): Man page description and option viewer.
 - [shml](https://github.com/odb/shml): A shell framework for faster and easier script development.
 - [slugify](https://github.com/benlinton/slugify): A bash command that converts filenames and directories to a web friendly format.
