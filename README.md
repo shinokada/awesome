@@ -158,6 +158,8 @@ You can try it for `perl-example.pl`, `python-example.py`, `ruby-example.rb`.
 ▁▂▃▅▂▇ in your shell
 - [spot](https://github.com/rauchg/spot): Tiny file search utility
 - [v](https://github.com/rupa/v): z for vim.
+- [ansiweather](https://github.com/fcambus/ansiweather): Displaying the current weather conditions.
+- 
 
 ## How to create a script for Awesome
 
