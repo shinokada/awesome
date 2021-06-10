@@ -5,7 +5,15 @@ version="0.2.5"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 
-script_path=$(realpath "$(which awesome)")
+if [[ -z $(which awesome) ]]; then
+    script_path=$(realpath "$0")
+    echo "$script_path"
+    script_path=${script_path%/*}
+else
+    script_path=$(realpath "$(which awesome)")
+fi
+
+echo "$script_path"
 script_dir="${script_path%/*}"
 source "$script_dir/lib"
 
@@ -50,9 +58,10 @@ fn_remove_dir() {
     repo=$1
     src_path=$2
     # exit if the src_path is $HOME/awesome
-    if [[ $src_path == "$HOME/awesome" ]]; then
-        echo "We don't $HOME/awesome directory. If you want to uninstall, please read the README."
-        exit 1
+    if [[ $src_path == "$HOME/awesome" || $src_path == "$HOME/bin" ]]; then
+        echo "We don't remove $HOME/awesome nor $HOME/bin directory."
+        echo "You already removed the repo."
+        return
     fi
     # confirm
     if [[ $(fn_confirmRemove "$src_path") = "Y" ]]; then
@@ -62,16 +71,6 @@ fn_remove_dir() {
     fi
     return 0
 }
-
-# Create a symlink in bin. repo_name and file_name can be different
-fn_create_symlink() {
-    # add a symlink
-    ln -sf "${awesome_dir}/$1/$2" "${bin_dir}/$2"
-    echo "Created a symlink."
-    exit 0
-}
-
-# check if a link exist in ~/bin
 
 # Run rm a symlink
 fn_remove_symlink() {
@@ -86,7 +85,7 @@ fn_remove_symlink() {
     if [[ $(fn_confirmRemove symlink) = "Y" ]]; then
         echo "Removing the symlink ..."
         cd "$bin_dir" || exit
-        rm "${repo}" || exit
+        rm "${repo}" 2>/dev/null || exit
         echo "Symlink removed."
     fi
     exit
@@ -117,8 +116,7 @@ fn_add_symlink() {
         # if not exit with warning
         # show awesome dir
         # link repo_name/script_name
-        fn_create_symlink "${repo_base}" "${script_name}" || exit
-        # fn_create_symlink "$1" || exit
+        create_symlink "${awesome_dir}" "${repo_base}" "${script_name}" "${bin_dir}" || exit
         echo "Symlink added." >&2
     else
         echo "No $script_name in $awesome_dir"
@@ -142,7 +140,7 @@ fn_install() {
     echo "Cloning ..."
     git clone "${repo_link}" || exit
     echo "Cloning done."
-    fn_create_symlink "${repo_name}" "${script_name}" || exit
+    create_symlink "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}" || exit
     echo "${repo_name}/${script_name} installation completed." >&2
     echo "Try ${repo} -h or which ${repo}." >&2
 }
@@ -152,7 +150,7 @@ fn_uninstall() {
     cd "$awesome_dir" || exit
     repo=$1
     # check if there is a (sym)link in ~/bin dir
-    check_link "$repo" "$HOME/bin/"
+    # check_link "$repo" "$HOME/bin/"
     # exit
     # find the realpath (source)
     path=$(realpath "$HOME/bin/$repo")
@@ -186,6 +184,19 @@ fn_update() {
     fi
 }
 
+fn_add_alias() {
+    local alias_name repo_name script_name
+    alias_name=$1
+    repo_name=$2
+    script_name=$3
+
+    echo "Creating an alias $alias_name to $repo_name/$script_name"
+    alias_check "$alias_name"
+    # all good create an alias
+
+    echo "Alias $alias_name created."
+}
+
 fn_help() {
     cat <<EOF
 Description: Awesome install a package from a GitHub repo on your macOS/Linux.
@@ -197,6 +208,7 @@ Usage: awesome [-h] [command]
     link         adds a symlink
     unlink       remove a package symlink 
     -u | update  checks an update and install a new package
+    -a | alias   creates an alias 
     -v | --version shows the version
     -h, --help   shows this help message and exit"
 
@@ -218,6 +230,9 @@ Examples:
     Show installed packages
     awesome ls
     awesome list
+
+    Create an alias to a script
+    awesome -a ne script-example node-example.js
 
     Remove a symlink
     awesome unlink gitstart
@@ -243,6 +258,7 @@ fn_main() {
         link) fn_add_symlink "$2" "$3" ;;
         unlink) fn_remove_symlink "$2" ;;
         -u | update) fn_update "$2" ;;
+        -a | alias) fn_add_alias "$2" "$3" "$4" ;;
         -h | --help) fn_help ;;
         -v | --version) echo "${version}" ;;
         *) fn_help ;;

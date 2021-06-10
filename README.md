@@ -25,6 +25,12 @@ or
 wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
 ```
 
+Add the following to your terminal config file, such as .zshrc or .bashrc.
+
+```sh
+export PATH=$HOME/bin:$PATH
+```
+
 ## Uninstallation
 
 Uninstalling awesome:
@@ -56,6 +62,7 @@ ls | list      lists awesome packages
 link           adds a symlink
 unlink         remove a package symlink
 -u | update    checks an update and install a new package
+-a | alias     creates an alias
 -v | --version shows version
 -h, --help     shows this help message and exit"
 ```
@@ -80,6 +87,9 @@ awesome rm cleanit
 # Show installed packages
 awesome ls
 awesome list
+
+# Create an alias to a script
+awesome -a ne script-example node-example.js
 
 # Remove a symlink but not uninstall
 awesome unlink cleanit

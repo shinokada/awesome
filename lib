@@ -79,12 +79,12 @@ checkDir() {
     fi
 }
 
-# Return 0 or 1 depending a command exists or not
-check_cmd() {
-    if [ ! "$(command -v "$1")" ]; then
-        echo "Please install $1" >&2
-        exit 1
-    fi
+# fn_list list installed symlinks from bin dir
+symlink_names() {
+    # ls "$awesome_dir"
+    find "$1" -type l -exec basename -a {} +
+    # find "$1" -type l
+    exit
 }
 
 # this check a symlink in a bin dir
@@ -98,14 +98,6 @@ check_link() {
     fi
 }
 
-# fn_list list installed symlinks from bin dir
-symlink_names() {
-    # ls "$awesome_dir"
-    find "$1" -type l -exec basename -a {} +
-    # find "$1" -type l
-    exit
-}
-
 # Outputs the path to the src
 src_path() {
     # src_path=$(realpath "$HOME/bin/$1")
@@ -114,17 +106,32 @@ src_path() {
     echo "${src_path%/*}"
 }
 
-# list all alias names from command alias
-alias_names() {
-    alias | cut -d= -f1
+# ###### No test
+
+# Return 0 or 1 depending a command exists or not
+check_cmd() {
+    if [ ! "$(command -v "$1")" ]; then
+        echo "Please install $1" >&2
+        exit 1
+    fi
 }
 
-# list all symlink names from ~/bin dir
-# symlink_names() {
-
-# }
-
 # check if $1 is in the alias_names or symlink_names
-# alias_check() {
+alias_check() {
+    type "$1" >&/dev/null
+    if [[ $? = 1 ]]; then
+        # echo "Good. Because there is no similar command"
+        return 0
+    else
+        # echo "You already have that command." >&2
+        exit 1
+    fi
+}
 
-# }
+# Create a symlink in bin. repo_name and file_name can be different
+create_symlink() {
+    # add a symlink
+    ln -sf "$1/$2/$3" "$4/$2"
+    echo "Created a symlink."
+    exit 0
+}
