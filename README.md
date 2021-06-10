@@ -109,6 +109,8 @@ awesome -v
 
 ## Alias
 
+Alias is useful when a repo has multiple scripts.
+
 Let's add aliases using [script-examples](https://github.com/shinokada/script-examples)
 
 Install it using php-example.php as the main script.
@@ -126,7 +128,7 @@ Hello world from PHP!%
 
 ```sh
 # Create an alias to a different script
-awesome -a ne script-example node-example.js
+awesome -a ne script-examples node-example.js
 ```
 
 Run it:
