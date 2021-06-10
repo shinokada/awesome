@@ -83,5 +83,16 @@ Describe 'Tests for check functions.'
                 The stdout should eq "/private${awesome_dir}"
             End
         End
+        Describe 'Testing check_cmd()'
+            It 'uses command -v  and outputs 0 or 1 depending a command exists or not'
+                When run check_cmd cd
+                The status should eq 0
+            End
+            It 'outputs 0 or 1 depending a command exists or not'
+                When run check_cmd abcdefg
+                The status should eq 1
+                The stderr should eq "Please install abcdefg"
+            End
+        End
     End
 End

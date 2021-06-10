@@ -106,8 +106,6 @@ src_path() {
     echo "${src_path%/*}"
 }
 
-# ###### No test
-
 # Return 0 or 1 depending a command exists or not
 check_cmd() {
     if [ ! "$(command -v "$1")" ]; then
@@ -116,22 +114,12 @@ check_cmd() {
     fi
 }
 
-# check if $1 is in the alias_names or symlink_names
-alias_check() {
-    type "$1" >&/dev/null
-    if [[ $? = 1 ]]; then
-        # echo "Good. Because there is no similar command"
-        return 0
-    else
-        # echo "You already have that command." >&2
-        exit 1
-    fi
-}
+# ###### No test yet
 
 # Create a symlink in bin. repo_name and file_name can be different
 create_symlink() {
     # add a symlink
     ln -sf "$1/$2/$3" "$4/$2"
     echo "Created a symlink."
-    exit 0
+    return 0
 }

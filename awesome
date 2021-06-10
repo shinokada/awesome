@@ -1,19 +1,18 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-version="0.2.5"
+version="0.3.0"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 
 if [[ -z $(which awesome) ]]; then
     script_path=$(realpath "$0")
-    echo "$script_path"
-    script_path=${script_path%/*}
+    # script_path=${script_path%/*}
 else
     script_path=$(realpath "$(which awesome)")
 fi
 
-echo "$script_path"
+# echo "$script_path"
 script_dir="${script_path%/*}"
 source "$script_dir/lib"
 
@@ -191,9 +190,9 @@ fn_add_alias() {
     script_name=$3
 
     echo "Creating an alias $alias_name to $repo_name/$script_name"
-    alias_check "$alias_name"
+    check_cmd "$alias_name"
     # all good create an alias
-
+    create_symlink "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}" || exit
     echo "Alias $alias_name created."
 }
 
