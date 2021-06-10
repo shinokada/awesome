@@ -116,10 +116,31 @@ check_cmd() {
 
 # ###### No test yet
 
+# check if $1 is in the alias_names or symlink_names
+alias_check() {
+    type "$1" >&/dev/null
+    if [[ $? = 1 ]]; then
+        # echo "Good. Because there is no similar command"
+        return 0
+    else
+        # echo "You already have that command." >&2
+        exit 1
+    fi
+}
+
+# "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}"
 # Create a symlink in bin. repo_name and file_name can be different
 create_symlink() {
     # add a symlink
-    ln -sf "$1/$2/$3" "$4/$2"
+    ln -sf "$1/$2/$3" "$4/$3"
+    echo "Created a symlink."
+    return 0
+}
+
+# "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}" "alias_name"
+create_alias() {
+    # add a symlink
+    ln -sf "$1/$2/$3" "$4/$5"
     echo "Created a symlink."
     return 0
 }

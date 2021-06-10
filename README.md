@@ -88,9 +88,6 @@ awesome rm cleanit
 awesome ls
 awesome list
 
-# Create an alias to a script
-awesome -a ne script-example node-example.js
-
 # Remove a symlink but not uninstall
 awesome unlink cleanit
 
@@ -109,6 +106,37 @@ awesome -h
 awesome --version
 awesome -v
 ```
+
+## Alias
+
+Let's add aliases using [script-examples](https://github.com/shinokada/script-examples)
+
+Install it using php-example.php as the main script.
+
+```sh
+awesome -i shinokada/script-examples php-example.php
+```
+
+Run it:
+
+```sh
+php-example.php
+Hello world from PHP!%
+```
+
+```sh
+# Create an alias to a different script
+awesome -a ne script-example node-example.js
+```
+
+Run it:
+
+```sh
+ne
+Hello World! from Node.
+```
+
+You can try it for `perl-example.pl`, `python-example.py`, `ruby-example.rb`.
 
 ## Some libraries you can install
 
