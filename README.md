@@ -164,10 +164,10 @@ You can try it for `perl-example.pl`, `python-example.py`, `ruby-example.rb`.
 ## How to create a script for Awesome
 
 - Use `#!/usr/bin/env script-name` at the beginning.
-- No `.sh` file extension for the main script
+- Recommend without `.sh` file extension for the main script
 - Recommend to have the same repo and main script name. e.g. `shinokada/gitstart` has `gitstart`.
 - Add `-h| --help` option.
-- Your command start with your main script name.
+- Your command starts with your main script name.
 
 ## Test
 
@@ -176,11 +176,6 @@ Run:
 ```sh
 shellspec -s bash
 ```
-
-## Todos
-
-- tldr-sh-client has tldr as the main script
-- add `awesome -u tldr` to uninstall symlink and symlink destination. Use `realpath tldr` to find the source and remove the dir.
 
 ## Author
 
