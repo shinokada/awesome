@@ -1,5 +1,5 @@
 #shellcheck shell=sh
-Describe 'Tests for check functions.'
+Describe 'Tests for functions.'
     Include ./lib
     dirname=$(openssl rand -hex 6)
     dir="/tmp/$dirname"
@@ -30,7 +30,6 @@ Describe 'Tests for check functions.'
     Describe 'Testing checkDir function.'
         It 'outputs the status of 1.'
             When run checkDir
-            The stderr should eq "Ooops!  doesn't exist."
             The status should eq 1
         End
 
@@ -70,10 +69,17 @@ Describe 'Tests for check functions.'
             End
         End
 
-        Describe 'Testing check_link().'
+        Describe 'Testing no_symlink().'
             It 'outputs the status of 0.'
-                When run check_link "my-link" "$bin_dir"
+                When run no_symlink "no-link" "$bin_dir"
                 The status should eq 0
+            End
+        End
+
+        Describe 'Testing no_symlink().'
+            It 'outputs the status of 1.'
+                When run no_symlink "my-link" "$bin_dir"
+                The status should eq 1
             End
         End
 
@@ -83,6 +89,7 @@ Describe 'Tests for check functions.'
                 The stdout should eq "/private${awesome_dir}"
             End
         End
+
         Describe 'Testing check_cmd()'
             It 'uses command -v  and outputs 0 or 1 depending a command exists or not'
                 When run check_cmd cd
@@ -93,6 +100,32 @@ Describe 'Tests for check functions.'
                 The status should eq 1
                 The stderr should eq "Please install abcdefg"
             End
+        End
+    End
+
+    Describe 'Testing slash_num()'
+        It 'outputs 0.'
+            When run slashes "path"
+            The stdout should eq "0"
+        End
+        It 'outputs 1.'
+            When run slashes "path/dir"
+            The stdout should eq "1"
+        End
+        It 'outputs 2.'
+            When run slashes "path/to/dir"
+            The stdout should eq "2"
+        End
+        It 'outputs 3.'
+            When run slashes "path/to/sub/dir"
+            The stdout should eq "3"
+        End
+    End
+
+    Describe 'Testing check_branch().'
+        It 'outputs master.'
+            When run check_branch "$(realpath "$link")"
+            The stdout should eq "/private${awesome_dir}"
         End
     End
 End

@@ -14,11 +14,8 @@ else
     script_path=$(realpath "$(which awesome)")
 fi
 
-# echo "$script_path"
-
 script_dir="${script_path%/*}"
-# echo "$script_path"
-# exit
+
 source "$script_dir/lib"
 
 # Return Y or N after asking a question.
@@ -138,15 +135,56 @@ fn_install() {
         echo "You need to specify the GitHub repo URL." >&2
         exit 1
     fi
-    # set $git_user, $repo_name, $script_name, and $repo_link
-    repo_script "$1" "$2"
-    cd "$awesome_dir" || exit
-    echo "Cloning ..."
-    git clone "${repo_link}" || exit
-    echo "Cloning done."
-    # echo "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}"
-    # exit
-    create_symlink "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}" || exit
+
+    # $2 may have subdir/main-script
+    slash_num=$(slashes "$2")
+    if [[ $slash_num = 0 ]]; then
+        echo "you have 0 /."
+        exit
+        # set $git_user, $repo_name, $script_name, and $repo_link
+        # repo_script returns repo_link
+        repo_script "$1" "$2"
+        cd "$awesome_dir" || exit
+        echo "Cloning ..."
+        git clone "${repo_link}" || exit
+        echo "Cloning done."
+        # echo "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}"
+        # exit
+        create_symlink "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}" || exit
+
+    elif [[ $slash_num = 1 ]]; then
+        echo "You have 1 /."
+        cd "$awesome_dir" || exit
+        sub=$2
+        subrepo=${sub%/*}
+        subscript=${sub##*/}
+        # if $? = 0 is good, no link
+        if ! no_symlink "$subscript" "$bin_dir"; then
+            echo "Link exist. Exitting..." >&2
+            exit 1
+        fi
+        # if $? = 0 is good, no dir
+
+        if ! no_dir "${awesome_dir}/${subrepo}"; then
+            echo "Directory exists. Exitting ..." >&2
+            exit 1
+        fi
+        ###### repo_script set $git_user, $repo_name, $script_name, and $repo_link
+        # This returns $repo_link ##################
+        repo_script "$1"
+        git init "${awesome_dir}/${subrepo}"
+        cd "${awesome_dir}/${subrepo}" || exit
+        git remote add "$subrepo" "$repo_link"
+        git fetch "$subrepo"
+        # find main or master
+        branch=$(check_branch)
+        # echo "$branch"
+        git checkout "${subrepo}/${branch}" -- "$subrepo"
+        # create a symlink
+        create_symlink "${awesome_dir}" "${subrepo}/${subrepo}" "${subscript}" "${bin_dir}" || exit
+    else
+        echo "You can't install sub/sub/script."
+    fi
     echo "${repo_name}/${script_name} installation completed." >&2
     echo "Try ${repo} -h or which ${repo}." >&2
 }
@@ -155,16 +193,12 @@ fn_install() {
 fn_uninstall() {
     cd "$awesome_dir" || exit
     repo=$1
-    # check if there is a (sym)link in ~/bin dir
-    # check_link "$repo" "$HOME/bin/"
-    # exit
-    # find the realpath (source)
+    ####### check if there is a (sym)link in ~/bin dir
+    # find the realpath (source) ######
     path=$(realpath "$HOME/bin/$repo")
     src_path=$(src_path "$path")
-
     # use realpath to find the real dir
-    checkDir "$src_path"
-    # checkDir "${src_path%/*}"
+    checkDir "$src_path" || exit 1
     echo "src path: $src_path"
     echo "repo: $repo"
     # remove a dir
@@ -174,10 +208,10 @@ fn_uninstall() {
     exit
 }
 
-# fn_update takes a script name (like tldr, not a repo name tldr-sh-client) and run git pull
+####### fn_update takes a script name (like tldr, not a repo name tldr-sh-client) and run git pull ######
 fn_update() {
     repo=$1
-    # find the real repo name by checking the ~/bin directory using realpath
+    ####### find the real repo name by checking the ~/bin directory using realpath ######
     if [[ $(ls "$bin_dir") =~ $repo ]]; then
         # script=$1
         cd "$awesome_dir/${1}" || exit
