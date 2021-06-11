@@ -59,9 +59,9 @@ fn_remove_dir() {
     repo=$1
     src_path=$2
     # exit if the src_path is $HOME/awesome
-    if [[ $src_path == "$HOME/awesome" || $src_path == "$HOME/bin" ]]; then
-        echo "We don't remove $HOME/awesome nor $HOME/bin directory."
-        echo "You already removed the repo."
+    if [[ $src_path == "$HOME/awesome" || $src_path == "$HOME/bin" || $src_path == "$HOME" ]]; then
+        echo "We don't remove $HOME, $HOME/awesome nor $HOME/bin directory."
+        echo "Remove the repo manually."
         return
     fi
     # confirm
@@ -140,7 +140,7 @@ fn_install() {
     slash_num=$(slashes "$2")
     if [[ $slash_num = 0 ]]; then
         echo "you have 0 /."
-        exit
+        # exit
         # set $git_user, $repo_name, $script_name, and $repo_link
         # repo_script returns repo_link
         repo_script "$1" "$2"
@@ -169,8 +169,16 @@ fn_install() {
             echo "Directory exists. Exitting ..." >&2
             exit 1
         fi
-        ###### repo_script set $git_user, $repo_name, $script_name, and $repo_link
-        # This returns $repo_link ##################
+        ############
+        # 1. check if there is the root repo
+        #
+        # 2. it should clone the root and add a symlink
+        # 3. next time use the root repo and make a symlink
+        ############
+        ############
+        # repo_script set $git_user, $repo_name, $script_name, and $repo_link
+        # This returns $repo_link
+        ##################
         repo_script "$1"
         git init "${awesome_dir}/${subrepo}"
         cd "${awesome_dir}/${subrepo}" || exit
