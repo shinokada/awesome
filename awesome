@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-version="0.3.1"
+version="0.3.2"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 
@@ -118,9 +118,9 @@ fn_add_symlink() {
         # show awesome dir
         # link repo_name/script_name
         create_symlink "${awesome_dir}" "${repo_base}" "${script_name}" "${bin_dir}" || exit
-        echo "Symlink added." >&2
+        echo "Symlink added."
     else
-        echo "No $script_name in $awesome_dir"
+        echo "No $script_name in $awesome_dir" >&2
         exit 1
 
     fi
@@ -139,57 +139,66 @@ fn_install() {
     # $2 may have subdir/main-script
     slash_num=$(slashes "$2")
     if [[ $slash_num = 0 ]]; then
-        echo "you have 0 /."
-        # exit
-        # set $git_user, $repo_name, $script_name, and $repo_link
-        # repo_script returns repo_link
+        # it can be raylee/tldr-sh-client tldr or
+        # no $2 like shinokada/gitig
+
+        # repo_script sets $git_user, $repo_name, $script_name, and $repo_link
+        # e.g. repo_script raylee/tldr-sh-client tldr
+        # e.g. repo_script shinokada/gitig
+        # returns repo_link
         repo_script "$1" "$2"
         cd "$awesome_dir" || exit
         echo "Cloning ..."
         git clone "${repo_link}" || exit
         echo "Cloning done."
-        # echo "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}"
-        # exit
+        echo "${awesome_dir}, ${repo_name}, ${script_name}, ${bin_dir}"
         create_symlink "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}" || exit
-
     elif [[ $slash_num = 1 ]]; then
-        echo "You have 1 /."
+        # $1 alexanderepstein/Bash-Snippets
+        # $2 cheat/cheat
+        # echo "You have 1 /."
         cd "$awesome_dir" || exit
+        user_repo=$1
+        user=$(first "$user_repo")
+        repo=$(second "$user_repo")
         sub=$2
-        subrepo=${sub%/*}
-        subscript=${sub##*/}
+        subrepo=$(first "$sub")
+        subscript=$(second "$sub")
         # if $? = 0 is good, no link
         if ! no_symlink "$subscript" "$bin_dir"; then
             echo "Link exist. Exitting..." >&2
             exit 1
         fi
-        # if $? = 0 is good, no dir
-
-        if ! no_dir "${awesome_dir}/${subrepo}"; then
-            echo "Directory exists. Exitting ..." >&2
+        # check if subrepo and subscript exist
+        # use may use wrong names
+        echo "${awesome_dir}/${repo}/${subrepo}"
+        if checkDir "${awesome_dir}/${repo}/${subrepo}"; then
+            :
+        else
+            echo "There is no repo called ${subrepo}." >&2
             exit 1
         fi
-        ############
+        if checkFile "${awesome_dir}/${repo}/${subrepo}/${subscript}"; then
+            :
+        else
+            echo "There is no script called ${subscript}." >&2
+            exit 1
+        fi
         # 1. check if there is the root repo
-        #
-        # 2. it should clone the root and add a symlink
-        # 3. next time use the root repo and make a symlink
-        ############
-        ############
-        # repo_script set $git_user, $repo_name, $script_name, and $repo_link
-        # This returns $repo_link
-        ##################
+        # repo_script returns git_usr, repo_name, script_repo, script_name
         repo_script "$1"
-        git init "${awesome_dir}/${subrepo}"
-        cd "${awesome_dir}/${subrepo}" || exit
-        git remote add "$subrepo" "$repo_link"
-        git fetch "$subrepo"
-        # find main or master
-        branch=$(check_branch)
-        # echo "$branch"
-        git checkout "${subrepo}/${branch}" -- "$subrepo"
+        # echo "${awesome_dir}, ${repo_name}, ${script_repo},${script_name}, ${bin_dir}"
+        # checkDir $repo_name
+        if checkDir "${awesome_dir}/${repo}"; then
+            :
+            # no clone
+        else
+            # clone
+            git clone "$repo_link"
+            echo "Cloning done."
+        fi
         # create a symlink
-        create_symlink "${awesome_dir}" "${subrepo}/${subrepo}" "${subscript}" "${bin_dir}" || exit
+        create_symlink "${awesome_dir}" "${repo}/${subrepo}" "${subscript}" "${bin_dir}" || exit
     else
         echo "You can't install sub/sub/script."
     fi
@@ -209,8 +218,14 @@ fn_uninstall() {
     checkDir "$src_path" || exit 1
     echo "src path: $src_path"
     echo "repo: $repo"
-    # remove a dir
-    fn_remove_dir "$repo" "$src_path"
+    # find the base_repo_name using realpath
+    exit
+    # if there is no other symlink is using the dir
+    if [[ $(num_symlinks "$repo" "$bin_dir") ]]; then
+        # remove a dir
+        fn_remove_dir "$repo" "$src_path"
+    fi
+
     # remove a symlink
     fn_remove_symlink "$repo"
     exit

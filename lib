@@ -16,16 +16,18 @@ repo_script() {
     local link_arg script_arg
     link_arg=$1
     script_arg=$2
-    slash_num=$(slashes "$link_arg")
-    # slash_num=$(echo "$link_arg" | grep -o "/" | wc -l)
+    link_slash_num=$(slashes "$link_arg")
+    script_slash_num=$(slashes "$script_arg")
+    # link_slash_num=$(echo "$link_arg" | grep -o "/" | wc -l)
     if [[ $link_arg =~ "@" ]]; then
         # if link_arg has @ it is like git@github.com:shinokada/cleanit.git
         echo "Please use URL or https, not ssh." >&2
         exit 1
     fi
     if [[ -z $script_arg ]]; then
+        # -z string is zero
         # check if it has a / if not exit
-        if ((slash_num < 1)); then
+        if ((link_slash_num < 1)); then
             echo "Not valid parameter." >&2
             exit 1
         fi
@@ -44,19 +46,30 @@ repo_script() {
             repo_link="https://github.com/${link_arg}"
         fi
     else
-        if (("$slash_num" == 1)); then
-            # one / so it must be raylee/tldr-sh-client tldr
+        # there is $2
+        # if $2 has one slash
+        if (("$script_slash_num" == 1)); then
             git_user="${link_arg%/*}"
             repo_name="${link_arg##*/}"
-            script_name="$script_arg"
+            script_repo="${script_arg%/*}"
+            script_name="${script_arg##*/}"
             repo_link="https://github.com/${link_arg}"
         else
-            # it must be https://github.com/raylee/tldr-sh-client.git tldr
-            git_user=$(basename "${link_arg%/*}")
-            repo_name=$(basename "$link_arg" .git)
-            script_name="$script_arg"
-            repo_link="$link_arg"
+            if (("$link_slash_num" == 1)); then
+                # one / so it must be raylee/tldr-sh-client tldr
+                git_user="${link_arg%/*}"
+                repo_name="${link_arg##*/}"
+                script_name="$script_arg"
+                repo_link="https://github.com/${link_arg}"
+            else
+                # it must be https://github.com/raylee/tldr-sh-client.git tldr
+                git_user=$(basename "${link_arg%/*}")
+                repo_name=$(basename "$link_arg" .git)
+                script_name="$script_arg"
+                repo_link="$link_arg"
+            fi
         fi
+
     fi
 }
 
@@ -83,6 +96,18 @@ checkDir() {
         return 0
     else
         # return 1 because there is no dir
+        return 1
+    fi
+}
+
+# Return 0 or 1 depending a file exists or not
+# Use: checkDir /path/to/file
+checkFile() {
+    if [[ -f $1 ]]; then
+        # return 0 because there is a file
+        return 0
+    else
+        # return 1 because there is no file
         return 1
     fi
 }
@@ -117,12 +142,31 @@ no_symlink() {
     fi
 }
 
+# retuns the number of symlink(s) that uses the same dir in ~/bin
+num_symlinks() {
+    repo=$1
+    bin_dir=$2
+    # ls -al "$HOME"/bin | grep -o "*${dir}*" | wc -l
+    count=0
+    for f in $HOME/${bin_dir}; do
+        if [[ f =~ ${repo} ]]; then
+            $count++
+        fi
+    done
+    echo $count
+}
+
 # Outputs the path to the src
 src_path() {
     # src_path=$(realpath "$HOME/bin/$1")
     src_path=$1
     # echo "$src_path"
     echo "${src_path%/*}"
+}
+
+main_repo() {
+    link=$1
+    ${link%awesome}
 }
 
 # Return 0 or 1 depending a command exists or not
@@ -133,12 +177,22 @@ check_cmd() {
     fi
 }
 
+first() {
+    item=$1
+    echo "${item%/*}"
+}
+
+second() {
+    item=$1
+    echo "${item##*/}"
+}
+
+# ###### No test yet
+
 check_branch() {
     branch=$(git branch -r | grep master)
     echo "${branch##*/}"
 }
-
-# ###### No test yet
 
 # check if $1 is in the alias_names or symlink_names
 alias_check() {
