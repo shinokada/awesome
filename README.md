@@ -11,6 +11,10 @@ The `awesome` is a simple shell script package manager. Awesome installs a shell
 - Some scripts don't have Homebrew installation. (macOS/Linux)
 - Make an easy installation.
 
+## Requirement
+
+- GNU find. macOS run `brew install findutils`.
+
 ## Installation
 
 Installing awesome:

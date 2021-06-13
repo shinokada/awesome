@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
+# ##### set up ########
 version="0.3.2"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
@@ -17,6 +18,13 @@ fi
 script_dir="${script_path%/*}"
 
 source "$script_dir/lib"
+
+# set find command find/gfind
+find_cmd=$(os_find_cmd)
+# echo "$find_cmd"
+check_find "$find_cmd"
+
+########################
 
 # Return Y or N after asking a question.
 fn_confirmRemove() {
@@ -213,6 +221,7 @@ fn_uninstall() {
     ####### check if there is a (sym)link in ~/bin dir
     # find the realpath (source) ######
     path=$(realpath "$HOME/bin/$repo")
+    # src_path outputs the directory path
     src_path=$(src_path "$path")
     # use realpath to find the real dir
     checkDir "$src_path" || exit 1
@@ -220,16 +229,18 @@ fn_uninstall() {
     echo "repo: $repo"
     # 1. find the base_repo_name using realpath
     # find the word after awesome/
-    exit
     # 2. if there is no other symlink is using the dir
     if [[ $(num_symlinks "$repo" "$bin_dir") = 1 ]]; then
         # remove a dir
-        fn_remove_dir "$repo" "$src_path"
+        echo "only 1 symlink"
+        # fn_remove_dir "$repo" "$src_path"
     else
         # don't remove the dir
+        echo "not 1"
+        num_symlinks "$repo" "$bin_dir"
         :
     fi
-
+    exit
     # remove a symlink
     fn_remove_symlink "$repo"
     exit
@@ -322,7 +333,10 @@ fn_main() {
         case $1 in
         -i | install) fn_install "$2" "$3" ;;
         rm) fn_uninstall "$2" ;;
-        ls | list) symlink_names "$bin_dir" ;;
+        ls | list)
+            symlink_names "$bin_dir"
+            exit
+            ;;
         link) fn_add_symlink "$2" "$3" ;;
         unlink) fn_remove_symlink "$2" ;;
         -u | update) fn_update "$2" ;;

@@ -1,6 +1,42 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034
 
+# Return 0 or 1 depending a command exists or not
+check_cmd() {
+    if [ ! "$(command -v "$1")" ]; then
+        echo "Please install $1" >&2
+        exit 1
+    fi
+}
+
+os_find_cmd() {
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        # Linux
+        echo "find"
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        # Mac OSX
+        echo "gfind"
+    fi
+}
+
+check_find() {
+    find_cmd=$1
+    # requires GNU sed
+    # find the find/gfind realpath
+    find_path=$(which "$find_cmd")
+    # echo "$find_path"
+    output=$($find_path --version)
+    out=$($output "findutils")
+    echo "$out"
+    exit
+    out=$(grep "$output" "findutils")
+
+    if [[ -z "$out" ]]; then
+        echo "Please install GNU find. If you are macOS user, run brew install findutils" >&2
+        exit 1
+    fi
+}
+
 # return the number of slashes
 # Use: slashes /path/name
 slashes() {
@@ -91,8 +127,10 @@ checkOrmkdir() {
 # Return 0 or 1 depending a dir exists or not
 # Use: checkDir /path/to/dir
 checkDir() {
-    if [[ -d $1 ]]; then
+    if [[ $1 = "$HOME" || $1 = "$HOME/awesome" ]]; then
         # return 0 because there is a dir
+        return 1
+    elif [[ -d $1 ]]; then
         return 0
     else
         # return 1 because there is no dir
@@ -122,12 +160,11 @@ no_dir() {
     fi
 }
 
-# fn_list list installed symlinks from bin dir
+# Option list lists all symlinks from bin dir
 symlink_names() {
     # ls "$awesome_dir"
     find "$1" -type l -exec basename -a {} +
     # find "$1" -type l
-    exit
 }
 
 # Checks a symlink in a bin dir
@@ -146,17 +183,22 @@ no_symlink() {
 num_symlinks() {
     repo=$1
     bin_dir=$2
+    # find Bash-Snippets after awesome/ from /Users/shinichiokada/awesome/Bash-Snippets/movies
     # ls -al "$HOME"/bin | grep -o "*${dir}*" | wc -l
-    count=0
-    for f in $HOME/${bin_dir}; do
-        if [[ f =~ ${repo} ]]; then
-            $count++
-        fi
-    done
-    echo $count
+    # count=0
+    # for f in {1..7}; do
+    # for f in ${bin_dir}; do
+    ((count++))
+    # if [[ f =~ ${repo} ]]; then
+    #     echo f
+    #     $count++
+    # fi
+    # done
+    find "$bin_dir" -regex
+    echo "$count"
 }
 
-# Outputs the path to the src
+# Outputs the path to the src (directory path)
 src_path() {
     # src_path=$(realpath "$HOME/bin/$1")
     src_path=$1
@@ -164,17 +206,11 @@ src_path() {
     echo "${src_path%/*}"
 }
 
-main_repo() {
-    link=$1
-    ${link%awesome}
-}
-
-# Return 0 or 1 depending a command exists or not
-check_cmd() {
-    if [ ! "$(command -v "$1")" ]; then
-        echo "Please install $1" >&2
-        exit 1
-    fi
+repo_after() {
+    link=$2
+    wa=$1
+    dirfile=${link#*$wa/}
+    echo "$dirfile" | cut -d/ -f1
 }
 
 first() {

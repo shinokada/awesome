@@ -40,19 +40,35 @@ Describe 'Tests for functions.'
             When run checkDir "$dir"
             The status should eq 0
         End
+
+        It 'return the status of 1 when it is HOME.'
+            When run checkDir "$HOME"
+            The status should eq 1
+        End
+
+        It 'return the status of 1 when it is HOME/awesome.'
+            When run checkDir "$HOME/awesome"
+            The status should eq 1
+        End
+
     End
 
-    Describe 'Tests for list and link'
+    Describe 'Tests for list and link.'
         filename=$(openssl rand -hex 4)
+        filename2=$(openssl rand -hex 4)
         awesome_dir="/tmp/awesome"
+        repo="$awesome_dir/repo"
         file="$awesome_dir/$filename"
+        repofile="$repo/$filename2"
         bin_dir="/tmp/bin"
         link="$bin_dir/my-link"
+        link2="$bin_dir/my-link2"
         setup() {
             mkdir "$awesome_dir"
             touch "$file"
             mkdir "$bin_dir"
             ln -s "$file" "$link"
+            ln -s "$repofile" "$link2"
         }
         cleanup() {
             rm -rf "$bin_dir"
@@ -61,37 +77,37 @@ Describe 'Tests for functions.'
         BeforeAll 'setup'
         AfterAll 'cleanup'
 
-        Describe 'Testing symlink_names.'
-            It 'outputs the my-link.'
+        Describe 'Testing symlink_names'
+            It 'outputs all the symlinks,'
                 When run symlink_names "$bin_dir"
-                The stdout should eq "my-link"
+                The line 2 of output should eq my-link
                 The status should eq 0
             End
         End
 
-        Describe 'Testing no_symlink.'
-            It 'outputs the status of 0.'
+        Describe 'Testing no_symlink '
+            It 'outputs the status of 0 '
                 When run no_symlink "no-link" "$bin_dir"
                 The status should eq 0
             End
         End
 
-        Describe 'Testing no_symlink.'
-            It 'outputs the status of 1.'
+        Describe 'Testing no_symlink '
+            It 'outputs the status of 1 because there is a symlink '
                 When run no_symlink "my-link" "$bin_dir"
                 The status should eq 1
             End
         End
 
-        Describe 'Testing src_path.'
-            It 'outputs source path.'
+        Describe 'Testing src_path '
+            It 'outputs source path '
                 When run src_path "$(realpath "$link")"
                 The stdout should eq "/private${awesome_dir}"
             End
         End
 
-        Describe 'Testing check_cmd'
-            It 'uses command -v  and outputs 0 or 1 depending a command exists or not'
+        Describe 'Testing check_cmd '
+            It 'uses command -v and outputs 0 or 1 depending a command exists or not '
                 When run check_cmd cd
                 The status should eq 0
             End
@@ -115,9 +131,9 @@ Describe 'Tests for functions.'
             End
         End
 
-        Describe 'Testing num_symlinks.'
-            It 'outputs 1 when there is a one symlink.'
-                When run num_symlinks "$filename" "$bin_dir"
+        Describe 'Testing num_symlinks '
+            It 'outputs 1 when there is a one symlink '
+                When run num_symlinks "$repo" "$bin_dir"
                 The output should eq 1
             End
         End
@@ -156,10 +172,15 @@ Describe 'Tests for functions.'
         End
     End
 
-    Describe 'Testing main_repo.'
-        It 'outputs second part of a path.'
-            When run main_repo "dir/file"
-            The stdout should eq "file"
+    Describe 'Testing repo_after.'
+        It 'outputs first part of a path.'
+            When run repo_after "awesome" "/path/to/awesome/dir/file"
+            The stdout should eq "dir"
+        End
+
+        It 'outputs first part of a path.'
+            When run repo_after "awesome" "/path/to/awesome/dir/file/script"
+            The stdout should eq "dir"
         End
     End
 
