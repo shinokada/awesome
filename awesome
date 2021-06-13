@@ -218,12 +218,16 @@ fn_uninstall() {
     checkDir "$src_path" || exit 1
     echo "src path: $src_path"
     echo "repo: $repo"
-    # find the base_repo_name using realpath
+    # 1. find the base_repo_name using realpath
+    # find the word after awesome/
     exit
-    # if there is no other symlink is using the dir
-    if [[ $(num_symlinks "$repo" "$bin_dir") ]]; then
+    # 2. if there is no other symlink is using the dir
+    if [[ $(num_symlinks "$repo" "$bin_dir") = 1 ]]; then
         # remove a dir
         fn_remove_dir "$repo" "$src_path"
+    else
+        # don't remove the dir
+        :
     fi
 
     # remove a symlink
