@@ -5,19 +5,35 @@ version="0.3.1"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 
+myrealpath() {
+    local LINK REALPATH
+    local OURPWD=$PWD
+    cd "$(dirname "$1")" || exit
+    LINK=$(readlink "$(basename "$1")")
+    while [ "$LINK" ]; do
+        cd "$(dirname "$LINK")" || exit
+        LINK=$(readlink "$(basename "$1")")
+    done
+    REALPATH="$PWD/$(basename "$1")"
+    cd "$OURPWD" || exit
+    echo "$REALPATH"
+}
+
+# realpath=myrealpath "$0"
+
 if [[ -z $(which awesome) ]]; then
     # echo "in 1"
-    script_path=$(realpath "$0")
+    script_path=$(myrealpath "$0")
     # script_path=${script_path%/*}
 else
     # echo "in 2"
-    script_path=$(realpath "$(which awesome)")
+    script_path=$(myrealpath "$(which awesome)")
 fi
 
 # echo "$script_path"
 
 script_dir="${script_path%/*}"
-# echo "$script_path"
+# echo "$script_dir"
 # exit
 source "$script_dir/lib"
 
@@ -159,10 +175,10 @@ fn_uninstall() {
     # check_link "$repo" "$HOME/bin/"
     # exit
     # find the realpath (source)
-    path=$(realpath "$HOME/bin/$repo")
+    path=$(myrealpath "$HOME/bin/$repo")
     src_path=$(src_path "$path")
 
-    # use realpath to find the real dir
+    # find the real dir
     checkDir "$src_path"
     # checkDir "${src_path%/*}"
     echo "src path: $src_path"
@@ -177,7 +193,7 @@ fn_uninstall() {
 # fn_update takes a script name (like tldr, not a repo name tldr-sh-client) and run git pull
 fn_update() {
     repo=$1
-    # find the real repo name by checking the ~/bin directory using realpath
+    # find the real repo name by checking the ~/bin directory
     if [[ $(ls "$bin_dir") =~ $repo ]]; then
         # script=$1
         cd "$awesome_dir/${1}" || exit
