@@ -68,7 +68,9 @@ fn_uninstall() {
     echo "Finding symlinks ..."
 
     if [[ $(fn_confirm symlinks) = "Y" ]]; then
-        mapfile -t links < <(fn_find_symlinks)
+        # mac doesn't have mapfile
+        # mapfile -t links < <(fn_find_symlinks)
+        links=($(fn_find_symlinks))
         for link in "${links[@]}"; do
             unlink "$link"
             echo "Removed the ${link} symlink."
