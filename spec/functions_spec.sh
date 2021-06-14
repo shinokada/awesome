@@ -1,6 +1,7 @@
 #shellcheck shell=sh
 Describe 'Tests for check functions.'
     Include ./lib
+    # Include ./awesome
     dirname=$(openssl rand -hex 6)
     dir="/tmp/$dirname"
     setup() {
@@ -78,9 +79,22 @@ Describe 'Tests for check functions.'
         End
 
         Describe 'Testing src_path().'
+            myrealpath() {
+                local LINK REALPATH
+                local OURPWD=$PWD
+                cd "$(dirname "$1")" || exit
+                LINK=$(readlink "$(basename "$1")")
+                while [ "$LINK" ]; do
+                    cd "$(dirname "$LINK")" || exit
+                    LINK=$(readlink "$(basename "$1")")
+                done
+                REALPATH="$PWD/$(basename "$1")"
+                cd "$OURPWD" || exit
+                echo "$REALPATH"
+            }
             It 'outputs source path.'
-                When run src_path "$(realpath "$link")"
-                The stdout should eq "/private${awesome_dir}"
+                When run src_path "$(myrealpath "$link")"
+                The stdout should eq "${awesome_dir}"
             End
         End
         Describe 'Testing check_cmd()'

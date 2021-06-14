@@ -100,9 +100,7 @@ check_link() {
 
 # Outputs the path to the src
 src_path() {
-    # src_path=$(realpath "$HOME/bin/$1")
     src_path=$1
-    # echo "$src_path"
     echo "${src_path%/*}"
 }
 
