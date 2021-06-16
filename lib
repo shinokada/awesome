@@ -141,3 +141,9 @@ create_alias() {
     echo "Created a symlink."
     return 0
 }
+
+same_src_path() {
+    src_path=$1
+    bin_dir=$2
+    find "$bin_dir" -type l -ilname "*${src_path}*" | wc -l
+}

@@ -65,11 +65,12 @@ rm             uninstalls a package and remove a symlink
 ls | list      lists awesome packages
 link           adds a symlink
 unlink         remove a package symlink
+links          prints all links
 -u | update    checks an update and install a new package
 -a | alias     creates an alias
--v | --version shows version
--h, --help     shows this help message and exit"
-url            Open Awesome repo on a browser
+-v | --version prints version
+-h, --help     prints this help message and exit"
+url            opens Awesome repo on a browser
 ```
 
 ```sh

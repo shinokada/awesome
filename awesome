@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-version="0.3.3"
+version="0.3.4"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 
@@ -19,9 +19,10 @@ myrealpath() {
     echo "$REALPATH"
 }
 
-# realpath=myrealpath "$0"
+# $0 may have ./ in ./awesome
+# then use pwd
 
-if [[ -z $(which awesome) ]]; then
+if [[ -z $(which awesome) || $0 = "./awesome" ]]; then
     # echo "in 1"
     script_path=$(myrealpath "$0")
     # script_path=${script_path%/*}
@@ -30,12 +31,9 @@ else
     script_path=$(myrealpath "$(which awesome)")
 fi
 
-# echo "$script_path"
-
 script_dir="${script_path%/*}"
-# echo "$script_dir"
-# exit
-source "$script_dir/lib"
+
+source "${script_dir}/lib"
 
 # Return Y or N after asking a question.
 fn_confirmRemove() {
@@ -83,6 +81,7 @@ fn_remove_dir() {
         echo "You already removed the repo."
         return
     fi
+
     # confirm
     if [[ $(fn_confirmRemove "$src_path") = "Y" ]]; then
         echo "Removing the ${src_path} directory ..."
@@ -168,7 +167,7 @@ fn_install() {
 }
 
 # fn_uninstall removes a symlink and repo
-fn_uninstall() {
+fn_rm() {
     cd "$awesome_dir" || exit
     repo=$1
     # check if there is a (sym)link in ~/bin dir
@@ -183,8 +182,14 @@ fn_uninstall() {
     # checkDir "${src_path%/*}"
     echo "src path: $src_path"
     echo "repo: $repo"
-    # remove a dir
-    fn_remove_dir "$repo" "$src_path"
+    # check number of symlink with src_path
+    if [[ $(same_src_path "$src_path" "$bin_dir") -gt 1 ]]; then
+        echo "There is another app is using the same repo."
+        echo "We are not deleting the repo."
+    else
+        # remove a dir
+        fn_remove_dir "$repo" "$src_path"
+    fi
     # remove a symlink
     fn_remove_symlink "$repo"
     exit
@@ -235,6 +240,7 @@ Usage: awesome [-h] [command]
     ls | list    lists awesome packages
     link         adds a symlink
     unlink       remove a package symlink 
+    links        print all links
     -u | update  checks an update and install a new package
     -a | alias   creates an alias 
     -v | --version shows the version
@@ -292,7 +298,7 @@ fn_main() {
     if (($# > 0)); then
         case $1 in
         -i | install) fn_install "$2" "$3" ;;
-        rm) fn_uninstall "$2" ;;
+        rm) fn_rm "$2" ;;
         ls | list) symlink_names "$bin_dir" ;;
         link) fn_add_symlink "$2" "$3" ;;
         unlink) fn_remove_symlink "$2" ;;
