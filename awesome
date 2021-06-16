@@ -285,7 +285,7 @@ fn_url() {
 }
 
 fn_show_symlinks() {
-    ls -al "$HOME"/bin
+    ls -l "$HOME"/bin
 }
 
 fn_main() {
