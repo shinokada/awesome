@@ -284,6 +284,10 @@ fn_url() {
     python -m webbrowser https://github.com/shinokada/awesome
 }
 
+fn_show_symlinks() {
+    ls -al "$HOME"/bin
+}
+
 fn_main() {
     if (($# > 0)); then
         case $1 in
@@ -292,6 +296,7 @@ fn_main() {
         ls | list) symlink_names "$bin_dir" ;;
         link) fn_add_symlink "$2" "$3" ;;
         unlink) fn_remove_symlink "$2" ;;
+        links) fn_show_symlinks ;;
         -u | update) fn_update "$2" ;;
         -a | alias) fn_add_alias "$2" "$3" "$4" ;;
         -h | --help) fn_help ;;
