@@ -117,11 +117,11 @@ check_cmd() {
 # check if $1 is in the alias_names or symlink_names
 alias_check() {
     if type "$1"; then
-        # echo "Good. Because there is no similar command"
-        return 0
-    else
         # echo "You already have that command." >&2
-        exit 1
+        return 1
+    else
+        # echo "Good. Because there is no similar command"
+        exit 0
     fi
 }
 

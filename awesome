@@ -220,6 +220,7 @@ fn_add_alias() {
         echo "Alias $alias_name created."
     else
         echo "You have the same alias as ${alias_name}."
+        echo "Use unlink to unlink the link."
     fi
 
 }
