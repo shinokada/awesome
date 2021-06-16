@@ -116,8 +116,7 @@ check_cmd() {
 
 # check if $1 is in the alias_names or symlink_names
 alias_check() {
-    type "$1"
-    if [[ $? = 1 ]]; then
+    if type "$1"; then
         # echo "Good. Because there is no similar command"
         return 0
     else
