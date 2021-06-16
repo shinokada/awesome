@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-version="0.3.2"
+version="0.3.3"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 
@@ -268,8 +268,15 @@ Examples:
 
     Show the version
     awesome -v
+
+    Open Awesome GitHub repo page 
+    awesome url
 EOF
     exit
+}
+
+fn_url() {
+    python -m webbrowser https://github.com/shinokada/awesome
 }
 
 fn_main() {
@@ -284,6 +291,7 @@ fn_main() {
         -a | alias) fn_add_alias "$2" "$3" "$4" ;;
         -h | --help) fn_help ;;
         -v | --version) echo "${version}" ;;
+        url) fn_url ;;
         *) fn_help ;;
         esac
     else

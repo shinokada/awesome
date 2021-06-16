@@ -105,6 +105,9 @@ awesome -h
 # version
 awesome --version
 awesome -v
+
+# Open a Awesome URL page
+awesome url
 ```
 
 ## Alias
