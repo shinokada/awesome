@@ -121,7 +121,7 @@ alias_check() {
         return 1
     else
         # echo "Good. Because there is no similar command"
-        exit 0
+        return 0
     fi
 }
 
