@@ -214,10 +214,14 @@ fn_add_alias() {
 
     echo "Creating an alias $alias_name to $repo_name/$script_name"
     # check_cmd "$alias_name"
-    alias_name "$alias_name"
-    # all good create an alias
-    create_alias "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}" "${alias_name}" || exit
-    echo "Alias $alias_name created."
+    if alias_check "$alias_name" >&/dev/null; then
+        # all good create an alias
+        create_alias "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}" "${alias_name}" || exit
+        echo "Alias $alias_name created."
+    else
+        echo "You have the same alias as ${alias_name}."
+    fi
+
 }
 
 fn_help() {

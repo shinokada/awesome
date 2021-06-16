@@ -31,6 +31,8 @@ Add the following to your terminal config file, such as .zshrc or .bashrc.
 export PATH=$HOME/bin:$PATH
 ```
 
+
+
 ## Uninstallation
 
 Uninstalling awesome:
@@ -45,11 +47,13 @@ or
 wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install > tmp1 && bash tmp1 uninstall && rm tmp1
 ```
 
-## Update
+## Update Awesome
 
 Update awesome:
 
 ```sh
+awesome -u awesome
+# or
 awesome update awesome
 ```
 
@@ -65,6 +69,7 @@ unlink         remove a package symlink
 -a | alias     creates an alias
 -v | --version shows version
 -h, --help     shows this help message and exit"
+url            Open Awesome repo on a browser
 ```
 
 ```sh
@@ -128,6 +133,8 @@ Run it:
 php-example.php
 Hello world from PHP!%
 ```
+
+Let's add an alias to node-example.js using `-a ne`, where `ne` is an alias name:
 
 ```sh
 # Create an alias to a different script
