@@ -45,6 +45,14 @@ Describe 'Run repo_script()'
         The value "$script_name" should eq 'tldr'
         The value "$repo_link" should eq 'https://github.com/raylee/tldr-sh-client'
     End
+    It 'outputs git_user, repo_name, script_name, repo_link with alexanderepstein/Bash-Snippets cheat/cheat'
+        When call repo_script alexanderepstein/Bash-Snippets cheat/cheat
+        The value "$git_user" should eq 'alexanderepstein'
+        The value "$repo_name" should eq 'Bash-Snippets'
+        The value "$script_repo" should eq 'cheat'
+        The value "$script_name" should eq 'cheat'
+        The value "$repo_link" should eq 'https://github.com/alexanderepstein/Bash-Snippets'
+    End
     It 'outputs Please use URL or https, not ssh.'
         When run repo_script tldr
         The stderr should eq 'Not valid parameter.'
