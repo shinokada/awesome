@@ -36,19 +36,17 @@ script_dir="${script_path%/*}"
 source "${script_dir}/lib"
 
 # set find command find/gfind
-find_cmd=$(os_find_cmd)
+# find_cmd=$(os_find_cmd)
 # echo "$find_cmd"
-check_find "$find_cmd"
+# check_find "$find_cmd"
 
 ########################
 
 # Return Y or N after asking a question.
 fn_confirmRemove() {
     local package=$1
-    read -rp "Do you want to remove $package? yes/y or no/n   " PANS
-
+    read -rp $'\e[31mDo you want to remove it? yes/y or no/n  \e[0m' PANS
     ans=$(echo "$PANS" | cut -c 1-1 | tr "[:lower:]" "[:upper:]")
-
     echo "$ans"
 }
 
@@ -73,7 +71,7 @@ fn_search_main() {
     else
         echo "The repo and script names are different. For example, tldr-sh-client/tldr." >&2
         echo "Use, for example:" >&2
-        echo "awesome link tldr-sh-client tldr" >&2
+        echo "awesome link tldr tldr-sh-client " >&2
         exit 1
     fi
 }
@@ -84,8 +82,9 @@ fn_remove_dir() {
     src_path=$2
     # exit if the src_path is $HOME/awesome
     if [[ $src_path == "$HOME/awesome" || $src_path == "$HOME/bin" || $src_path == "$HOME" ]]; then
-        echo "We don't remove $HOME, $HOME/awesome nor $HOME/bin directory."
-        echo "Remove the repo manually."
+        bannerColor "There is no directory called ${repo}." "red" "*"
+        # echo "We don't remove $HOME, $HOME/awesome nor $HOME/bin directory."
+        # echo "Remove the repo manually."
         return
     fi
 
@@ -105,14 +104,23 @@ fn_remove_symlink() {
         exit 1
     fi
     repo=$1
+    # if the repo is awesome then exit with warning.
+    if [[ $repo = 'awesome' ]]; then
+        bannerColor "Please don't remove the awesome link." "red" "*"
+    fi
     # src_path=$2
-
-    # check if the dir exist || exit
-    if [[ $(fn_confirmRemove symlink) = "Y" ]]; then
-        echo "Removing the symlink ..."
-        cd "$bin_dir" || exit
-        rm "${repo}" 2>/dev/null || exit
-        echo "Symlink removed."
+    if no_symlink "$repo" "$bin_dir"; then
+        exit
+    else
+        # check if the dir exist || exit
+        if [[ $(fn_confirmRemove symlink) = "Y" ]]; then
+            bannerColor "Removing the symlink ..." "yellow" "*"
+            cd "$bin_dir" || exit
+            rm "${repo}" 2>/dev/null || exit
+            bannerColor "Symlink removed." "green" "*"
+        else
+            bannerColor "Something wrong." "red" "*"
+        fi
     fi
     exit
 }
@@ -120,11 +128,19 @@ fn_remove_symlink() {
 # Add a symlink
 fn_add_symlink() {
     if [[ -z $1 ]]; then
-        echo "Specify the repo to remove." >&2
+        bannerColor "Specify the repo." "red" "*" >&2
         exit 1
     else
         repo_base=$1
     fi
+
+    # if [[ -z $2 ]]; then
+    #     echo "Specify the script name." >&2
+    #     exit 1
+    # else
+    #     repo_base=$1
+    # fi
+
     # repo_base=$(basename "$url" .git)
     if [[ -n $2 ]]; then
         script_name=$2
@@ -132,7 +148,7 @@ fn_add_symlink() {
         script_name="$repo_base"
     fi
     # check if repo_name exists in awesome dir
-    echo "Searching ..."
+    bannerColor "Searching ..." "yellow" "*"
     # echo "repo-base $repo_base"
     # echo "script-name: $script_name"
     if [[ $(ls "$awesome_dir") =~ $script_name ]]; then
@@ -143,9 +159,10 @@ fn_add_symlink() {
         # show awesome dir
         # link repo_name/script_name
         create_symlink "${awesome_dir}" "${repo_base}" "${script_name}" "${bin_dir}" || exit
-        echo "Symlink added."
+        bannerColor "Symlink added." "green" "*"
     else
-        echo "No $script_name in $awesome_dir" >&2
+        bannerColor "No $script_name in $awesome_dir" "red" "*" >&2
+        bannerColor "Please add the repo name. awesome link script-name repo-name." "red" "*" >&2
         exit 1
 
     fi
@@ -235,6 +252,14 @@ fn_install() {
 fn_rm() {
     cd "$awesome_dir" || exit
     repo=$1
+    # exit with warning if $repo is awesome
+    # Please read the README at https://github.com/shinokada/awesome
+    if [[ $repo = "awesome" ]]; then
+        bannerColor "If you want to uninstall awesome, Please read the README at https://github.com/shinokada/awesome" "red" "*"
+        open_url
+        exit
+    fi
+    exit
     # check if there is a (sym)link in ~/bin dir
     # check_link "$repo" "$HOME/bin/"
     # exit
@@ -245,8 +270,8 @@ fn_rm() {
     # find the real dir
     checkDir "$src_path"
     # checkDir "${src_path%/*}"
-    echo "src path: $src_path"
-    echo "repo: $repo"
+    # echo "src path: $src_path"
+    # echo "repo: $repo"
     # check number of symlink with src_path
     if [[ $(same_src_path "$src_path" "$bin_dir") -gt 1 ]]; then
         echo "There is another app is using the same repo."
@@ -351,14 +376,6 @@ EOF
     exit
 }
 
-fn_url() {
-    python -m webbrowser https://github.com/shinokada/awesome
-}
-
-fn_show_symlinks() {
-    ls -l "$HOME"/bin
-}
-
 fn_main() {
     if (($# > 0)); then
         case $1 in
@@ -370,12 +387,12 @@ fn_main() {
             ;;
         link) fn_add_symlink "$2" "$3" ;;
         unlink) fn_remove_symlink "$2" ;;
-        links) fn_show_symlinks ;;
+        links) show_symlinks ;;
         -u | update) fn_update "$2" ;;
         -a | alias) fn_add_alias "$2" "$3" "$4" ;;
         -h | --help) fn_help ;;
         -v | --version) echo "${version}" ;;
-        url) fn_url ;;
+        url) open_url ;;
         *) fn_help ;;
         esac
     else
