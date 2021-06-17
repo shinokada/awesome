@@ -153,8 +153,6 @@ You can try it for `perl-example.pl`, `python-example.py`, `ruby-example.rb`.
 
 ## Some libraries you can install
 
-<script src="https://gist.github.com/shinokada/95880c294f46d24c5189ff69b7779a68.js"></script>
-
 | Name                                                              | Installation                            | Description                                                                                 |
 | ----------------------------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------- |
 | [tldr](https://github.com/raylee/tldr-sh-client)                  | awesome -i raylee/tldr-sh-client tldr   | a collection of community-maintained help pages for command-line tools                      |
