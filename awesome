@@ -98,14 +98,23 @@ fn_remove_symlink() {
         exit 1
     fi
     repo=$1
+    # if the repo is awesome then exit with warning.
+    if [[ $repo = 'awesome' ]]; then
+        bannerColor "Please don't remove the awesome link." "red" "*"
+    fi
     # src_path=$2
-
-    # check if the dir exist || exit
-    if [[ $(fn_confirmRemove symlink) = "Y" ]]; then
-        echo "Removing the symlink ..."
-        cd "$bin_dir" || exit
-        rm "${repo}" 2>/dev/null || exit
-        echo "Symlink removed."
+    if no_symlink "$repo" "$bin_dir"; then
+        exit
+    else
+        # check if the dir exist || exit
+        if [[ $(fn_confirmRemove symlink) = "Y" ]]; then
+            bannerColor "Removing the symlink ..." "yellow" "*"
+            cd "$bin_dir" || exit
+            rm "${repo}" 2>/dev/null || exit
+            bannerColor "Symlink removed." "green" "*"
+        else
+            bannerColor "Something wrong." "red" "*"
+        fi
     fi
     exit
 }
@@ -170,6 +179,13 @@ fn_install() {
 fn_rm() {
     cd "$awesome_dir" || exit
     repo=$1
+    # exit with warning if $repo is awesome
+    # Please read the README at https://github.com/shinokada/awesome
+    if [[ $repo = "awesome" ]]; then
+        bannerColor "If you want to uninstall awesome, Please read the README at https://github.com/shinokada/awesome" "red" "*"
+        open_url
+        exit
+    fi
     # check if there is a (sym)link in ~/bin dir
     # check_link "$repo" "$HOME/bin/"
     # exit
@@ -300,14 +316,14 @@ fn_main() {
         -i | install) fn_install "$2" "$3" ;;
         rm) fn_rm "$2" ;;
         ls | list) symlink_names "$bin_dir" ;;
-        link) fn_add_symlink "$2" "$3" ;;
-        unlink) fn_remove_symlink "$2" ;;
-        links) fn_show_symlinks ;;
+        # link) fn_add_symlink "$2" "$3" ;;
+        # unlink) fn_remove_symlink "$2" ;;
+        links) show_symlinks ;;
         -u | update) fn_update "$2" ;;
         -a | alias) fn_add_alias "$2" "$3" "$4" ;;
         -h | --help) fn_help ;;
         -v | --version) echo "${version}" ;;
-        url) fn_url ;;
+        url) open_url ;;
         *) fn_help ;;
         esac
     else
