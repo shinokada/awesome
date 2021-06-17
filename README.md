@@ -155,6 +155,7 @@ You can try it for `perl-example.pl`, `python-example.py`, `ruby-example.rb`.
 
 | Name                                                              | Installation                            | Description                                                                                 |
 | ----------------------------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------- |
+| [tldr](https://github.com/raylee/tldr-sh-client)                  | awesome -i raylee/tldr-sh-client tldr   | a collection of community-maintained help pages for command-line tools                      |
 | [has](https://github.com/kdabir/has)                              | awesome -i kdabir/has                   | Helps you to check the presence of various command line tools and their versions on a path. |
 | [ddgr](https://github.com/jarun/ddgr)                             | awesome -i jarun/ddgr                   | DuckDuckGo from the terminal.                                                               |
 | [desk](https://github.com/jamesob/desk)                           | awesome -i jamesob/desk                 | Lightweight workspace manager for the shell.                                                |
