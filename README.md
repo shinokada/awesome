@@ -77,6 +77,19 @@ url            opens Awesome repo on a browser
 
 # Installing a repo using user/repo
 awesome -i shinokada/gitstart
+```
+
+Once you install a repo, you can start using it.
+
+```sh
+mkdir my-repo
+cd my-repo
+gitstart
+```
+
+More commands:
+
+```sh
 # Installing a repo using user/repo.git
 awesome -i shinokada/gitstart.git
 # Installing a repo whose main script is different from the repo name
@@ -94,12 +107,6 @@ awesome rm cleanit
 awesome ls
 awesome list
 
-# Remove a symlink but not uninstall
-awesome unlink cleanit
-
-# Add a symlink
-awesome link cleanit
-
 # Update a repo
 awesome update cleanit
 awesome -u cleanit
@@ -116,7 +123,7 @@ awesome -v
 awesome url
 ```
 
-## Alias
+## What should I do when a repo has multiple scripts
 
 Alias is useful when a repo has multiple scripts.
 
@@ -135,6 +142,7 @@ php-example.php
 Hello world from PHP!%
 ```
 
+The script-examples has multiple scripts in different languages.
 Let's add an alias to node-example.js using `-a ne`, where `ne` is an alias name:
 
 ```sh
