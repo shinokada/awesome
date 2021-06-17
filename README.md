@@ -172,27 +172,6 @@ You can try it for `perl-example.pl`, `python-example.py`, `ruby-example.rb`.
 | [v](https://github.com/rupa/v)                                    | awesome -i rupa/v                       | z for vim.                                                                                  |
 | [ansiweather](https://github.com/fcambus/ansiweather)             | awesome -i fcambus/ansiweather          | Display the current weather conditions.                                                     |
 
-======
-
-- [has](https://github.com/kdabir/has): helps you check presence of various command line tools and their versions on path.
-- [ddgr](https://github.com/jarun/ddgr): DuckDuckGo from the terminal.
-- [desk](https://github.com/jamesob/desk): Lightweight workspace manager for the shell.
-- [gitstart](https://github.com/shinokada/gitstart): GitHub repository automation.
-- [gitig](https://github.com/shinokada/gitig): Fix a gitignore problem.
-- [googler](https://github.com/jarun/googler): Google Search, Google Site Search, Google News from the terminal
-- [hhighlighter](https://github.com/paoloantinori/hhighlighter): Colorize words in a command output
-- [backpack_install](https://github.com/shinokada/backpack_install): Backpack for Laravel installer.
-- [hr](https://github.com/paoloantinori/hhighlighter): hr for your terminal
-- [manop](https://github.com/shinokada/manop): Man page description and option viewer.
-- [shml](https://github.com/odb/shml): A shell framework for faster and easier script development.
-- [slugify](https://github.com/benlinton/slugify): A bash command that converts filenames and directories to a web friendly format.
-- [spark](https://github.com/holman/spark): 
-▁▂▃▅▂▇ in your shell
-- [spot](https://github.com/rauchg/spot): Tiny file search utility
-- [v](https://github.com/rupa/v): z for vim.
-- [ansiweather](https://github.com/fcambus/ansiweather): Displaying the current weather conditions.
-
-
 ## How to create a script for Awesome
 
 - Use `#!/usr/bin/env script-name` at the beginning.
