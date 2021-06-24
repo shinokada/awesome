@@ -190,22 +190,27 @@ fn_install() {
         # $2 cheat/cheat
         # echo "You have 1 /."
         cd "$awesome_dir" || exit
+        # echo "1: $1" # alexanderepstein/Bash-Snippets
         user_repo=$1
-        user=$(first "$user_repo")
-        repo=$(second "$user_repo")
+        # git_user=$(first "$user_repo")
+        repo_name=$(second "$user_repo")
+        # echo "repo name $repo_name" # Bash-Snippets
         sub=$2
-        subrepo=$(first "$sub")
-        subscript=$(second "$sub")
+        # echo "sub $2" # cheat/cheat
+        script_repo=$(first "$sub")
+        script_name=$(second "$sub")
+        # echo "script repo $script_repo"
+        # echo "script name $script_name"
         # if $? = 0 is good, no link
-        if ! no_symlink "$subscript" "$bin_dir"; then
+        if ! no_symlink "$script_name" "$bin_dir"; then
             echo "Link exist. Exitting..." >&2
             exit 1
         fi
         # 1. check if there is the root repo
-        # repo_script returns git_usr, repo_name, script_repo, script_name
-        repo_script "$1"
+        # repo_script returns git_user, repo_name, script_repo, script_name
+        # repo_script "$1"
         # checkDir $repo_name
-        if checkDir "${awesome_dir}/${repo}"; then
+        if checkDir "${awesome_dir}/${repo_name}"; then
             :
             # no clone
         else
@@ -214,7 +219,8 @@ fn_install() {
             echo "Cloning done."
         fi
         # create a symlink
-        create_symlink "${awesome_dir}" "${repo}/${subrepo}" "${subscript}" "${bin_dir}" || exit
+        create_symlink "${awesome_dir}" "${repo_name}/${script_repo}" "${script_name}" "${bin_dir}" || exit
+        repo=$script_name
     else
         echo "You can't install sub/sub/script."
     fi
@@ -246,9 +252,9 @@ fn_rm() {
     # echo "src path: $src_path"
     # echo "repo: $repo"
     # check number of symlink with src_path
-    dirpath=$(first "$src_path")
-    same_src_path "$dirpath" "$bin_dir"
-    if (($(same_src_path "$src_path" "$bin_dir") > 1)); then
+    dirpath=$(second "$src_path")
+    # same_src_path "$dirpath" "$bin_dir"
+    if (($(same_src_path "$dirpath" "$bin_dir") > 1)); then
         echo "There is another app is using the same repo."
         echo "We are not deleting the repo."
     else
