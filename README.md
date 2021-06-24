@@ -3,6 +3,8 @@
 </p>
 <h1  align="center">A Simple Shell Script Package Manager - Awesome</h1>
 
+[Find scripts for Aweseome Package Manager](https://medium.com/mkdir-awesome)
+
 ## Overview
 
 The `awesome` is a simple shell script package manager. Awesome installs a shell script package from a GitHub repo on your macOS/Linux.
