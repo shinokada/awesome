@@ -75,7 +75,19 @@ checkDir() {
         return 0
     else
         echo "Ooops! $1 doesn't exist." >&2
-        exit 1
+        return 1
+    fi
+}
+
+# Return 0 or 1 depending a file exists or not
+# Use: checkDir /path/to/file
+checkFile() {
+    if [[ -f $1 ]]; then
+        # return 0 because there is a file
+        return 0
+    else
+        # return 1 because there is no file
+        return 1
     fi
 }
 
@@ -154,6 +166,34 @@ open_url() {
 
 show_symlinks() {
     ls -l "$HOME"/bin
+}
+
+first() {
+    item=$1
+    echo "${item%/*}"
+}
+
+second() {
+    item=$1
+    echo "${item##*/}"
+}
+
+# Checks a symlink in a bin dir
+# Use: no_symlink "my-link" "$bin_dir"
+no_symlink() {
+    if [[ -L "$2/$1" ]]; then
+        # return 1 because there is a symlink
+        return 1
+    else
+        # return 0 because there is no symlink
+        return 0
+    fi
+}
+
+# return the number of slashes
+# Use: slashes /path/name
+slashes() {
+    echo "$1" | grep -o "/" | wc -l | tr -d '[:space:]'
 }
 
 # Usage: bannerSimple "my title" "*"

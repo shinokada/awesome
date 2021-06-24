@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-version="0.3.4"
+version="0.3.5"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 
@@ -162,15 +162,56 @@ fn_install() {
         echo "You need to specify the GitHub repo URL." >&2
         exit 1
     fi
-    # set $git_user, $repo_name, $script_name, and $repo_link
-    repo_script "$1" "$2"
-    cd "$awesome_dir" || exit
-    echo "Cloning ..."
-    git clone "${repo_link}" || exit
-    echo "Cloning done."
-    # echo "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}"
-    # exit
-    create_symlink "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}" || exit
+
+    slash_num=$(slashes "$2")
+    if [[ $slash_num = 0 ]]; then
+        # it can be raylee/tldr-sh-client tldr or
+        # no $2 like shinokada/gitig
+
+        # repo_script sets $git_user, $repo_name, $script_name, and $repo_link
+        # e.g. repo_script raylee/tldr-sh-client tldr
+        # e.g. repo_script shinokada/gitig
+        # returns repo_link
+        repo_script "$1" "$2"
+        cd "$awesome_dir" || exit
+        echo "Cloning ..."
+        git clone "${repo_link}" || exit
+        echo "Cloning done."
+        echo "${awesome_dir}, ${repo_name}, ${script_name}, ${bin_dir}"
+        create_symlink "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}" || exit
+    elif [[ $slash_num = 1 ]]; then
+        # $1 alexanderepstein/Bash-Snippets
+        # $2 cheat/cheat
+        # echo "You have 1 /."
+        cd "$awesome_dir" || exit
+        user_repo=$1
+        user=$(first "$user_repo")
+        repo=$(second "$user_repo")
+        sub=$2
+        subrepo=$(first "$sub")
+        subscript=$(second "$sub")
+        # if $? = 0 is good, no link
+        if ! no_symlink "$subscript" "$bin_dir"; then
+            echo "Link exist. Exitting..." >&2
+            exit 1
+        fi
+        # 1. check if there is the root repo
+        # repo_script returns git_usr, repo_name, script_repo, script_name
+        repo_script "$1"
+        # checkDir $repo_name
+        if checkDir "${awesome_dir}/${repo}"; then
+            :
+            # no clone
+        else
+            # clone
+            git clone "$repo_link"
+            echo "Cloning done."
+        fi
+        # create a symlink
+        create_symlink "${awesome_dir}" "${repo}/${subrepo}" "${subscript}" "${bin_dir}" || exit
+    else
+        echo "You can't install sub/sub/script."
+    fi
     echo "${repo_name}/${script_name} installation completed." >&2
     echo "Try ${repo} -h or which ${repo}." >&2
 }
@@ -194,7 +235,7 @@ fn_rm() {
     src_path=$(src_path "$path")
 
     # find the real dir
-    checkDir "$src_path"
+    checkDir "$src_path" || exit
     # checkDir "${src_path%/*}"
     echo "src path: $src_path"
     echo "repo: $repo"
