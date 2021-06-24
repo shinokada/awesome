@@ -6,7 +6,7 @@
 <img width="400" src="https://raw.githubusercontent.com/shinokada/awesome/main/images/awesomesky-o.gif" />
 </p>
 
-[Find scripts for Aweseome Package Manager](https://medium.com/mkdir-awesome)
+[Read more about Aweseome Package Manager](https://medium.com/mkdir-awesome/a-new-simple-package-manager-for-script-languages-a1228fd0972a)
 
 ## Overview
 
