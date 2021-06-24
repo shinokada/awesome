@@ -36,8 +36,6 @@ Add the following to your terminal config file, such as .zshrc or .bashrc.
 export PATH=$HOME/bin:$PATH
 ```
 
-
-
 ## Uninstallation
 
 Uninstalling awesome:
@@ -205,6 +203,10 @@ shellspec -s bash
 ## Author
 
 Shinichi Okada
+
+<p align="center">
+<img width="400" src="https://raw.githubusercontent.com/shinokada/awesome/main/images/awesomesky-o.gif" />
+</p>
 
 ## License
 
