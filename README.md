@@ -79,23 +79,11 @@ links          prints all links
 url            opens Awesome repo on a browser
 ```
 
-```sh
+You can use different ways installing scripts.
 
+```sh
 # Installing a repo using user/repo
 awesome -i shinokada/gitstart
-```
-
-Once you install a repo, you can start using it.
-
-```sh
-mkdir my-repo
-cd my-repo
-gitstart
-```
-
-More commands:
-
-```sh
 # Installing a repo using user/repo.git
 awesome -i shinokada/gitstart.git
 # Installing a repo whose main script is different from the repo name
@@ -105,27 +93,53 @@ awesome -i https://github.com/shinokada/cleanit
 awesome -i https://github.com/raylee/tldr-sh-client tldr
 # Installing a repo using install option instead of -i
 awesome install https://github.com/shinokada/gitstart.git
+```
 
-# Remove a symlink and repo
+To install scripts from [Bash snippets](https://github.com/alexanderepstein/Bash-Snippets):
+
+```sh
+awesome -i alexanderepstein/Bash-Snippets cheat/cheat
+# add more script
+awesome -i alexanderepstein/Bash-Snippets movies/movies
+```
+
+## Remove a symlink and repo
+
+```sh
 awesome rm cleanit
+```
 
-# Show installed packages
+## Show installed packages
+
+```sh
 awesome ls
 awesome list
+```
 
-# Update a repo
+## Update a repo
+
+```sh
 awesome update cleanit
 awesome -u cleanit
+```
 
-# help
+## Print help
+
+```sh
 awesome --help
 awesome -h
+```
 
-# version
+## Print version
+
+```sh
 awesome --version
 awesome -v
+```
 
-# Open a Awesome URL page
+## Open a Awesome URL page
+
+```sh
 awesome url
 ```
 
@@ -186,6 +200,9 @@ You can try it for `perl-example.pl`, `python-example.py`, `ruby-example.rb`.
 | [spot](https://github.com/rauchg/spot)                            | awesome -i rauchg/spot                  | Tiny file search utility.                                                                   |
 | [v](https://github.com/rupa/v)                                    | awesome -i rupa/v                       | z for vim.                                                                                  |
 | [ansiweather](https://github.com/fcambus/ansiweather)             | awesome -i fcambus/ansiweather          | Display the current weather conditions.                                                     |
+
+
+You can use more than 20 scripts from [Bash Snippets](https://github.com/alexanderepstein/Bash-Snippets).
 
 ## How to create a script for Awesome
 

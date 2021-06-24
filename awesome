@@ -122,7 +122,7 @@ fn_remove_symlink() {
 # Add a symlink
 fn_add_symlink() {
     if [[ -z $1 ]]; then
-        echo "Specify the repo to remove." >&2
+        echo "Specify the repo to add." >&2
         exit 1
     else
         repo_base=$1
@@ -145,7 +145,7 @@ fn_add_symlink() {
         # show awesome dir
         # link repo_name/script_name
         create_symlink "${awesome_dir}" "${repo_base}" "${script_name}" "${bin_dir}" || exit
-        echo "Symlink added." >&2
+        echo "Symlink added."
     else
         echo "No $script_name in $awesome_dir"
         exit 1
@@ -237,10 +237,12 @@ fn_rm() {
     # find the real dir
     checkDir "$src_path" || exit
     # checkDir "${src_path%/*}"
-    echo "src path: $src_path"
-    echo "repo: $repo"
+    # echo "src path: $src_path"
+    # echo "repo: $repo"
     # check number of symlink with src_path
-    if [[ $(same_src_path "$src_path" "$bin_dir") -gt 1 ]]; then
+    dirpath=$(first "$src_path")
+    same_src_path "$dirpath" "$bin_dir"
+    if (($(same_src_path "$src_path" "$bin_dir") > 1)); then
         echo "There is another app is using the same repo."
         echo "We are not deleting the repo."
     else
@@ -357,8 +359,8 @@ fn_main() {
         -i | install) fn_install "$2" "$3" ;;
         rm) fn_rm "$2" ;;
         ls | list) symlink_names "$bin_dir" ;;
-        # link) fn_add_symlink "$2" "$3" ;;
-        # unlink) fn_remove_symlink "$2" ;;
+        link) fn_add_symlink "$2" "$3" ;;
+        unlink) fn_remove_symlink "$2" ;;
         links) show_symlinks ;;
         -u | update) fn_update "$2" ;;
         -a | alias) fn_add_alias "$2" "$3" "$4" ;;
