@@ -2,6 +2,9 @@
 <img width="400" src="https://raw.githubusercontent.com/shinokada/awesome/main/images/mkdirawesome.png" />
 </p>
 <h1  align="center">A Simple Shell Script Package Manager - Awesome</h1>
+<p align="center">
+<img width="400" src="https://raw.githubusercontent.com/shinokada/awesome/main/images/awesomesky-o.gif" />
+</p>
 
 [Find scripts for Aweseome Package Manager](https://medium.com/mkdir-awesome)
 
@@ -203,10 +206,6 @@ shellspec -s bash
 ## Author
 
 Shinichi Okada
-
-<p align="center">
-<img width="400" src="https://raw.githubusercontent.com/shinokada/awesome/main/images/awesomesky-o.gif" />
-</p>
 
 ## License
 
