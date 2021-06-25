@@ -174,17 +174,17 @@ fn_install() {
         # returns repo_link
         repo_script "$1" "$2"
         cd "$awesome_dir" || exit
-        repo=$repo_name
         # echo "script dir: $script_dir"
         # echo "repo name: $repo_name"
         # echo "repo link: $repo_link"
-        if [[ -z $repo_name ]]; then
+        if [[ -n $repo_name ]]; then
             echo "Cloning ..."
             git clone "${repo_link}"
             echo "Cloning done."
         fi
-        echo "${awesome_dir}, ${repo_name}, ${script_name}, ${bin_dir}"
+        # echo "${awesome_dir}, ${repo_name}, ${script_name}, ${bin_dir}"
         create_symlink "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}" || exit
+        repo=$repo_name
     elif [[ $slash_num = 1 ]]; then
         # $1 alexanderepstein/Bash-Snippets
         # $2 cheat/cheat
