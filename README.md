@@ -19,6 +19,10 @@ The `awesome` is a simple shell script package manager. Awesome installs a shell
 - Some scripts don't have Homebrew installation. (macOS/Linux)
 - Make an easy installation.
 
+## Requirements
+
+UNIX-lie (Tested on Ubuntu and MacOS.)
+
 ## Installation
 
 Installing awesome:
