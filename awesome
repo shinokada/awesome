@@ -314,7 +314,7 @@ fn_push() {
     if [[ -L $bin_dir/$dir_name ]]; then
         git add .
         git commit -m "$1"
-        git push origin "$(git_current_branch)"
+        git push origin "$(current_branch)"
         echo "Updating ..."
         awesome -u "$dir_name"
         echo
