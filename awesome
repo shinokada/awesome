@@ -312,9 +312,10 @@ fn_push() {
     dir_path=$(pwd)
     dir_name=$(second "$dir_path")
     if [[ -L $bin_dir/$dir_name ]]; then
+        branch_name=$(git branch --show-current)
         git add .
         git commit -m "$1"
-        git push origin "$(current_branch)"
+        git push origin "$branch_name"
         echo "Updating ..."
         awesome -u "$dir_name"
         echo
