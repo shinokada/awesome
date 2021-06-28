@@ -301,6 +301,28 @@ fn_add_alias() {
 
 }
 
+fn_push() {
+    # check if message parameter exists
+    if [[ -z $1 ]]; then
+        echo "Please add commit message."
+        exit 1
+    fi
+    # check if it is awesome lib
+    # find the dir name which should be the script name
+    dir_path=$(pwd)
+    dir_name=$(second "$dir_path")
+    if [[ -L $bin_dir/$dir_name ]]; then
+        git add .
+        git commit -m "$1"
+        git push origin "$(git_current_branch)"
+        awesome -u "$dir_name"
+    else
+        echo "Please install the script first."
+        exit 1
+    fi
+    exit
+}
+
 fn_help() {
     cat <<EOF
 Description: Awesome install a package from a GitHub repo on your macOS/Linux.
@@ -313,6 +335,7 @@ Usage: awesome [-h] [command]
     unlink       remove a package symlink 
     links        print all links
     -u | update  checks an update and install a new package
+    -p | push  Git add, commit, push, awesome update
     -a | alias   creates an alias 
     -v | --version shows the version
     -h, --help   shows this help message and exit"
@@ -345,6 +368,9 @@ Examples:
     Create a symlink
     awesome link gitstart
 
+    Git add, commit, push, awesome update
+    awesome push "message"
+
     Show this help
     awesome -h
 
@@ -376,6 +402,7 @@ fn_main() {
         links) show_symlinks ;;
         -u | update) fn_update "$2" ;;
         -a | alias) fn_add_alias "$2" "$3" "$4" ;;
+        -p | push) fn_push "$2" ;;
         -h | --help) fn_help ;;
         -v | --version) echo "${version}" ;;
         url) open_url ;;
