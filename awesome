@@ -315,7 +315,9 @@ fn_push() {
         git add .
         git commit -m "$1"
         git push origin "$(git_current_branch)"
+        echo "Updating ..."
         awesome -u "$dir_name"
+        echo
     else
         echo "Please install the script first."
         exit 1
