@@ -314,7 +314,7 @@ fn_push() {
         git commit -m "$1"
         git push origin "$branch_name"
         printf "${GREEN}%s${RESET}\n" "Updating ..."
-        awesome -u "$dir_name"
+        fn_update "$dir_name"
         echo
     else
         printf "${RED}%s${RESET}\n" "Please install the script first."
