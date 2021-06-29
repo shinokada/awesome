@@ -335,7 +335,7 @@ Usage: awesome [-h] [command]
     unlink       remove a package symlink 
     links        print all links
     -u | update  checks an update and install a new package
-    -p | push  Git add, commit, push, awesome update
+    -p | push    Git add, commit, push, awesome update
     -a | alias   creates an alias 
     -v | --version shows the version
     -h, --help   shows this help message and exit"

@@ -77,6 +77,7 @@ link           adds a symlink
 unlink         remove a package symlink
 links          prints all links
 -u | update    checks an update and install a new package
+-p | push      Git add, commit, push, and update the script you are working
 -a | alias     creates an alias
 -v | --version prints version
 -h, --help     prints this help message and exit"
@@ -126,6 +127,18 @@ awesome list
 awesome update cleanit
 awesome -u cleanit
 ```
+
+## Git add, commit, push, and update
+
+When you are working on a script, you need to run git commands and want to 
+update the local package, run `-p` or `push`:
+
+```sh
+awesome -p "your commit message"
+awesome push "your commit message"
+```
+
+This will run Git add, commit, push, and awesome update commands.
 
 ## Print help
 
