@@ -83,7 +83,7 @@ fn_remove_dir() {
 
     # confirm
     if [[ $(fn_confirmRemove "$src_path") = "Y" ]]; then
-        printf "${GREEN}%s${RESET}\n" "Removing the ${src_path} directory ..."
+        printf "${CYAN}%s${RESET}\n" "Removing the ${src_path} directory ..."
         rm -rf "${src_path}" || exit
         printf "${GREEN}%s${RESET}\n" "$repo directory removed."
     fi
@@ -107,12 +107,12 @@ fn_remove_symlink() {
     else
         # check if the dir exist || exit
         if [[ $(fn_confirmRemove symlink) = "Y" ]]; then
-            bannerColor "Removing the symlink ..." "yellow" "*"
+            printf "${CYAN}%s${RESET}\n" "Removing the symlink ..."
             cd "$bin_dir" || exit
             rm "${repo}" 2>/dev/null || exit
-            bannerColor "Symlink removed." "green" "*"
+            printf "${GREEN}%s${RESET}\n" "Symlink removed."
         else
-            bannerColor "Something wrong." "red" "*"
+            printf "${RED}%s${RESET}\n" "Something wrong."
         fi
     fi
     exit
@@ -133,7 +133,7 @@ fn_add_symlink() {
         script_name="$repo_base"
     fi
     # check if repo_name exists in awesome dir
-    echo "Searching ..."
+    printf "${CYAN}%s${RESET}\n" "Searching ..."
     # echo "repo-base $repo_base"
     # echo "script-name: $script_name"
     if [[ $(ls "$awesome_dir") =~ $script_name ]]; then
@@ -175,7 +175,7 @@ fn_install() {
         # echo "repo name: $repo_name"
         # echo "repo link: $repo_link"
         if [[ -n $repo_name ]]; then
-            echo "Cloning ..."
+            printf "${CYAN}%s${RESET}\n" "Cloning ..."
             git clone "${repo_link}"
             printf "${GREEN}%s${RESET}\n" "Cloning done."
         fi
@@ -287,7 +287,7 @@ fn_add_alias() {
 
     # check_cmd "$alias_name"
     if alias_check "$alias_name" >&/dev/null; then
-        printf "${GREEN}%s${RESET}\n" "Creating an alias $alias_name to $repo_name/$script_name"
+        printf "${CYAN}%s${RESET}\n" "Creating an alias $alias_name to $repo_name/$script_name"
         # all good create an alias
         create_alias "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}" "${alias_name}" || exit
         printf "${GREEN}%s${RESET}\n" "Alias $alias_name created."
@@ -313,7 +313,7 @@ fn_push() {
         git add .
         git commit -m "$1"
         git push origin "$branch_name"
-        printf "${GREEN}%s${RESET}\n" "Updating ..."
+        printf "${CYAN}%s${RESET}\n" "Updating ..."
         fn_update "$dir_name"
         echo
     else
