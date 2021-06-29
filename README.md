@@ -130,8 +130,7 @@ awesome -u cleanit
 
 ## Git add, commit, push, and update
 
-When you are working on a script, you need to run git commands and want to 
-update the local package, run `-p` or `push`:
+When you are working on a script, you need to run a bunch of Git commands and update the local package. Use `-p` or `push`:
 
 ```sh
 awesome -p "your commit message"
