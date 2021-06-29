@@ -49,7 +49,6 @@ fn_confirmRemove() {
 fn_search_main() {
     repo=$1
     if [[ -d "$awesome_dir/$repo" ]]; then
-        echo "found it"
         cd "$awesome_dir/$repo" || return
         if [[ -n $2 ]]; then
             script_name=$2
@@ -64,9 +63,9 @@ fn_search_main() {
             return 1
         fi
     else
-        echo "The repo and script names are different. For example, tldr-sh-client/tldr." >&2
-        echo "Use, for example:" >&2
-        echo "awesome link tldr-sh-client tldr" >&2
+        printf "${RED}%s${RESET}\n" "The repo and script names are different. For example, tldr-sh-client/tldr." >&2
+        printf "${RED}%s${RESET}\n" "Use, for example:" >&2
+        printf "${RED}%s${RESET}\n" "awesome link tldr-sh-client tldr" >&2
         exit 1
     fi
 }
@@ -77,16 +76,16 @@ fn_remove_dir() {
     src_path=$2
     # exit if the src_path is $HOME/awesome
     if [[ $src_path == "$HOME/awesome" || $src_path == "$HOME/bin" ]]; then
-        echo "We don't remove $HOME/awesome nor $HOME/bin directory."
-        echo "You already removed the repo."
+        printf "${RED}%s${RESET}\n" "We don't remove $HOME/awesome nor $HOME/bin directory."
+        printf "${RED}%s${RESET}\n" "You already removed the repo."
         return
     fi
 
     # confirm
     if [[ $(fn_confirmRemove "$src_path") = "Y" ]]; then
-        echo "Removing the ${src_path} directory ..."
+        printf "${GREEN}%s${RESET}\n" "Removing the ${src_path} directory ..."
         rm -rf "${src_path}" || exit
-        echo "$repo directory removed."
+        printf "${GREEN}%s${RESET}\n" "$repo directory removed."
     fi
     return 0
 }
@@ -94,13 +93,13 @@ fn_remove_dir() {
 # Run rm a symlink
 fn_remove_symlink() {
     if [[ -z $1 ]]; then
-        echo "Specify the repo to remove." >&2
+        printf "${RED}%s${RESET}\n" "Specify the repo to remove." >&2
         exit 1
     fi
     repo=$1
     # if the repo is awesome then exit with warning.
     if [[ $repo = 'awesome' ]]; then
-        bannerColor "Please don't remove the awesome link." "red" "*"
+        printf "${RED}%s${RESET}\n" "==> Please don't remove the awesome link."
     fi
     # src_path=$2
     if no_symlink "$repo" "$bin_dir"; then
@@ -122,7 +121,7 @@ fn_remove_symlink() {
 # Add a symlink
 fn_add_symlink() {
     if [[ -z $1 ]]; then
-        echo "Specify the repo to add." >&2
+        printf "${RED}%s${RESET}\n" "Specify the repo to add." >&2
         exit 1
     else
         repo_base=$1
@@ -145,21 +144,19 @@ fn_add_symlink() {
         # show awesome dir
         # link repo_name/script_name
         create_symlink "${awesome_dir}" "${repo_base}" "${script_name}" "${bin_dir}" || exit
-        echo "Symlink added."
+        printf "${GREEN}%s${RESET}\n" "Symlink added."
     else
-        echo "No $script_name in $awesome_dir"
+        printf "${RED}%s${RESET}\n" "No $script_name in $awesome_dir"
         exit 1
 
     fi
-    # echo "$script_name"
-
     exit
 }
 
 # fn_install run git clone and create a symlink
 fn_install() {
     if [[ -z $1 ]]; then
-        echo "You need to specify the GitHub repo URL." >&2
+        printf "${RED}%s${RESET}\n" "You need to specify the GitHub repo URL." >&2
         exit 1
     fi
 
@@ -180,7 +177,7 @@ fn_install() {
         if [[ -n $repo_name ]]; then
             echo "Cloning ..."
             git clone "${repo_link}"
-            echo "Cloning done."
+            printf "${GREEN}%s${RESET}\n" "Cloning done."
         fi
         # echo "${awesome_dir}, ${repo_name}, ${script_name}, ${bin_dir}"
         create_symlink "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}" || exit
@@ -203,7 +200,7 @@ fn_install() {
         # echo "script name $script_name"
         # if $? = 0 is good, no link
         if ! no_symlink "$script_name" "$bin_dir"; then
-            echo "Link exist. Exitting..." >&2
+            printf "${RED}%s${RESET}\n" "Link exist. Exitting..." >&2
             exit 1
         fi
         # 1. check if there is the root repo
@@ -216,15 +213,15 @@ fn_install() {
         else
             # clone
             git clone "$repo_link"
-            echo "Cloning done."
+            printf "${GREEN}%s${RESET}\n" "Cloning done."
         fi
         # create a symlink
         create_symlink "${awesome_dir}" "${repo_name}/${script_repo}" "${script_name}" "${bin_dir}" || exit
         repo=$script_name
     else
-        echo "You can't install sub/sub/script."
+        printf "${RED}%s${RESET}\n" "You can't install sub/sub/script."
     fi
-    echo "${repo_name}/${script_name} installation completed." >&2
+    printf "${GREEN}%s${RESET}\n" "${repo_name}/${script_name} installation completed." >&2
     echo "Try ${repo} -h or which ${repo}." >&2
 }
 
@@ -235,7 +232,7 @@ fn_rm() {
     # exit with warning if $repo is awesome
     # Please read the README at https://github.com/shinokada/awesome
     if [[ $repo = "awesome" ]]; then
-        bannerColor "If you want to uninstall awesome, Please read the README at https://github.com/shinokada/awesome" "red" "*"
+        printf "${RED}%s${RESET}\n" "If you want to uninstall awesome, Please read the README at https://github.com/shinokada/awesome"
         open_url
         exit
     fi
@@ -255,8 +252,8 @@ fn_rm() {
     dirpath=$(second "$src_path")
     # same_src_path "$dirpath" "$bin_dir"
     if (($(same_src_path "$dirpath" "$bin_dir") > 1)); then
-        echo "There is another app is using the same repo."
-        echo "We are not deleting the repo."
+        printf "${YELLOW}%s${RESET}\n" "There is another app is using the same repo."
+        printf "${YELLOW}%s${RESET}\n" "We are not deleting the repo."
     else
         # remove a dir
         fn_remove_dir "$repo" "$src_path"
@@ -274,10 +271,10 @@ fn_update() {
         # script=$1
         cd "$awesome_dir/${1}" || exit
         git pull || exit
-        echo "$repo updated."
+        printf "${GREEN}%s${RESET}\n" "$repo updated."
         exit
     else
-        echo "You don't have ${repo}." >&2
+        printf "${RED}%s${RESET}\n" "You don't have ${repo}." >&2
         exit 2
     fi
 }
@@ -290,13 +287,13 @@ fn_add_alias() {
 
     # check_cmd "$alias_name"
     if alias_check "$alias_name" >&/dev/null; then
-        echo "Creating an alias $alias_name to $repo_name/$script_name"
+        printf "${GREEN}%s${RESET}\n" "Creating an alias $alias_name to $repo_name/$script_name"
         # all good create an alias
         create_alias "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}" "${alias_name}" || exit
-        echo "Alias $alias_name created."
+        printf "${GREEN}%s${RESET}\n" "Alias $alias_name created."
     else
-        echo "You have the same alias as ${alias_name}."
-        echo "Use unlink to unlink the link."
+        printf "${RED}%s${RESET}\n" "You have the same alias as ${alias_name}."
+        printf "${RED}%s${RESET}\n" "Use unlink to unlink the link."
     fi
 
 }
@@ -304,7 +301,7 @@ fn_add_alias() {
 fn_push() {
     # check if message parameter exists
     if [[ -z $1 ]]; then
-        echo "Please add commit message."
+        printf "${RED}%s${RESET}\n" "Please add commit message."
         exit 1
     fi
     # check if it is awesome lib
@@ -316,11 +313,11 @@ fn_push() {
         git add .
         git commit -m "$1"
         git push origin "$branch_name"
-        echo "Updating ..."
+        printf "${GREEN}%s${RESET}\n" "Updating ..."
         awesome -u "$dir_name"
         echo
     else
-        echo "Please install the script first."
+        printf "${RED}%s${RESET}\n" "Please install the script first."
         exit 1
     fi
     exit
