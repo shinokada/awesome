@@ -14,6 +14,8 @@ The `awesome` is a simple shell script package manager. Awesome installs a shell
 
  It creates the `~/awesome` directory and the `~/bin` directory if they don't exist. When you install a package, it will clone it in the `~/awesome` directory. It creates a symlink in the `~/bin` directory.
 
+ Use `awesome push <message>` to run Git commands and awesome update.
+
 ## Why?
 
 - Some scripts don't have Homebrew installation. (macOS/Linux)
@@ -62,40 +64,48 @@ wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install > tm
 Update awesome:
 
 ```sh
-awesome -u awesome
-# or
 awesome update awesome
 ```
 
 ## Usage
 
 ```sh
--i | install   installs a package from a GitHub repo and create a symlink in ~/bin
-rm             uninstalls a package and remove a symlink
-ls | list      lists awesome packages
-link           adds a symlink
-unlink         remove a package symlink
-links          prints all links
--u | update    checks an update and install a new package
--p | push      Git add, commit, push, and update the script you are working
--a | alias     creates an alias
+install  installs a package from a GitHub repo and create a symlink in ~/bin
+rm       uninstalls a package and remove a symlink
+ls       lists awesome packages
+link     adds a symlink
+unlink   remove a package symlink
+links    prints all links
+update   checks an update and install a new package
+push     Git add, commit, push, and update the script you are working
+alias    creates an alias
+url      opens Awesome repo on a browser
+```
+
+## Options
+
+```sh
 -v | --version prints version
--h, --help     prints this help message and exit"
-url            opens Awesome repo on a browser
+-h, --help     prints this help message and exit
 ```
 
 You can use different ways installing scripts.
 
 ```sh
 # Installing a repo using user/repo
-awesome -i shinokada/gitstart
+awesome install shinokada/gitstart
+
 # Installing a repo using user/repo.git
-awesome -i shinokada/gitstart.git
+awesome install shinokada/gitstart.git
+
 # Installing a repo whose main script is different from the repo name
-awesome -i raylee/tldr-sh-client tldr
+awesome install raylee/tldr-sh-client tldr
+
 # Same as above but using https
-awesome -i https://github.com/shinokada/cleanit
-awesome -i https://github.com/raylee/tldr-sh-client tldr
+awesome install https://github.com/shinokada/cleanit
+
+awesome install https://github.com/raylee/tldr-sh-client tldr
+
 # Installing a repo using install option instead of -i
 awesome install https://github.com/shinokada/gitstart.git
 ```
@@ -103,9 +113,9 @@ awesome install https://github.com/shinokada/gitstart.git
 To install scripts from [Bash snippets](https://github.com/alexanderepstein/Bash-Snippets):
 
 ```sh
-awesome -i alexanderepstein/Bash-Snippets cheat/cheat
+awesome install alexanderepstein/Bash-Snippets cheat/cheat
 # add more script
-awesome -i alexanderepstein/Bash-Snippets movies/movies
+awesome install alexanderepstein/Bash-Snippets movies/movies
 ```
 
 ## Remove a symlink and repo
@@ -118,26 +128,30 @@ awesome rm cleanit
 
 ```sh
 awesome ls
-awesome list
 ```
 
 ## Update a repo
 
 ```sh
 awesome update cleanit
-awesome -u cleanit
 ```
 
 ## Git add, commit, push, and update
 
-When you are working on a script, you need to run a bunch of Git commands and update the local package. Use `-p` or `push`:
+When you are working on a script, you need to run a bunch of Git commands and update the local package. Use `push`:
 
 ```sh
-awesome -p "your commit message"
 awesome push "your commit message"
 ```
 
 This will run Git add, commit, push, and awesome update commands.
+
+
+## Open a Awesome URL page
+
+```sh
+awesome url
+```
 
 ## Print help
 
@@ -153,12 +167,6 @@ awesome --version
 awesome -v
 ```
 
-## Open a Awesome URL page
-
-```sh
-awesome url
-```
-
 ## What should I do when a repo has multiple scripts
 
 Alias is useful when a repo has multiple scripts.
@@ -168,7 +176,7 @@ Let's add aliases using [script-examples](https://github.com/shinokada/script-ex
 Install it using php-example.php as the main script.
 
 ```sh
-awesome -i shinokada/script-examples php-example.php
+awesome install shinokada/script-examples php-example.php
 ```
 
 Run it:
@@ -179,11 +187,11 @@ Hello world from PHP!%
 ```
 
 The script-examples has multiple scripts in different languages.
-Let's add an alias to node-example.js using `-a ne`, where `ne` is an alias name:
+Let's add an alias to node-example.js using `alias ne`, where `ne` is an alias name:
 
 ```sh
 # Create an alias to a different script
-awesome -a ne script-examples node-example.js
+awesome alias ne script-examples node-example.js
 ```
 
 Run it:
@@ -222,8 +230,8 @@ You can use more than 20 scripts from [Bash Snippets](https://github.com/alexand
 
 ## How to create a script for Awesome
 
-- Use `#!/usr/bin/env script-name` at the beginning.
-- Recommend without `.sh` file extension for the main script
+- Add a shebang for example `#!/usr/bin/env bash` at the beginning.
+- Recommend use a file name without `.sh` file extension for the main script
 - Recommend to have the same repo and main script name. e.g. `shinokada/gitstart` has `gitstart`.
 - Add `-h| --help` option.
 - Your command starts with your main script name.

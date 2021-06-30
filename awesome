@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-version="0.3.7"
+version="0.3.8"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 
@@ -327,40 +327,40 @@ fn_help() {
     cat <<EOF
 Description: Awesome install a package from a GitHub repo on your macOS/Linux.
 
-Usage: awesome [-h] [command]
-    -i | install installs a package from a GitHub repo and create a symlink in ~/bin
-    rm           uninstalls a package and remove a symlink
-    ls | list    lists awesome packages
-    link         adds a symlink
-    unlink       remove a package symlink 
-    links        print all links
-    -u | update  checks an update and install a new package
-    -p | push    Git add, commit, push, awesome update
-    -a | alias   creates an alias 
+Usage: awesome (command | -h | v )
+    install  installs a package from a GitHub repo and create a symlink in ~/bin
+    rm       uninstalls a package and remove a symlink
+    ls       lists awesome packages
+    link     adds a symlink
+    unlink   remove a package symlink 
+    links    print all links
+    update   checks an update and install a new package
+    push     Git add, commit, push, awesome update
+    alias    creates an alias 
+
+Options:
+
     -v | --version shows the version
     -h, --help   shows this help message and exit"
 
 Examples:
     Install a package
-    awesome -i shinokada/gitstart
-    awesome -i shinokada/gitstart.git
-    awesome -i raylee/tldr-sh-client tldr
-    awesome -i https://github.com/raylee/tldr-sh-client tldr
-    awesome install https://github.com/shinokada/gitstart.git
-
+    awesome install shinokada/gitstart
+    awesome install shinokada/gitstart.git
+    awesome install raylee/tldr-sh-client tldr
+    awesome install https://github.com/raylee/tldr-sh-client tldr
+    
     Uninstall a package
     awesome rm gitstart
 
     Update a package
-    awesome -u gitstart
     awesome update gitstart
 
     Show installed packages
     awesome ls
-    awesome list
 
     Create an alias to a script
-    awesome -a ne script-example node-example.js
+    awesome alias ne script-example node-example.js
 
     Remove a symlink
     awesome unlink gitstart
@@ -394,18 +394,18 @@ fn_show_symlinks() {
 fn_main() {
     if (($# > 0)); then
         case $1 in
-        -i | install) fn_install "$2" "$3" ;;
+        install) fn_install "$2" "$3" ;;
         rm) fn_rm "$2" ;;
-        ls | list) symlink_names "$bin_dir" ;;
+        ls) symlink_names "$bin_dir" ;;
         link) fn_add_symlink "$2" "$3" ;;
         unlink) fn_remove_symlink "$2" ;;
         links) show_symlinks ;;
-        -u | update) fn_update "$2" ;;
-        -a | alias) fn_add_alias "$2" "$3" "$4" ;;
-        -p | push) fn_push "$2" ;;
+        update) fn_update "$2" ;;
+        alias) fn_add_alias "$2" "$3" "$4" ;;
+        push) fn_push "$2" ;;
+        url) open_url ;;
         -h | --help) fn_help ;;
         -v | --version) echo "${version}" ;;
-        url) open_url ;;
         *) fn_help ;;
         esac
     else
