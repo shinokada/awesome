@@ -249,8 +249,12 @@ fn_rm() {
     # echo "src path: $src_path"
     # echo "repo: $repo"
     # check number of symlink with src_path
-    dirpath=$(second "$src_path")
+    second "$(first "$src_path")"
+    dirpath=$(second "$(first "$src_path")")
     # same_src_path "$dirpath" "$bin_dir"
+    # echo "$dirpath"
+    # find ~/bin -type l -ilname "*Bash-Snippets*" | wc -l
+    # exit
     if (($(same_src_path "$dirpath" "$bin_dir") > 1)); then
         printf "${YELLOW}%s${RESET}\n" "There is another app is using the same repo."
         printf "${YELLOW}%s${RESET}\n" "We are not deleting the repo."
