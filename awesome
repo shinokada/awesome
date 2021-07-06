@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-version="0.3.8"
+version="0.3.9"
 awesome_dir="$HOME/awesome"
 bin_dir="$HOME/bin"
 
@@ -32,7 +32,7 @@ else
 fi
 
 script_dir="${script_path%/*}"
-
+# shellcheck disable=SC1091
 source "${script_dir}/lib"
 
 # Return Y or N after asking a question.
@@ -196,8 +196,8 @@ fn_install() {
         # echo "sub $2" # cheat/cheat
         script_repo=$(first "$sub")
         script_name=$(second "$sub")
-        # echo "script repo $script_repo"
-        # echo "script name $script_name"
+        # echo "script repo $script_repo" # cheat
+        # echo "script name $script_name" # cheat
         # if $? = 0 is good, no link
         if ! no_symlink "$script_name" "$bin_dir"; then
             printf "${RED}%s${RESET}\n" "Link exist. Exitting..." >&2
@@ -205,13 +205,13 @@ fn_install() {
         fi
         # 1. check if there is the root repo
         # repo_script returns git_user, repo_name, script_repo, script_name
-        # repo_script "$1"
-        # checkDir $repo_name
-        if checkDir "${awesome_dir}/${repo_name}"; then
-            :
-            # no clone
-        else
+        # $repo_link https://github.com/alexanderepstein/Bash-Snippets
+        repo_script "$1" "$script_name"
+        # echo "$repo_name, $script_repo, $script_name"
+
+        if [[ ! -d "${awesome_dir}/${repo_name}" ]]; then
             # clone
+            echo "cloning"
             git clone "$repo_link"
             printf "${GREEN}%s${RESET}\n" "Cloning done."
         fi
@@ -241,10 +241,14 @@ fn_rm() {
     # exit
     # find the realpath (source)
     path=$(myrealpath "$HOME/bin/$repo")
+    # src_path: /Users/shinichiokada/awesome/manop
     src_path=$(src_path "$path")
 
     # find the real dir
+    # checkDir returns 1 or 0 depending a dir exists or not
+    # 1 means dir exists
     checkDir "$src_path" || exit
+
     # checkDir "${src_path%/*}"
     # echo "src path: $src_path"
     # echo "repo: $repo"
@@ -252,7 +256,7 @@ fn_rm() {
     second "$(first "$src_path")"
     dirpath=$(second "$(first "$src_path")")
     # same_src_path "$dirpath" "$bin_dir"
-    # echo "$dirpath"
+    echo "$dirpath"
     # find ~/bin -type l -ilname "*Bash-Snippets*" | wc -l
     # exit
     if (($(same_src_path "$dirpath" "$bin_dir") > 1)); then

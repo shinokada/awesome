@@ -37,7 +37,6 @@ repo_script() {
             repo_link="https://github.com/${link_arg}"
         fi
     else
-
         if (("$slash_num" == 1)); then
             # one / so it must be raylee/tldr-sh-client tldr
             git_user="${link_arg%/*}"
@@ -72,10 +71,12 @@ checkOrmkdir() {
 # Return 0 or 1 depending a dir exists or not
 checkDir() {
     if [[ -d $1 ]]; then
-        return 0
+        # since 1 is true return 1
+        echo 1
     else
-        echo "Ooops! $1 doesn't exist." >&2
-        return 1
+        # 0 is false return 0
+        # echo "$1 doesn't exist." >&2
+        echo 0
     fi
 }
 
