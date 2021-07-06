@@ -241,24 +241,16 @@ fn_rm() {
     # exit
     # find the realpath (source)
     path=$(myrealpath "$HOME/bin/$repo")
-    # src_path: /Users/shinichiokada/awesome/manop
+    # $path /Users/shinichiokada/awesome/Bash-Snippets/weather/weather
     src_path=$(src_path "$path")
-
-    # find the real dir
-    # checkDir returns 1 or 0 depending a dir exists or not
-    # 1 means dir exists
-    checkDir "$src_path" || exit
-
-    # checkDir "${src_path%/*}"
-    # echo "src path: $src_path"
+    # src path: /Users/shinichiokada/awesome/Bash-Snippets/weather
     # echo "repo: $repo"
     # check number of symlink with src_path
-    second "$(first "$src_path")"
+    # second "$(first "$src_path")"
     dirpath=$(second "$(first "$src_path")")
     # same_src_path "$dirpath" "$bin_dir"
-    echo "$dirpath"
+    # echo "dirpath: $dirpath"
     # find ~/bin -type l -ilname "*Bash-Snippets*" | wc -l
-    # exit
     if (($(same_src_path "$dirpath" "$bin_dir") > 1)); then
         printf "${YELLOW}%s${RESET}\n" "There is another app is using the same repo."
         printf "${YELLOW}%s${RESET}\n" "We are not deleting the repo."
