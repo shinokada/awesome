@@ -247,9 +247,17 @@ fn_rm() {
     # echo "repo: $repo"
     # check number of symlink with src_path
     # second "$(first "$src_path")"
-    dirpath=$(second "$(first "$src_path")")
+    S_NUM=$(slashes "$path")
+    if [ "$S_NUM" -eq 6 ]; then
+        # if 6 slashes in $path
+        dirpath=$(second "$(first "$src_path")")
+    else
+        # for 5 slashes in $path
+        dirpath=$(second "$src_path")
+    fi
     # same_src_path "$dirpath" "$bin_dir"
     # echo "dirpath: $dirpath"
+    # exit
     # find ~/bin -type l -ilname "*Bash-Snippets*" | wc -l
     if (($(same_src_path "$dirpath" "$bin_dir") > 1)); then
         printf "${YELLOW}%s${RESET}\n" "There is another app is using the same repo."
