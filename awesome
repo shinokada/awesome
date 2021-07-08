@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-version="0.4.0"
+version="0.4.1"
 awesome_dir="$HOME/.local/share/awesome"
 bin_dir="$HOME/.local/share/bin"
 
@@ -75,8 +75,8 @@ fn_remove_dir() {
     repo=$1
     src_path=$2
     # exit if the src_path is $HOME/awesome
-    if [[ $src_path == "$HOME/awesome" || $src_path == "$HOME/bin" ]]; then
-        printf "${RED}%s${RESET}\n" "We don't remove $HOME/awesome nor $HOME/bin directory."
+    if [[ $src_path == "$awesome_dir" || $src_path == "$bin_dir" ]]; then
+        printf "${RED}%s${RESET}\n" "We don't remove $awesome_dir nor $bin_dir directory."
         printf "${RED}%s${RESET}\n" "You already removed the repo."
         return
     fi
@@ -240,7 +240,7 @@ fn_rm() {
     # check_link "$repo" "$HOME/bin/"
     # exit
     # find the realpath (source)
-    path=$(myrealpath "$HOME/bin/$repo")
+    path=$(myrealpath "$bin_dir/$repo")
     # $path /Users/shinichiokada/awesome/Bash-Snippets/weather/weather
     src_path=$(src_path "$path")
     # src path: /Users/shinichiokada/awesome/Bash-Snippets/weather
@@ -336,7 +336,7 @@ fn_help() {
 Description: Awesome install a package from a GitHub repo on your macOS/Linux.
 
 Usage: awesome (command | -h | v )
-    install  installs a package from a GitHub repo and create a symlink in ~/bin
+    install  installs a package from a GitHub repo and create a symlink in $bin_dir
     rm       uninstalls a package and remove a symlink
     ls       lists awesome packages
     link     adds a symlink
@@ -396,7 +396,7 @@ fn_url() {
 }
 
 fn_show_symlinks() {
-    ls -l "$HOME"/bin
+    ls -l "$bin_dir"
 }
 
 fn_main() {
