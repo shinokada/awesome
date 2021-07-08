@@ -12,7 +12,7 @@
 
 The `awesome` is a simple shell script package manager. Awesome installs a shell script package from a GitHub repo on your macOS/Linux.
 
- It creates the `~/awesome` directory and the `~/bin` directory if they don't exist. When you install a package, it will clone it in the `~/awesome` directory. It creates a symlink in the `~/bin` directory.
+ It creates the `~/.local/share/awesome` directory and the `~/.local/share/bin` directory if they don't exist. When you install a package, it will clone it in the `~/.local/share/awesome` directory. It creates a symlink in the `~/.local/share/bin` directory.
 
  Use `awesome push <message>` to run Git commands and awesome update.
 
@@ -43,6 +43,13 @@ Add the following to your terminal config file, such as .zshrc or .bashrc.
 
 ```sh
 export PATH=$HOME/bin:$PATH
+```
+
+Then source the config file or open a new terminal tab.
+
+```sh
+# for example
+source ~/.zshrc
 ```
 
 ## Uninstallation

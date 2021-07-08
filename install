@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-awesome_dir="$HOME/awesome"
-bin_dir="$HOME/bin"
+awesome_dir="$HOME/.local/share/awesome"
+bin_dir="$HOME/.local/share/bin"
 # version="0.1.1"
 
 # if ((BASH_VERSINFO[0] < 4)); then
@@ -16,14 +16,14 @@ fn_confirm() {
     echo $ans
 }
 
-# check if awesome dir exist. if not create it and add $HOME/awesome path to config file
+# check if a dir exist. if not create it and add $HOME/awesome path to config file
 fn_checkDir() {
     if [[ -z $1 ]]; then
         echo "Specify the directory." >&2
         exit
     fi
     if [[ ! -d $1 ]]; then
-        mkdir "$1"
+        mkdir -p "$1"
         echo "$1 directory is created." >&2
     fi
 }
