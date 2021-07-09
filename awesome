@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-version="0.4.1"
+version="0.4.2"
 awesome_dir="$HOME/.local/share/awesome"
 bin_dir="$HOME/.local/share/bin"
 
@@ -241,18 +241,20 @@ fn_rm() {
     # exit
     # find the realpath (source)
     path=$(myrealpath "$bin_dir/$repo")
-    # $path /Users/shinichiokada/awesome/Bash-Snippets/weather/weather
+    # $path /Users/shinichiokada/.local/share/awesome/Bash-Snippets/weather/weather
     src_path=$(src_path "$path")
-    # src path: /Users/shinichiokada/awesome/Bash-Snippets/weather
+    # src path: /Users/shinichiokada/.local/share/awesome/Bash-Snippets/weather
     # echo "repo: $repo"
     # check number of symlink with src_path
     # second "$(first "$src_path")"
     S_NUM=$(slashes "$path")
-    if [ "$S_NUM" -eq 6 ]; then
-        # if 6 slashes in $path
+    echo $S_NUM
+    exit
+    if [ "$S_NUM" -eq 8 ]; then
+        # if 8 slashes in $path
         dirpath=$(second "$(first "$src_path")")
     else
-        # for 5 slashes in $path
+        # for 7 slashes in $path
         dirpath=$(second "$src_path")
     fi
     # same_src_path "$dirpath" "$bin_dir"
