@@ -248,8 +248,8 @@ fn_rm() {
     # check number of symlink with src_path
     # second "$(first "$src_path")"
     S_NUM=$(slashes "$path")
-    echo $S_NUM
-    exit
+    # echo $S_NUM
+    # exit
     if [ "$S_NUM" -eq 8 ]; then
         # if 8 slashes in $path
         dirpath=$(second "$(first "$src_path")")
