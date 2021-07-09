@@ -253,9 +253,11 @@ fn_rm() {
     if [ "$S_NUM" -eq 8 ]; then
         # if 8 slashes in $path
         dirpath=$(second "$(first "$src_path")")
+        echo "$dirpath" #Bash-Snippets
     else
         # for 7 slashes in $path
         dirpath=$(second "$src_path")
+        echo "$dirpath" #manop
     fi
     # same_src_path "$dirpath" "$bin_dir"
     # echo "dirpath: $dirpath"
