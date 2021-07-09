@@ -42,7 +42,7 @@ wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install | ba
 Add the following to your terminal config file, such as .zshrc or .bashrc.
 
 ```sh
-export PATH=$HOME/bin:$PATH
+export PATH=$HOME/.local/share/bin:$PATH
 ```
 
 Then source the config file or open a new terminal tab.

@@ -112,7 +112,7 @@ fn_remove_symlink() {
             rm "${repo}" 2>/dev/null || exit
             printf "${GREEN}%s${RESET}\n" "Symlink removed."
         else
-            printf "${RED}%s${RESET}\n" "Something wrong."
+            printf "${RED}%s${RESET}\n" "Exiting..."
         fi
     fi
     exit
