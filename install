@@ -59,7 +59,7 @@ fn_install() {
     { git clone "${url}" && fn_create_symlink "${repo}"; } || exit
     echo "${repo} installation completed."
     echo "Add the following to your your terminal config file, such as .zshrc or .bashrc."
-    echo 'export PATH=$HOME/bin:$PATH'
+    echo 'export PATH=$HOME/.local/share/bin:$PATH'
     echo "Try ${repo} -h or which ${repo}."
 }
 
