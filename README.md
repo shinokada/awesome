@@ -49,7 +49,7 @@ Then source the config file or open a new terminal tab.
 
 ```sh
 # for example
-source ~/.zshrc
+. ~/.zshrc
 ```
 
 ## Uninstallation
