@@ -1,43 +1,52 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-version="0.4.2"
+version="0.4.3"
 awesome_dir="$HOME/.local/share/awesome"
 bin_dir="$HOME/.local/share/bin"
 
-myrealpath() {
-    local LINK REALPATH
-    local OURPWD=$PWD
-    cd "$(dirname "$1")" || exit
-    LINK=$(readlink "$(basename "$1")")
-    while [ "$LINK" ]; do
-        cd "$(dirname "$LINK")" || exit
-        LINK=$(readlink "$(basename "$1")")
+readlinkf() {
+    [ "${1:-}" ] || return 1
+    max_symlinks=40
+    CDPATH='' # to avoid changing to an unexpected directory
+
+    target=$1
+    [ -e "${target%/}" ] || target=${1%"${1##*[!/]}"} # trim trailing slashes
+    [ -d "${target:-/}" ] && target="$target/"
+
+    cd -P . 2>/dev/null || return 1
+    while [ "$max_symlinks" -ge 0 ] && max_symlinks=$((max_symlinks - 1)); do
+        if [ ! "$target" = "${target%/*}" ]; then
+            case $target in
+            /*) cd -P "${target%/*}/" 2>/dev/null || break ;;
+            *) cd -P "./${target%/*}" 2>/dev/null || break ;;
+            esac
+            target=${target##*/}
+        fi
+
+        if [ ! -L "$target" ]; then
+            target="${PWD%/}${target:+/}${target}"
+            printf '%s\n' "${target:-/}"
+            return 0
+        fi
+        link=$(ls -dl -- "$target" 2>/dev/null) || break
+        target=${link#*" $target -> "}
     done
-    REALPATH="$PWD/$(basename "$1")"
-    cd "$OURPWD" || exit
-    echo "$REALPATH"
+    return 1
 }
 
-# $0 may have ./ in ./awesome
-# then use pwd
+self=$(readlinkf "$0")
+script_dir=${self%/*}
+# echo "self: $self"
+# echo "script_dir: $script_dir"
 
-if [[ -z $(which awesome) || $0 = "./awesome" ]]; then
-    # echo "in 1"
-    script_path=$(myrealpath "$0")
-    # script_path=${script_path%/*}
-else
-    # echo "in 2"
-    script_path=$(myrealpath "$(which awesome)")
-fi
-
-script_dir="${script_path%/*}"
 # shellcheck disable=SC1091
-source "${script_dir}/lib"
+. "${script_dir}/utils/lib"
 
 # Return Y or N after asking a question.
 fn_confirmRemove() {
-    local package=$1
+    package=$1
+    # echo
     read -rp "Do you want to remove $package? yes/y or no/n   " PANS
 
     ans=$(echo "$PANS" | cut -c 1-1 | tr "[:lower:]" "[:upper:]")
@@ -48,16 +57,16 @@ fn_confirmRemove() {
 # Outputs the main script name. if $2 is provided use it as script_name otherwise use $1 as script_name
 fn_search_main() {
     repo=$1
-    if [[ -d "$awesome_dir/$repo" ]]; then
+    if [ -d "$awesome_dir/$repo" ]; then
         cd "$awesome_dir/$repo" || return
-        if [[ -n $2 ]]; then
+        if [ -n "$2" ]; then
             script_name=$2
         else
             script_name="$repo"
         fi
         IFS= read -r -d '' repo < <(find . '(' -name "${script_name##*/}" -o -name "${script_name##*/}.sh" ')' -print0)
 
-        if [[ $repo ]]; then
+        if [ "$repo" ]; then
             printf '%s\n' "$(basename "$repo")"
         else
             return 1
@@ -72,19 +81,21 @@ fn_search_main() {
 
 # Run rm after a confirmation
 fn_remove_dir() {
+    echo "in fn_remove_dir"
     repo=$1
     src_path=$2
     # exit if the src_path is $HOME/awesome
-    if [[ $src_path == "$awesome_dir" || $src_path == "$bin_dir" ]]; then
+    if [ "$src_path" = "$awesome_dir" ] || [ "$src_path" = "$bin_dir" ]; then
         printf "${RED}%s${RESET}\n" "We don't remove $awesome_dir nor $bin_dir directory."
         printf "${RED}%s${RESET}\n" "You already removed the repo."
         return
     fi
-
     # confirm
-    if [[ $(fn_confirmRemove "$src_path") = "Y" ]]; then
-        printf "${CYAN}%s${RESET}\n" "Removing the ${src_path} directory ..."
-        rm -rf "${src_path}" || exit
+    confirmrm=$(fn_confirmRemove "$src_path")
+    if [ "$confirmrm" = "Y" ]; then
+        printf "${CYAN}%s${RESET}\n" "Removing the $(first "$src_path") directory ..."
+        # exit
+        rm -rf "$(first "$src_path")" || exit
         printf "${GREEN}%s${RESET}\n" "$repo directory removed."
     fi
     return 0
@@ -92,13 +103,13 @@ fn_remove_dir() {
 
 # Run rm a symlink
 fn_remove_symlink() {
-    if [[ -z $1 ]]; then
+    if [ -z "$1" ]; then
         printf "${RED}%s${RESET}\n" "Specify the repo to remove." >&2
         exit 1
     fi
     repo=$1
     # if the repo is awesome then exit with warning.
-    if [[ $repo = 'awesome' ]]; then
+    if [ "$repo" = 'awesome' ]; then
         printf "${RED}%s${RESET}\n" "==> Please don't remove the awesome link."
     fi
     # src_path=$2
@@ -106,7 +117,7 @@ fn_remove_symlink() {
         exit
     else
         # check if the dir exist || exit
-        if [[ $(fn_confirmRemove symlink) = "Y" ]]; then
+        if [ "$(fn_confirmRemove symlink)" = "Y" ]; then
             printf "${CYAN}%s${RESET}\n" "Removing the symlink ..."
             cd "$bin_dir" || exit
             rm "${repo}" 2>/dev/null || exit
@@ -120,14 +131,14 @@ fn_remove_symlink() {
 
 # Add a symlink
 fn_add_symlink() {
-    if [[ -z $1 ]]; then
+    if [ -z "$1" ]; then
         printf "${RED}%s${RESET}\n" "Specify the repo to add." >&2
         exit 1
     else
         repo_base=$1
     fi
     # repo_base=$(basename "$url" .git)
-    if [[ -n $2 ]]; then
+    if [ -n "$2" ]; then
         script_name=$2
     else
         script_name="$repo_base"
@@ -155,13 +166,13 @@ fn_add_symlink() {
 
 # fn_install run git clone and create a symlink
 fn_install() {
-    if [[ -z $1 ]]; then
+    if [ -z "$1" ]; then
         printf "${RED}%s${RESET}\n" "You need to specify the GitHub repo URL." >&2
         exit 1
     fi
 
     slash_num=$(slashes "$2")
-    if [[ $slash_num = 0 ]]; then
+    if [ "$slash_num" = 0 ]; then
         # it can be raylee/tldr-sh-client tldr or
         # no $2 like shinokada/gitig
 
@@ -174,7 +185,7 @@ fn_install() {
         # echo "script dir: $script_dir"
         # echo "repo name: $repo_name"
         # echo "repo link: $repo_link"
-        if [[ -n $repo_name ]]; then
+        if [ -n "$repo_name" ]; then
             printf "${CYAN}%s${RESET}\n" "Cloning ..."
             git clone "${repo_link}"
             printf "${GREEN}%s${RESET}\n" "Cloning done."
@@ -182,7 +193,7 @@ fn_install() {
         # echo "${awesome_dir}, ${repo_name}, ${script_name}, ${bin_dir}"
         create_symlink "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}" || exit
         repo=$repo_name
-    elif [[ $slash_num = 1 ]]; then
+    elif [ "$slash_num" = 1 ]; then
         # $1 alexanderepstein/Bash-Snippets
         # $2 cheat/cheat
         # echo "You have 1 /."
@@ -209,7 +220,7 @@ fn_install() {
         repo_script "$1" "$script_name"
         # echo "$repo_name, $script_repo, $script_name"
 
-        if [[ ! -d "${awesome_dir}/${repo_name}" ]]; then
+        if [ ! -d "${awesome_dir}/${repo_name}" ]; then
             # clone
             echo "cloning"
             git clone "$repo_link"
@@ -231,43 +242,39 @@ fn_rm() {
     repo=$1
     # exit with warning if $repo is awesome
     # Please read the README at https://github.com/shinokada/awesome
-    if [[ $repo = "awesome" ]]; then
+    if [ "$repo" = "awesome" ]; then
         printf "${RED}%s${RESET}\n" "If you want to uninstall awesome, Please read the README at https://github.com/shinokada/awesome"
         open_url
         exit
     fi
-    # check if there is a (sym)link in ~/bin dir
-    # check_link "$repo" "$HOME/bin/"
-    # exit
-    # find the realpath (source)
-    path=$(myrealpath "$bin_dir/$repo")
-    # $path /Users/shinichiokada/.local/share/awesome/Bash-Snippets/weather/weather
-    src_path=$(src_path "$path")
-    # src path: /Users/shinichiokada/.local/share/awesome/Bash-Snippets/weather
-    # echo "repo: $repo"
-    # check number of symlink with src_path
-    # second "$(first "$src_path")"
-    S_NUM=$(slashes "$path")
-    # echo $S_NUM
-    # exit
+    repo_path="$bin_dir/$repo"
+    src_path=$(readlinkf "$repo_path")
+    # echo "gee"
+    # readlinkf "/Users/shinichiokada/.local/share/bin/weather"
+    S_NUM=$(slashes "$src_path")
     if [ "$S_NUM" -eq 8 ]; then
         # if 8 slashes in $path
-        dirpath=$(second "$(first "$src_path")")
-        echo "$dirpath" #Bash-Snippets
+        dirpath=$(first "$(first "$src_path")")
+        # echo "$dirpath" #Bash-Snippets
     else
-        # for 7 slashes in $path
-        dirpath=$(second "$src_path")
-        echo "$dirpath" #manop
+        # for 7 slashes
+        dirpath=$(first "$src_path")
     fi
-    # same_src_path "$dirpath" "$bin_dir"
+    # echo "repo_path: $repo_path"
+    # echo "src_path: $src_path"
+    # echo "s_num: $S_NUM"
     # echo "dirpath: $dirpath"
+    # echo "bin_dir: $bin_dir"
+    same_src_path "$dirpath" "$bin_dir"
     # exit
-    # find ~/bin -type l -ilname "*Bash-Snippets*" | wc -l
     if (($(same_src_path "$dirpath" "$bin_dir") > 1)); then
         printf "${YELLOW}%s${RESET}\n" "There is another app is using the same repo."
         printf "${YELLOW}%s${RESET}\n" "We are not deleting the repo."
     else
         # remove a dir
+        echo "repo: $repo"
+        # echo "src_path: $src_path"
+        # exit
         fn_remove_dir "$repo" "$src_path"
     fi
     # remove a symlink
@@ -292,13 +299,12 @@ fn_update() {
 }
 
 fn_add_alias() {
-    local alias_name repo_name script_name
     alias_name=$1
     repo_name=$2
     script_name=$3
 
     # check_cmd "$alias_name"
-    if alias_check "$alias_name" >&/dev/null; then
+    if alias_check "$alias_name" 1>&/dev/null 2>&1; then
         printf "${CYAN}%s${RESET}\n" "Creating an alias $alias_name to $repo_name/$script_name"
         # all good create an alias
         create_alias "${awesome_dir}" "${repo_name}" "${script_name}" "${bin_dir}" "${alias_name}" || exit
@@ -312,7 +318,7 @@ fn_add_alias() {
 
 fn_push() {
     # check if message parameter exists
-    if [[ -z $1 ]]; then
+    if [ -z "$1" ]; then
         printf "${RED}%s${RESET}\n" "Please add commit message."
         exit 1
     fi
@@ -320,7 +326,7 @@ fn_push() {
     # find the dir name which should be the script name
     dir_path=$(pwd)
     dir_name=$(second "$dir_path")
-    if [[ -L $bin_dir/$dir_name ]]; then
+    if [ -L "$bin_dir/$dir_name" ]; then
         branch_name=$(git branch --show-current)
         git add .
         git commit -m "$1"
@@ -404,7 +410,7 @@ fn_show_symlinks() {
 }
 
 fn_main() {
-    if (($# > 0)); then
+    if [ $# -gt 0 ]; then
         case $1 in
         install) fn_install "$2" "$3" ;;
         rm) fn_rm "$2" ;;
