@@ -7,6 +7,7 @@
 # https://github.com/raylee/tldr-sh-client.git tldr
 # https://github.com/raylee/tldr-sh-client tldr
 repo_script() {
+    local link_arg script_arg
     link_arg=$1
     script_arg=$2
     slash_num=$(echo "$link_arg" | grep -o "/" | wc -l)
@@ -15,9 +16,9 @@ repo_script() {
         echo "Please use URL or https, not ssh." >&2
         exit 1
     fi
-    if [ -z "$script_arg" ]; then
+    if [[ -z $script_arg ]]; then
         # check if it has a / if not exit
-        if [ "$slash_num" -lt 1 ]; then
+        if ((slash_num < 1)); then
             echo "Not valid parameter." >&2
             exit 1
         fi
@@ -36,7 +37,7 @@ repo_script() {
             repo_link="https://github.com/${link_arg}"
         fi
     else
-        if [ "$slash_num" -eq 1 ]; then
+        if (("$slash_num" == 1)); then
             # one / so it must be raylee/tldr-sh-client tldr
             git_user="${link_arg%/*}"
             repo_name="${link_arg##*/}"
@@ -54,11 +55,11 @@ repo_script() {
 
 # Create a awesome dir if it doesn't, exit 1.
 checkOrmkdir() {
-    if [ -z "$1" ]; then
+    if [[ -z $1 ]]; then
         echo "Specify the directory." >&2
         exit 1
     fi
-    if [ ! -d "$1" ]; then
+    if [[ ! -d $1 ]]; then
         mkdir "$1"
         echo "$1 directory is created." >&1
         return 0
@@ -69,7 +70,7 @@ checkOrmkdir() {
 
 # Return 0 or 1 depending a dir exists or not
 checkDir() {
-    if [ -d "$1" ]; then
+    if [[ -d $1 ]]; then
         # since 1 is true return 1
         echo 1
     else
@@ -82,7 +83,7 @@ checkDir() {
 # Return 0 or 1 depending a file exists or not
 # Use: checkDir /path/to/file
 checkFile() {
-    if [ -f "$1" ]; then
+    if [[ -f $1 ]]; then
         # return 0 because there is a file
         return 0
     else
@@ -101,7 +102,7 @@ symlink_names() {
 
 # this check a symlink in a bin dir
 check_link() {
-    if [ -L "$2/$1" ]; then
+    if [[ -L "$2/$1" ]]; then
         # echo "It's a link!"
         return 0
     else
@@ -181,7 +182,7 @@ second() {
 # Checks a symlink in a bin dir
 # Use: no_symlink "my-link" "$bin_dir"
 no_symlink() {
-    if [ -L "$2/$1" ]; then
+    if [[ -L "$2/$1" ]]; then
         # return 1 because there is a symlink
         return 1
     else
@@ -247,7 +248,7 @@ BG_DEFAULT="${ESC}[49m"
 # printf "${UNDERLINE}${ITALIC}%s${RESET}\n" 'Underline ITALIC'
 
 # Usage: bannerColor "my title" "red" "*"
-bannerColor() {
+function bannerColor() {
     case ${2} in
     black)
         color=0
@@ -279,8 +280,8 @@ bannerColor() {
         ;;
     esac
 
-    msg="${3} ${1} ${3}"
-    edge=$(echo "${msg}" | sed "s/./${3}/g")
+    local msg="${3} ${1} ${3}"
+    local edge=$(echo "${msg}" | sed "s/./${3}/g")
     tput setaf ${color}
     tput bold
     echo "${edge}"

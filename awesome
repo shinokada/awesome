@@ -33,7 +33,7 @@ fi
 
 script_dir="${script_path%/*}"
 # shellcheck disable=SC1091
-source "${script_dir}/lib"
+. "${script_dir}/utils/lib"
 
 # Return Y or N after asking a question.
 fn_confirmRemove() {
@@ -93,14 +93,11 @@ fn_remove_dir() {
         echo "Unknow src path."
         exit
     fi
-    echo "$path_to_delete"
+    # echo "$path_to_delete"
     # exit
-    # confirm
-    if [[ $(fn_confirmRemove "$src_path") = "Y" ]]; then
-        printf "${CYAN}%s${RESET}\n" "Removing the ${src_path} directory ..."
-        rm -rf "$path_to_delete" || exit
-        printf "${GREEN}%s${RESET}\n" "$repo directory removed."
-    fi
+    printf "${CYAN}%s${RESET}\n" "Removing the ${src_path} directory ..."
+    rm -rf "$path_to_delete" || exit
+    printf "${GREEN}%s${RESET}\n" "$repo directory removed."
     return 0
 }
 
@@ -262,11 +259,11 @@ fn_rm() {
     if [ "$S_NUM" -eq 8 ]; then
         # if 8 slashes in $path
         dirpath=$(second "$(first "$src_path")")
-        echo "$dirpath" #Bash-Snippets
+        # echo "$dirpath" #Bash-Snippets
     else
         # for 7 slashes in $path
         dirpath=$(second "$src_path")
-        echo "$dirpath" #manop
+        # echo "$dirpath" #manop
     fi
     # same_src_path "$dirpath" "$bin_dir"
     # echo "dirpath: $dirpath"
