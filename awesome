@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-version="0.5.1"
+version="0.5.0"
 awesome_dir="$HOME/.local/share/awesome"
 bin_dir="$HOME/.local/share/bin"
 
