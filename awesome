@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-version="0.4.3"
+version="0.4.4"
 awesome_dir="$HOME/.local/share/awesome"
 bin_dir="$HOME/.local/share/bin"
 
@@ -92,18 +92,6 @@ fn_remove_dir() {
         printf "${RED}%s${RESET}\n" "You already removed the repo."
         return
     fi
-<<<<<<< HEAD
-    # confirm
-    confirmrm=$(fn_confirmRemove "$src_path")
-    echo "src_path: $src_path"
-    first_path=$(first "$src_path")
-    echo "first src path: $first_path "
-    exit
-    if [ "$confirmrm" = "Y" ]; then
-        printf "${CYAN}%s${RESET}\n" "Removing the $(first "$src_path") directory ..."
-        # exit
-        rm -rf "$(first "$src_path")" || exit
-=======
 
     # there will be 6 or 7 slashes
     # /Users/shinichiokada/.local/share/awesome/Bash-Snippets/ytview
@@ -123,7 +111,6 @@ fn_remove_dir() {
     if [[ $(fn_confirmRemove "$src_path") = "Y" ]]; then
         printf "${CYAN}%s${RESET}\n" "Removing the ${src_path} directory ..."
         rm -rf "$path_to_delete" || exit
->>>>>>> back-to-e5b4ed4
         printf "${GREEN}%s${RESET}\n" "$repo directory removed."
     fi
     return 0
@@ -144,22 +131,10 @@ fn_remove_symlink() {
     if no_symlink "$repo" "$bin_dir"; then
         exit
     else
-<<<<<<< HEAD
-        # check if the dir exist || exit
-        if [ "$(fn_confirmRemove symlink)" = "Y" ]; then
-            printf "${CYAN}%s${RESET}\n" "Removing the symlink ..."
-            cd "$bin_dir" || exit
-            rm "${repo}" 2>/dev/null || exit
-            printf "${GREEN}%s${RESET}\n" "Symlink removed."
-        else
-            printf "${RED}%s${RESET}\n" "Exiting..."
-        fi
-=======
         cd "$bin_dir" || exit
         rm "${repo}" 2>/dev/null || exit
         printf "${GREEN}%s${RESET}\n" "Symlink removed."
 
->>>>>>> back-to-e5b4ed4
     fi
     exit
 }
