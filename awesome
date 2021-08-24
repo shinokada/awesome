@@ -36,6 +36,8 @@ readlinkf() {
 }
 
 self=$(readlinkf "$0")
+readlinkf "/Users/shinichiokada/.local/share/bin/tldr"
+echo "hi"
 script_dir=${self%/*}
 # echo "self: $self"
 # echo "script_dir: $script_dir"
@@ -92,6 +94,10 @@ fn_remove_dir() {
     fi
     # confirm
     confirmrm=$(fn_confirmRemove "$src_path")
+    echo "src_path: $src_path"
+    first_path=$(first "$src_path")
+    echo "first src path: $first_path "
+    exit
     if [ "$confirmrm" = "Y" ]; then
         printf "${CYAN}%s${RESET}\n" "Removing the $(first "$src_path") directory ..."
         # exit
@@ -249,7 +255,9 @@ fn_rm() {
     fi
     repo_path="$bin_dir/$repo"
     src_path=$(readlinkf "$repo_path")
-    # echo "gee"
+    echo "repo_path: $repo_path"
+    echo "src_path: $src_path"
+    readlinkf "$HOME/.local/share/bin/cheat"
     # readlinkf "/Users/shinichiokada/.local/share/bin/weather"
     S_NUM=$(slashes "$src_path")
     if [ "$S_NUM" -eq 8 ]; then
@@ -260,13 +268,12 @@ fn_rm() {
         # for 7 slashes
         dirpath=$(first "$src_path")
     fi
-    # echo "repo_path: $repo_path"
-    # echo "src_path: $src_path"
-    # echo "s_num: $S_NUM"
-    # echo "dirpath: $dirpath"
-    # echo "bin_dir: $bin_dir"
+
+    echo "s_num: $S_NUM"
+    echo "dirpath: $dirpath"
+    echo "bin_dir: $bin_dir"
     same_src_path "$dirpath" "$bin_dir"
-    # exit
+    exit
     if (($(same_src_path "$dirpath" "$bin_dir") > 1)); then
         printf "${YELLOW}%s${RESET}\n" "There is another app is using the same repo."
         printf "${YELLOW}%s${RESET}\n" "We are not deleting the repo."
