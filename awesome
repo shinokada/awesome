@@ -81,10 +81,24 @@ fn_remove_dir() {
         return
     fi
 
+    # there will be 6 or 7 slashes
+    # /Users/shinichiokada/.local/share/awesome/Bash-Snippets/ytview
+    # /Users/shinichiokada/.local/share/awesome/gitig
+    slash_num=$(slashes "$src_path")
+    if [ "$slash_num" = 6 ]; then
+        path_to_delete="$src_path"
+    elif [ "$slash_num" = 7 ]; then
+        path_to_delete=$(first "$src_path")
+    else
+        echo "Unknow src path."
+        exit
+    fi
+    echo "$path_to_delete"
+    # exit
     # confirm
     if [[ $(fn_confirmRemove "$src_path") = "Y" ]]; then
         printf "${CYAN}%s${RESET}\n" "Removing the ${src_path} directory ..."
-        rm -rf "${src_path}" || exit
+        rm -rf "$path_to_delete" || exit
         printf "${GREEN}%s${RESET}\n" "$repo directory removed."
     fi
     return 0
@@ -105,15 +119,10 @@ fn_remove_symlink() {
     if no_symlink "$repo" "$bin_dir"; then
         exit
     else
-        # check if the dir exist || exit
-        if [[ $(fn_confirmRemove symlink) = "Y" ]]; then
-            printf "${CYAN}%s${RESET}\n" "Removing the symlink ..."
-            cd "$bin_dir" || exit
-            rm "${repo}" 2>/dev/null || exit
-            printf "${GREEN}%s${RESET}\n" "Symlink removed."
-        else
-            printf "${RED}%s${RESET}\n" "Exiting..."
-        fi
+        cd "$bin_dir" || exit
+        rm "${repo}" 2>/dev/null || exit
+        printf "${GREEN}%s${RESET}\n" "Symlink removed."
+
     fi
     exit
 }
