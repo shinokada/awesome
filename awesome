@@ -142,7 +142,7 @@ fn_add_symlink() {
     printf "${CYAN}%s${RESET}\n" "Searching ..."
     # echo "repo-base $repo_base"
     # echo "script-name: $script_name"
-    if [[ $(ls "$awesome_dir") =~ $script_name ]]; then
+    if [[ $(ls "$awesome_dir/$repo_base") =~ $script_name ]]; then
         # exit
         file_name=$(fn_search_main "$repo_base" "$script_name") || exit 1
         echo "$file_name"
@@ -387,6 +387,7 @@ Examples:
 
     Create a symlink
     awesome link gitstart
+    awesome link tmux-xpanes/bin xpanes
 
     Git add, commit, push, awesome update
     awesome push "message"
