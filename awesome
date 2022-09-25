@@ -284,6 +284,10 @@ fn_rm() {
 # fn_update takes a script name (like tldr, not a repo name tldr-sh-client) and run git pull
 fn_update() {
     repo=$1
+    if [[ -z $repo ]]; then
+        printf "${RED}%s${RESET}\n" "Package name is missing."
+        exit 1
+    fi
     if [[ $(ls "$bin_dir") =~ $repo ]]; then
         # find the directory from symlink
         symlink_dir="$(myrealpath "$bin_dir/$repo")"
