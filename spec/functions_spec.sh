@@ -1,6 +1,6 @@
 #shellcheck shell=sh
 Describe 'Tests for check functions.'
-    Include ./lib
+    Include ./utils/lib
     # Include ./awesome
     dirname=$(openssl rand -hex 6)
     dir="/tmp/$dirname"
@@ -24,22 +24,6 @@ Describe 'Tests for check functions.'
         After 'cleanup'
         It 'outputs the status of 0.'
             When run checkOrmkdir "$dir"
-            The status should eq 0
-        End
-    End
-
-    Describe 'Testing checkDir function.'
-        It 'outputs the status of 1.'
-            When run checkDir
-            The stderr should eq "Ooops!  doesn't exist."
-            The status should eq 1
-        End
-
-        Before 'setup'
-        After 'cleanup'
-
-        It 'outputs the status of 0.'
-            When run checkDir "$dir"
             The status should eq 0
         End
     End
