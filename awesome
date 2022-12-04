@@ -222,7 +222,12 @@ fn_install() {
         if [[ ! -d "${awesome_dir}/${repo_name}" ]]; then
             # clone
             echo "cloning"
-            git clone "$repo_link"
+            if [[ $3 ]];then
+                # $3 is git branch
+                git clone -b "${3}" "${repo_link}"
+            else
+                git clone "${repo_link}"
+            fi
             printf "${GREEN}%s${RESET}\n" "Cloning done."
         fi
         # create a symlink
