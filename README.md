@@ -1,5 +1,6 @@
 <p align="center">
 <img width="400" src="https://raw.githubusercontent.com/shinokada/awesome/main/images/mkdirawesome.png" />
+<a href="https://shinokada.github.io/awesome/">https://shinokada.github.io/awesome/</a>
 </p>
 <h1  align="center">A Simple Shell Script Package Manager - Awesome</h1>
 <p align="center">
@@ -253,7 +254,7 @@ shellspec -s bash
 
 ## Author
 
-Shinichi Okada
+@shinokada
 
 ## License
 
