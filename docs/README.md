@@ -2,7 +2,7 @@
 <img width="400" src="https://raw.githubusercontent.com/shinokada/awesome/main/images/mkdirawesome.png" />
 </p>
 <p align="center">
-<a href="https://shinokada.github.io/awesome/">https://shinokada.github.io/awesome/</a>
+<a href="https://awesome.codewithshin.com/">https://awesome.codewithshin.com/</a>
 </p>
 <h1  align="center">A Simple Shell Script Package Manager - Awesome</h1>
 <p align="center">
