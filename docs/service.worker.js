@@ -8,14 +8,13 @@ const APP_PREFIX = 'awesome_';
 // you need to change this version (version_01, version_02…). 
 // If you don't change the version, the service worker will give your
 // users the old files!
-const VERSION = 'version_01';
+const VERSION = 'version_02';
 
 // The files to make available for offline use. make sure to add 
 // others to this list
 const URLS = [
   `${GHPATH}/`,
   `${GHPATH}/index.html`,
-  '//cdn.jsdelivr.net/npm/docsify/lib/themes/vue.css',
   '//cdn.jsdelivr.net/npm/docsify@4'
   // `${GHPATH}/js/app.js`
 ]
