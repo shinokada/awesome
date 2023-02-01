@@ -2,7 +2,7 @@
 	"name": "Awesome Package Manager",
 	"short_name": "Awesome Package Manager",
 	"scope": "/",
-	"start_url": "./docs",
+	"start_url": ".",
 	"icons": [
 	 {
 		"src": "static/apple-touch-icon.png",
