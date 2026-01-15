@@ -82,7 +82,8 @@ fn_check_cmd() {
 # Check network connectivity
 check_network() {
     print_info "Checking network connectivity..."
-    if ping -c 1 github.com &>/dev/null || ping -c 1 8.8.8.8 &>/dev/null; then
+    # Use curl with timeout to verify actual HTTPS connectivity to GitHub
+    if curl -sf --connect-timeout 5 --max-time 10 "https://github.com" -o /dev/null 2>/dev/null; then
         print_success "Network connection OK"
         return 0
     else
@@ -113,7 +114,7 @@ verify_installation() {
         print_success "Awesome repository cloned"
     else
         print_error "Awesome repository not found"
-        ((issues++))
+        ((++issues))
     fi
     
     # Check for main script
@@ -121,7 +122,7 @@ verify_installation() {
         print_success "Main awesome script found"
     else
         print_error "Main awesome script not found"
-        ((issues++))
+        ((++issues))
     fi
     
     # Check for utility libraries
@@ -135,7 +136,7 @@ verify_installation() {
         print_success "Basic library found"
     else
         print_error "Basic library not found"
-        ((issues++))
+        ((++issues))
     fi
     
     # Check symlink
@@ -143,7 +144,7 @@ verify_installation() {
         print_success "Awesome symlink created"
     else
         print_error "Awesome symlink not found"
-        ((issues++))
+        ((++issues))
     fi
     
     # Check if awesome is in PATH
@@ -151,7 +152,7 @@ verify_installation() {
         print_success "Awesome is accessible in PATH"
     else
         print_warning "Awesome not found in PATH (you may need to update your shell config)"
-        ((issues++))
+        ((++issues))
     fi
     
     echo
@@ -224,12 +225,26 @@ fn_install() {
         fi
     fi
     
-    if git clone --depth 1 "${url}"; then
-        print_success "Repository cloned successfully"
-    else
-        print_error "Failed to clone repository"
-        exit 1
-    fi
+    local max_retries=${MAX_RETRIES:-3}
+    local retry_count=0
+
+    while :; do
+        if git clone --depth 1 "$url"; then
+            print_success "Repository cloned successfully"
+            break
+        fi
+
+        ((++retry_count))
+
+        if (( retry_count >= max_retries )); then
+            print_error "Failed to clone repository after $max_retries attempts"
+            exit 1
+        fi
+
+        print_warning "Clone failed, retrying ($retry_count/$max_retries)..."
+        sleep 2
+    done
+
     
     # Create symlink
     print_info "Creating symlink..."
@@ -294,26 +309,36 @@ fn_uninstall() {
         print_info "Uninstall cancelled"
         exit 0
     fi
+
+    # Ask about directory removal first
+    local remove_awesome_dir="N"
+    if [[ -d "$awesome_dir" ]]; then
+        remove_awesome_dir=$(fn_confirm "awesome directory")
+    fi
     
-    # Remove symlinks
-    print_info "Finding and removing symlinks..."
-    if [[ -d "$bin_dir" ]]; then
-        mapfile -t links < <(fn_find_symlinks) 2>/dev/null || links=()
-        if [ ${#links[@]} -gt 0 ]; then
-            for link in "${links[@]}"; do
-                if [[ -L "$link" ]]; then
-                    local link_name=$(basename "$link")
-                    unlink "$link"
-                    print_success "Removed symlink: $link_name"
-                fi
-            done
-        else
-            print_info "No symlinks found"
+    # Only remove symlinks if user confirmed directory removal
+    if [[ "$remove_awesome_dir" == "Y" ]]; then
+        print_info "Finding and removing symlinks..."
+        if [[ -d "$bin_dir" ]]; then
+            links=()
+        while IFS= read -r link; do
+            links+=("$link")
+        done < <(fn_find_symlinks 2>/dev/null)
+            if [ ${#links[@]} -gt 0 ]; then
+                for link in "${links[@]}"; do
+                    if [[ -L "$link" ]]; then
+                        local link_name=$(basename "$link")
+                        unlink "$link"
+                        print_success "Removed symlink: $link_name"
+                    fi
+                done
+            else
+                print_info "No symlinks found"
+            fi
         fi
     fi
     
-    # Remove awesome directory
-    if [[ $(fn_confirm "awesome directory") = "Y" ]]; then
+    if [[ "$remove_awesome_dir" == "Y" ]]; then
         if [[ -d "$awesome_dir" ]]; then
             print_info "Removing awesome directory..."
             rm -rf "$awesome_dir"
@@ -358,6 +383,11 @@ fn_update() {
     if [[ ! -d "$awesome_dir/awesome" ]]; then
         print_error "Awesome is not installed"
         print_info "Run: ./install install"
+        exit 1
+    fi
+
+    # Check network connectivity
+    if ! check_network; then
         exit 1
     fi
     

@@ -114,6 +114,8 @@ create_manifest() {
     local repo_url=$2
     local version=${3:-"latest"}
     local manifest_file="$AWESOME_DIR/$package_name/.awesome-manifest"
+
+    mkdir -p "$AWESOME_DIR/$package_name"
     
     cat > "$manifest_file" <<EOF
 {
@@ -291,9 +293,7 @@ update_single_package() {
         return 1
     fi
     
-    cd "$dir" || return 1
-    
-    if git pull --quiet; then
+    if (cd "$dir" && git pull --quiet); then
         printf "${GREEN}%s${RESET}\n" "✓ $package updated"
         log_operation "update" "$package" "success"
         return 0
@@ -332,11 +332,9 @@ export_packages() {
             
             if [[ -n "$real_path" ]]; then
                 local repo_path="${real_path%/*}"
-                cd "$repo_path" || continue
-                
-                if [[ -d ".git" ]]; then
+                if [[ -d "$repo_path/.git" ]]; then
                     local remote_url
-                    remote_url=$(git config --get remote.origin.url 2>/dev/null)
+                    remote_url=$(git -C "$repo_path" config --get remote.origin.url 2>/dev/null)
                     if [[ -n "$remote_url" ]]; then
                         # Extract user/repo from URL
                         if [[ "$remote_url" =~ github.com[:/]([^/]+)/([^/]+)(\.git)?$ ]]; then
@@ -453,7 +451,7 @@ checkFile() {
 
 symlink_names() {
     find "$1" -type l -exec basename -a {} +
-    exit
+    return 0
 }
 
 check_link() {
@@ -544,14 +542,14 @@ slashes() {
 myrealpath() {
     local LINK REALPATH
     local OURPWD=$PWD
-    cd "$(dirname "$1")" || exit
+    cd "$(dirname "$1")" || return 1
     LINK=$(readlink "$(basename "$1")")
     while [ "$LINK" ]; do
-        cd "$(dirname "$LINK")" || exit
+        cd "$(dirname "$LINK")" || return 1
         LINK=$(readlink "$(basename "$1")")
     done
     REALPATH="$PWD/$(basename "$1")"
-    cd "$OURPWD" || exit
+    cd "$OURPWD" || return 1
     echo "$REALPATH"
 }
 

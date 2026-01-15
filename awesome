@@ -295,7 +295,7 @@ fn_update() {
         exit 1
     fi
     
-    if [[ $(ls "$bin_dir" 2>/dev/null) =~ $repo ]]; then
+    if [[ -L "$bin_dir/$repo" ]]; then symlink_dir="$(myrealpath "$bin_dir/$repo")"
         symlink_dir="$(myrealpath "$bin_dir/$repo")"
         dir="${symlink_dir%/*}"
         cd "$dir" || exit
@@ -437,11 +437,10 @@ fn_info() {
     # Check if it's a git repo
     local repo_dir="${real_path%/*}"
     if [[ -d "$repo_dir/.git" ]]; then
-        cd "$repo_dir" || exit
         printf "\n${BOLD}%s${RESET}\n" "Git Info:"
-        printf "  Remote: %s\n" "$(git config --get remote.origin.url 2>/dev/null || echo 'N/A')"
-        printf "  Branch: %s\n" "$(git branch --show-current 2>/dev/null || echo 'N/A')"
-        printf "  Last commit: %s\n" "$(git log -1 --format='%cr' 2>/dev/null || echo 'N/A')"
+        printf "  Remote: %s\n" "$(git -C "$repo_dir" config --get remote.origin.url 2>/dev/null || echo 'N/A')"
+        printf "  Branch: %s\n" "$(git -C "$repo_dir" branch --show-current 2>/dev/null || echo 'N/A')"
+        printf "  Last commit: %s\n" "$(git -C "$repo_dir" log -1 --format='%cr' 2>/dev/null || echo 'N/A')"
     fi
     
     exit

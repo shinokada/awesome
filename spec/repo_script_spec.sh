@@ -3,14 +3,14 @@
 
 Describe 'Run repo_script()'
     Include ./utils/lib-enhanced
-    It 'outputs git_user, repo_name, script_name, repo_link with shinokada/gitstart '
+    It 'outputs git_user, repo_name, script_name, repo_link with  full GitHub URL'
         When call repo_script shinokada/gitstart
         The value "$git_user" should eq 'shinokada'
         The value "$repo_name" should eq 'gitstart'
         The value "$script_name" should eq 'gitstart'
         The value "$repo_link" should eq 'https://github.com/shinokada/gitstart'
     End
-    It 'outputs git_user, repo_name, script_name, repo_link with shinokada/gitstart '
+    It 'outputs git_user, repo_name, script_name, repo_link with  full GitHub URL'
         When call repo_script https://github.com/shinokada/cleanit.git
         The value "$git_user" should eq 'shinokada'
         The value "$repo_name" should eq 'cleanit'
@@ -43,7 +43,7 @@ Describe 'Run repo_script()'
         The stderr should eq 'Not valid parameter.'
         The status should eq 1
     End
-    It 'is failure because expection is fail.'
+    It 'rejects SSH URLs with appropriate error message'
         When run repo_script git@github.com:shinokada/cleanit.git
         The stderr should eq 'Please use URL or https, not ssh.'
         The status should eq 1

@@ -3,7 +3,7 @@
 # Source this file or copy to your completion directory
 
 _awesome_completion() {
-    local cur prev commands options
+    local cur prev commands
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"

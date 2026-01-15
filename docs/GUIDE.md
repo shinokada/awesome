@@ -5,7 +5,7 @@
 - [Command Reference](#command-reference)
 - [Advanced Usage](#advanced-usage)
 - [Configuration](#configuration)
-- [Package Manifests](#package-manifests)
+- [Package Manifests](#working-with-package-manifests)
 - [Logging](#logging)
 - [Troubleshooting](#troubleshooting)
 - [Development](#development)
@@ -803,25 +803,25 @@ echo 'source ~/.config/awesome/plugins/my-commands.sh' >> ~/.zshrc
 
 ### File Locations
 
-| File/Directory | Purpose |
-|---------------|---------|
-| `~/.local/share/awesome` | Package installations |
-| `~/.local/share/bin` | Symlinks to executables |
-| `~/.local/share/awesome/logs` | Operation logs |
-| `~/.config/awesome` | Configuration files |
-| `~/.config/awesome/config` | Main configuration |
-| `<package>/.awesome-manifest` | Package metadata |
+| File/Directory                | Purpose                 |
+| ----------------------------- | ----------------------- |
+| `~/.local/share/awesome`      | Package installations   |
+| `~/.local/share/bin`          | Symlinks to executables |
+| `~/.local/share/awesome/logs` | Operation logs          |
+| `~/.config/awesome`           | Configuration files     |
+| `~/.config/awesome/config`    | Main configuration      |
+| `<package>/.awesome-manifest` | Package metadata        |
 
 ### Exit Codes
 
-| Code | Meaning |
-|------|---------|
-| 0 | Success |
-| 1 | General error |
-| 2 | Invalid arguments |
-| 3 | Network error |
-| 4 | Git error |
-| 5 | Package not found |
+| Code | Meaning           |
+| ---- | ----------------- |
+| 0    | Success           |
+| 1    | General error     |
+| 2    | Invalid arguments |
+| 3    | Network error     |
+| 4    | Git error         |
+| 5    | Package not found |
 
 ---
 

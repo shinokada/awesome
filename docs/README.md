@@ -134,7 +134,13 @@ tail -20 ~/.local/share/awesome/logs/awesome.log
 ### TAB completion
 
 ```bash
-source completions/awesome-completion.bash
+# If installed from source or cloned repo:
+ source completions/awesome-completion.bash
+
+# Or download directly:
+# curl -o ~/.local/share/awesome/awesome-completion.bash \
+#   https://raw.githubusercontent.com/shinokada/awesome/main/completions/awesome-completion.bash
+# source ~/.local/share/awesome/awesome-completion.bash
 awesome update <TAB>  # Should show --all
 ```
 
