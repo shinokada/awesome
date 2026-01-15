@@ -34,6 +34,12 @@ Awesome is a lightweight shell script package manager that installs packages fro
 curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
 ```
 
+You can update your current `awesome` package:
+
+```bash
+curl -s https://raw.githubusercontent.com/shinokada/awesome/main/update | bash -s update
+```
+
 Add to your shell config:
 
 ```bash
