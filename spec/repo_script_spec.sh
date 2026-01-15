@@ -11,13 +11,6 @@ Describe 'Run repo_script()'
         The value "$repo_link" should eq 'https://github.com/shinokada/gitstart'
     End
     It 'outputs git_user, repo_name, script_name, repo_link with shinokada/gitstart '
-        When call repo_script shinokada/gitstart
-        The value "$git_user" should eq 'shinokada'
-        The value "$repo_name" should eq 'gitstart'
-        The value "$script_name" should eq 'gitstart'
-        The value "$repo_link" should eq 'https://github.com/shinokada/gitstart'
-    End
-    It 'outputs git_user, repo_name, script_name, repo_link with shinokada/gitstart '
         When call repo_script https://github.com/shinokada/cleanit.git
         The value "$git_user" should eq 'shinokada'
         The value "$repo_name" should eq 'cleanit'

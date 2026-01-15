@@ -211,7 +211,9 @@ fn_install() {
     if [[ -d "$awesome_dir/$repo" ]]; then
         print_warning "Awesome directory already exists"
         read -rp "Do you want to remove it and reinstall? (yes/y or no/n): " response
-        if [[ "${response,,}" =~ ^(yes|y)$ ]]; then
+        # Convert to lowercase for Bash 3.2 compatibility
+        response=$(echo "$response" | tr '[:upper:]' '[:lower:]')
+        if [[ "$response" =~ ^(yes|y)$ ]]; then
             rm -rf "$awesome_dir/$repo"
             print_info "Removed existing installation"
         else
@@ -261,7 +263,9 @@ fn_install() {
     # Ask if user wants to run diagnostics
     echo
     read -rp "Would you like to run diagnostics now? (yes/y or no/n): " run_diag
-    if [[ "${run_diag,,}" =~ ^(yes|y)$ ]]; then
+    # Convert to lowercase for Bash 3.2 compatibility
+    run_diag=$(echo "$run_diag" | tr '[:upper:]' '[:lower:]')
+    if [[ "$run_diag" =~ ^(yes|y)$ ]]; then
         # Temporarily add to PATH for this session
         export PATH="$bin_dir:$PATH"
         run_diagnostics
@@ -294,7 +298,7 @@ fn_uninstall() {
     # Remove symlinks
     print_info "Finding and removing symlinks..."
     if [[ -d "$bin_dir" ]]; then
-        mapfile -t links < <(fn_find_symlinks)
+        mapfile -t links < <(fn_find_symlinks) 2>/dev/null || links=()
         if [ ${#links[@]} -gt 0 ]; then
             for link in "${links[@]}"; do
                 if [[ -L "$link" ]]; then
@@ -320,7 +324,9 @@ fn_uninstall() {
     # Remove config directory
     if [[ -d "$config_dir" ]]; then
         read -rp "Remove configuration directory? (yes/y or no/n): " remove_config
-        if [[ "${remove_config,,}" =~ ^(yes|y)$ ]]; then
+        # Convert to lowercase for Bash 3.2 compatibility
+        remove_config=$(echo "$remove_config" | tr '[:upper:]' '[:lower:]')
+        if [[ "$remove_config" =~ ^(yes|y)$ ]]; then
             rm -rf "$config_dir"
             print_success "Removed $config_dir"
         fi
@@ -329,7 +335,9 @@ fn_uninstall() {
     # Remove bin directory if empty
     if [[ -d "$bin_dir" ]] && [[ -z "$(ls -A "$bin_dir")" ]]; then
         read -rp "Bin directory is empty. Remove it? (yes/y or no/n): " remove_bin
-        if [[ "${remove_bin,,}" =~ ^(yes|y)$ ]]; then
+        # Convert to lowercase for Bash 3.2 compatibility
+        remove_bin=$(echo "$remove_bin" | tr '[:upper:]' '[:lower:]')
+        if [[ "$remove_bin" =~ ^(yes|y)$ ]]; then
             rm -rf "$bin_dir"
             print_success "Removed empty bin directory"
         fi

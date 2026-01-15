@@ -182,7 +182,7 @@ Describe 'Enhanced Awesome Functions'
       git config user.email "test@test.com"
       git config user.name "Test"
       git remote add origin "https://github.com/test/test-pkg"
-      cd - > /dev/null
+      cd - > /dev/null || true
       
       output_file="$TEST_DIR/packages.txt"
       When call export_packages "$output_file"

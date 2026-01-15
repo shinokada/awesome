@@ -4,7 +4,6 @@
 set -e
 
 # Colors
-RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
@@ -71,7 +70,7 @@ echo
 
 # Check if any packages installed
 if command -v awesome &>/dev/null; then
-    PACKAGES=($(awesome ls 2>/dev/null | head -3))
+    mapfile -t PACKAGES < <(awesome ls 2>/dev/null | head -3)
     if [ ${#PACKAGES[@]} -gt 0 ]; then
         echo -e "${CYAN}Command:${RESET} ./awesome info ${PACKAGES[0]}"
         echo
@@ -112,7 +111,7 @@ echo -e "${CYAN}Configuration file:${RESET} ~/.config/awesome/config"
 echo
 echo -e "${BOLD}Example configuration:${RESET}"
 echo
-cat awesome.config.example | head -20
+head -20 awesome.config.example
 echo "..."
 
 pause

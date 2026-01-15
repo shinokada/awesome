@@ -17,7 +17,7 @@ _awesome_completion() {
             # No completion for install (requires GitHub URL)
             return 0
             ;;
-        rm|update|info|unlink)
+        rm|info|unlink)
             # Complete with installed package names
             local packages
             packages=$(awesome ls 2>/dev/null)
