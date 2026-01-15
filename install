@@ -1,104 +1,403 @@
 #!/usr/bin/env bash
 
+# Enhanced Awesome Package Manager Installer
+# Version: 0.2.0
+
+set -e  # Exit on error
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+RESET='\033[0m'
+
 awesome_dir="$HOME/.local/share/awesome"
 bin_dir="$HOME/.local/share/bin"
-# version="0.1.1"
+log_dir="$HOME/.local/share/awesome/logs"
+config_dir="$HOME/.config/awesome"
 
-# if ((BASH_VERSINFO[0] < 4)); then
-#     printf '%s\n' "Error: This requires Bash v4.0 or higher. You have version $BASH_VERSION." 1>&2
-#     exit 2
-# fi
+# ============================================================================
+# UTILITY FUNCTIONS
+# ============================================================================
+
+print_color() {
+    local color=$1
+    shift
+    printf "${color}%s${RESET}\n" "$*"
+}
+
+print_success() {
+    print_color "$GREEN" "✓ $*"
+}
+
+print_error() {
+    print_color "$RED" "✗ $*" >&2
+}
+
+print_info() {
+    print_color "$CYAN" "→ $*"
+}
+
+print_warning() {
+    print_color "$YELLOW" "! $*"
+}
+
+print_header() {
+    echo
+    print_color "$BOLD$CYAN" "=== $* ==="
+    echo
+}
 
 fn_confirm() {
     local item=$1
-    read -rp "Do you want to remove $item? yes/y or no/n   " PANS
+    read -rp "Do you want to remove $item? (yes/y or no/n): " PANS
     ans=$(echo "$PANS" | cut -c 1-1 | tr "[:lower:]" "[:upper:]")
-    echo $ans
+    echo "$ans"
 }
 
-# check if a dir exist. if not create it and add $HOME/awesome path to config file
+# Check if a directory exists, create if not
 fn_checkDir() {
     if [[ -z $1 ]]; then
-        echo "Specify the directory." >&2
-        exit
+        print_error "Specify the directory."
+        exit 1
     fi
     if [[ ! -d $1 ]]; then
         mkdir -p "$1"
-        echo "$1 directory is created." >&2
+        print_success "$1 directory created."
     fi
 }
 
+# Check if a command exists
 fn_check_cmd() {
-    if [ ! "$(command -v "$1")" ]; then
-        echo "Please install $1" >&2
-        exit
+    if ! command -v "$1" &>/dev/null; then
+        print_error "Please install $1"
+        print_info "On macOS: brew install $1"
+        print_info "On Ubuntu/Debian: sudo apt-get install $1"
+        exit 1
     fi
 }
 
-# create a symlink in bin
+# Check network connectivity
+check_network() {
+    print_info "Checking network connectivity..."
+    if ping -c 1 github.com &>/dev/null || ping -c 1 8.8.8.8 &>/dev/null; then
+        print_success "Network connection OK"
+        return 0
+    else
+        print_error "Cannot reach GitHub. Please check your internet connection."
+        return 1
+    fi
+}
+
+# Create a symlink in bin directory
 fn_create_symlink() {
-    # find the name of repo
-    repo_name=$1
-    # add a symlink
+    local repo_name=$1
     ln -sf "${awesome_dir}/${repo_name}/${repo_name}" "${bin_dir}/${repo_name}"
 }
 
+# Find all symlinks in bin directory
 fn_find_symlinks() {
-    paths=$(find "$bin_dir" -type l)
-    echo "$paths"
+    find "$bin_dir" -type l 2>/dev/null
 }
 
-# Run git clone and create a symlink
-fn_install() {
-    fn_checkDir "$awesome_dir"
-    fn_checkDir "$bin_dir"
-    fn_check_cmd git
-    cd "$awesome_dir" || exit
-    url="https://github.com/shinokada/awesome.git"
-    repo="awesome"
-    { git clone "${url}" && fn_create_symlink "${repo}"; } || exit
-    echo "${repo} installation completed."
-    echo "Add the following to your your terminal config file, such as .zshrc or .bashrc."
-    echo 'export PATH=$HOME/.local/share/bin:$PATH'
-    echo "Try ${repo} -h or which ${repo}."
-}
-
-# Removes the awesome symlinks and dir
-fn_uninstall() {
-    echo "Finding symlinks ..."
-
-    if [[ $(fn_confirm symlinks) = "Y" ]]; then
-        # mac doesn't have mapfile
-        # mapfile -t links < <(fn_find_symlinks)
-        links=($(fn_find_symlinks))
-        for link in "${links[@]}"; do
-            unlink "$link"
-            echo "Removed the ${link} symlink."
-        done
-    fi
-
-    if [[ $(fn_confirm awesome-directory) = "Y" ]]; then
-        echo "Uninstalling awesome directory ..."
-        rm -rf "$awesome_dir"
-        echo "Uninstalled awesome directory."
-        exit
-    fi
-}
-
-fn_main() {
-    if [ $# -eq 1 ]; then
-        case $1 in
-        "install")
-            fn_install
-            ;;
-        "uninstall")
-            fn_uninstall
-            ;;
-        esac
+# Verify installation
+verify_installation() {
+    print_header "Verifying Installation"
+    
+    local issues=0
+    
+    # Check awesome directory
+    if [[ -d "$awesome_dir/awesome" ]]; then
+        print_success "Awesome repository cloned"
     else
-        echo "Something wrong."
+        print_error "Awesome repository not found"
+        ((issues++))
+    fi
+    
+    # Check for main script
+    if [[ -f "$awesome_dir/awesome/awesome" ]]; then
+        print_success "Main awesome script found"
+    else
+        print_error "Main awesome script not found"
+        ((issues++))
+    fi
+    
+    # Check for utility libraries
+    if [[ -f "$awesome_dir/awesome/utils/lib-enhanced" ]]; then
+        print_success "Enhanced library found"
+    else
+        print_warning "Enhanced library not found (will use basic lib)"
+    fi
+    
+    if [[ -f "$awesome_dir/awesome/utils/lib" ]]; then
+        print_success "Basic library found"
+    else
+        print_error "Basic library not found"
+        ((issues++))
+    fi
+    
+    # Check symlink
+    if [[ -L "$bin_dir/awesome" ]]; then
+        print_success "Awesome symlink created"
+    else
+        print_error "Awesome symlink not found"
+        ((issues++))
+    fi
+    
+    # Check if awesome is in PATH
+    if command -v awesome &>/dev/null; then
+        print_success "Awesome is accessible in PATH"
+    else
+        print_warning "Awesome not found in PATH (you may need to update your shell config)"
+        ((issues++))
+    fi
+    
+    echo
+    if [ "$issues" -eq 0 ]; then
+        print_success "All checks passed!"
+        return 0
+    else
+        print_warning "Found $issues issue(s) that may need attention"
+        return 1
+    fi
+}
+
+# Run post-install diagnostics
+run_diagnostics() {
+    print_header "Running Diagnostics"
+    
+    if command -v awesome &>/dev/null; then
+        awesome --version
+        echo
+        awesome doctor
+    else
+        print_warning "Cannot run diagnostics - awesome not in PATH yet"
+        print_info "After adding awesome to PATH, run: awesome doctor"
+    fi
+}
+
+# ============================================================================
+# INSTALL FUNCTION
+# ============================================================================
+
+fn_install() {
+    print_header "Installing Awesome Package Manager"
+    
+    # Check prerequisites
+    print_info "Checking prerequisites..."
+    fn_check_cmd git
+    
+    # Check network
+    if ! check_network; then
         exit 1
     fi
+    
+    # Create directories
+    print_info "Setting up directories..."
+    fn_checkDir "$awesome_dir"
+    fn_checkDir "$bin_dir"
+    fn_checkDir "$log_dir"
+    fn_checkDir "$config_dir"
+    
+    # Clone repository
+    cd "$awesome_dir" || exit
+    local url="https://github.com/shinokada/awesome.git"
+    local repo="awesome"
+    
+    print_info "Cloning awesome repository..."
+    
+    if [[ -d "$awesome_dir/$repo" ]]; then
+        print_warning "Awesome directory already exists"
+        read -rp "Do you want to remove it and reinstall? (yes/y or no/n): " response
+        if [[ "${response,,}" =~ ^(yes|y)$ ]]; then
+            rm -rf "$awesome_dir/$repo"
+            print_info "Removed existing installation"
+        else
+            print_info "Keeping existing installation"
+            fn_create_symlink "$repo"
+            print_success "Symlink updated"
+            exit 0
+        fi
+    fi
+    
+    if git clone --depth 1 "${url}"; then
+        print_success "Repository cloned successfully"
+    else
+        print_error "Failed to clone repository"
+        exit 1
+    fi
+    
+    # Create symlink
+    print_info "Creating symlink..."
+    fn_create_symlink "${repo}"
+    print_success "Symlink created"
+    
+    # Verify installation
+    verify_installation
+    
+    # Print usage instructions
+    print_header "Installation Complete!"
+    
+    echo "To use awesome, ensure your PATH includes the bin directory:"
+    print_color "$YELLOW" "  export PATH=\$HOME/.local/share/bin:\$PATH"
+    echo
+    echo "Add this line to your shell configuration file:"
+    print_info "  For zsh: ~/.zshrc"
+    print_info "  For bash: ~/.bashrc or ~/.bash_profile"
+    echo
+    echo "Then reload your shell or run:"
+    print_color "$YELLOW" "  source ~/.zshrc  # or source ~/.bashrc"
+    echo
+    echo "Getting started:"
+    print_info "  awesome --help          # Show help"
+    print_info "  awesome doctor          # Run health check"
+    print_info "  awesome ls              # List installed packages"
+    print_info "  awesome install <repo>  # Install a package"
+    echo
+    print_success "Visit https://awesome.codewithshin.com for documentation"
+    
+    # Ask if user wants to run diagnostics
+    echo
+    read -rp "Would you like to run diagnostics now? (yes/y or no/n): " run_diag
+    if [[ "${run_diag,,}" =~ ^(yes|y)$ ]]; then
+        # Temporarily add to PATH for this session
+        export PATH="$bin_dir:$PATH"
+        run_diagnostics
+    fi
+}
+
+# ============================================================================
+# UNINSTALL FUNCTION
+# ============================================================================
+
+fn_uninstall() {
+    print_header "Uninstalling Awesome Package Manager"
+    
+    # Show what will be removed
+    echo "This will remove:"
+    print_info "  - All installed packages in $awesome_dir"
+    print_info "  - All symlinks in $bin_dir"
+    print_info "  - Configuration files in $config_dir"
+    print_info "  - Log files in $log_dir"
+    echo
+    
+    print_warning "This action cannot be undone!"
+    echo
+    
+    if [[ $(fn_confirm "awesome and all its data") != "Y" ]]; then
+        print_info "Uninstall cancelled"
+        exit 0
+    fi
+    
+    # Remove symlinks
+    print_info "Finding and removing symlinks..."
+    if [[ -d "$bin_dir" ]]; then
+        mapfile -t links < <(fn_find_symlinks)
+        if [ ${#links[@]} -gt 0 ]; then
+            for link in "${links[@]}"; do
+                if [[ -L "$link" ]]; then
+                    local link_name=$(basename "$link")
+                    unlink "$link"
+                    print_success "Removed symlink: $link_name"
+                fi
+            done
+        else
+            print_info "No symlinks found"
+        fi
+    fi
+    
+    # Remove awesome directory
+    if [[ $(fn_confirm "awesome directory") = "Y" ]]; then
+        if [[ -d "$awesome_dir" ]]; then
+            print_info "Removing awesome directory..."
+            rm -rf "$awesome_dir"
+            print_success "Removed $awesome_dir"
+        fi
+    fi
+    
+    # Remove config directory
+    if [[ -d "$config_dir" ]]; then
+        read -rp "Remove configuration directory? (yes/y or no/n): " remove_config
+        if [[ "${remove_config,,}" =~ ^(yes|y)$ ]]; then
+            rm -rf "$config_dir"
+            print_success "Removed $config_dir"
+        fi
+    fi
+    
+    # Remove bin directory if empty
+    if [[ -d "$bin_dir" ]] && [[ -z "$(ls -A "$bin_dir")" ]]; then
+        read -rp "Bin directory is empty. Remove it? (yes/y or no/n): " remove_bin
+        if [[ "${remove_bin,,}" =~ ^(yes|y)$ ]]; then
+            rm -rf "$bin_dir"
+            print_success "Removed empty bin directory"
+        fi
+    fi
+    
+    print_header "Uninstallation Complete"
+    print_info "Remember to remove the PATH export from your shell config file:"
+    print_color "$YELLOW" "  export PATH=\$HOME/.local/share/bin:\$PATH"
+}
+
+# ============================================================================
+# UPDATE FUNCTION
+# ============================================================================
+
+fn_update() {
+    print_header "Updating Awesome Package Manager"
+    
+    if [[ ! -d "$awesome_dir/awesome" ]]; then
+        print_error "Awesome is not installed"
+        print_info "Run: ./install install"
+        exit 1
+    fi
+    
+    cd "$awesome_dir/awesome" || exit
+    
+    print_info "Fetching updates..."
+    if git pull; then
+        print_success "Awesome updated successfully"
+        print_info "New version: $(git describe --tags 2>/dev/null || git rev-parse --short HEAD)"
+    else
+        print_error "Update failed"
+        exit 1
+    fi
+}
+
+# ============================================================================
+# MAIN FUNCTION
+# ============================================================================
+
+fn_main() {
+    if [ $# -eq 0 ]; then
+        print_error "No command specified"
+        echo
+        echo "Usage: $0 {install|uninstall|update}"
+        echo
+        echo "Commands:"
+        echo "  install     - Install awesome package manager"
+        echo "  uninstall   - Remove awesome and all data"
+        echo "  update      - Update awesome to latest version"
+        exit 1
+    fi
+    
+    case $1 in
+    install)
+        fn_install
+        ;;
+    uninstall)
+        fn_uninstall
+        ;;
+    update)
+        fn_update
+        ;;
+    *)
+        print_error "Unknown command: $1"
+        echo "Valid commands: install, uninstall, update"
+        exit 1
+        ;;
+    esac
 }
 
 fn_main "$@"

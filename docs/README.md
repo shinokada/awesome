@@ -22,282 +22,213 @@
 <img width="400" src="https://raw.githubusercontent.com/shinokada/awesome/main/images/awesomesky-o.gif" />
 </p>
 
-[Read more about Aweseome Package Manager](https://medium.com/mkdir-awesome/a-new-simple-package-manager-for-script-languages-a1228fd0972a)
+[Read more about Awesome Package Manager](https://medium.com/mkdir-awesome/a-new-simple-package-manager-for-script-languages-a1228fd0972a)
 
 ## Overview
 
-The `awesome` is a simple shell script package manager. Awesome installs a shell script package from a GitHub repo on your macOS/Linux.
+Awesome is a lightweight shell script package manager that installs packages from GitHub repositories on macOS and Linux. It manages installations in `~/.local/share/awesome` and creates convenient symlinks in `~/.local/share/bin`.
 
- It creates the `~/.local/share/awesome` directory and the `~/.local/share/bin` directory if they don't exist. When you install a package, it will clone it in the `~/.local/share/awesome` directory. It creates a symlink in the `~/.local/share/bin` directory.
+## Why Awesome?
 
- Use `awesome push <message>` to run Git commands and awesome update.
-
-## Why?
-
-- Some scripts don't have Homebrew installation. (macOS/Linux)
-- Make an easy installation.
+- Install scripts not available in package managers like Homebrew
+- Simple, fast installation and updates
+- Easy package management with health checks and diagnostics
+- Git workflow integration for script development
 
 ## Requirements
 
-UNIX-lie (Tested on Ubuntu and MacOS.)
+- UNIX-like system (macOS, Linux, BSD)
+- Git
+- Bash 3.2 or higher
 
 ## Installation
-
-Installing awesome:
 
 ```sh
 curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
 ```
 
-or
+Or using wget:
 
 ```sh
 wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
 ```
 
-Add the following to your terminal config file, such as .zshrc or .bashrc.
+Add to your shell config (`.zshrc`, `.bashrc`, etc.):
 
 ```sh
 export PATH=$HOME/.local/share/bin:$PATH
 ```
 
-Then source the config file or open a new terminal tab.
+Then reload your shell:
 
 ```sh
-# for example
-. ~/.zshrc
+source ~/.zshrc  # or source ~/.bashrc
 ```
+
+The installer will:
+- Verify prerequisites (Git, network)
+- Create necessary directories
+- Clone the awesome repository
+- Set up symlinks
+- Run diagnostics (optional)
 
 ## Uninstallation
 
-Uninstalling awesome:
-
 ```sh
-curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install > tmp1 && bash tmp1 uninstall && rm tmp1
+curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s uninstall
 ```
 
-or
+This removes all packages, symlinks, configuration, and logs.
+
+## Features
+
+### Package Management
 
 ```sh
-wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install > tmp1 && bash tmp1 uninstall && rm tmp1
-```
-
-## Update Awesome
-
-Update awesome:
-
-```sh
-awesome update awesome
-```
-
-## Usage
-
-```sh
-install  installs a package from a GitHub repo and create a symlink in ~/bin
-rm       uninstalls a package and remove a symlink
-ls       lists awesome packages
-link     adds a symlink
-unlink   remove a package symlink
-links    prints all links
-update   checks an update and install a new package
-push     Git add, commit, push, and update the script you are working
-alias    creates an alias
-url      opens Awesome repo on a browser
-```
-
-## Options
-
-```sh
--v | --version prints version
--h, --help     prints this help message and exit
-```
-
-You can use different ways installing scripts.
-
-```sh
-# Installing a repo using user/repo
+# Install packages
 awesome install shinokada/gitstart
-
-# Installing a repo using user/repo.git
-awesome install shinokada/gitstart.git
-
-# Installing a repo whose main script is different from the repo name
 awesome install raylee/tldr-sh-client tldr
-
-# Same as above but using https
 awesome install https://github.com/shinokada/cleanit
 
-awesome install https://github.com/raylee/tldr-sh-client tldr
+# Update packages
+awesome update cleanit
+awesome update --all  # Update all packages
 
-# Installing a repo using install option instead of -i
-awesome install https://github.com/shinokada/gitstart.git
-```
-
-To install scripts from [Bash snippets](https://github.com/alexanderepstein/Bash-Snippets):
-
-```sh
-awesome install alexanderepstein/Bash-Snippets cheat/cheat
-# add more script
-awesome install alexanderepstein/Bash-Snippets movies/movies
-```
-
-## Remove a symlink and repo
-
-```sh
+# Remove packages
 awesome rm cleanit
-```
 
-## Show installed packages
-
-```sh
+# List installed packages
 awesome ls
 ```
 
-## Update a repo
+### Health & Diagnostics
 
 ```sh
-awesome update cleanit
+# System health check
+awesome doctor
+
+# Package information
+awesome info gitstart
+
+# Show statistics
+awesome stats
 ```
 
-## Git add, commit, push, and update
-
-When you are working on a script, you need to run a bunch of Git commands and update the local package. Use `push`:
+### Backup & Restore
 
 ```sh
+# Export installed packages
+awesome export ~/my-packages.txt
+
+# Import and install from list
+awesome import ~/my-packages.txt
+```
+
+### Symlink Management
+
+```sh
+# Create symlink to installed package
+awesome link tldr-sh-client tldr
+
+# Remove symlink only
+awesome unlink tldr
+
+# Show all symlinks
+awesome links
+```
+
+### Aliases
+
+Create command aliases for scripts within a package:
+
+```sh
+# Install package with one script as main
+awesome install shinokada/script-examples php-example.php
+
+# Create alias to another script in same package
+awesome alias ne script-examples node-example.js
+
+# Now use the alias
+ne  # Runs node-example.js
+```
+
+### Development Workflow
+
+When developing a script managed by awesome:
+
+```sh
+# Git add, commit, push, and update local package
 awesome push "your commit message"
 ```
 
-This will run Git add, commit, push, and awesome update commands.
+This combines Git workflow with automatic package updates.
 
-
-## Open a Awesome URL page
+### Additional Commands
 
 ```sh
+# Open Awesome GitHub repository
 awesome url
-```
 
-## Print help
+# Show version
+awesome -v
 
-```sh
-awesome --help
+# Show help
 awesome -h
 ```
 
-## Print version
+## Multi-Script Repositories
+
+Install from repositories with multiple scripts using the Bash Snippets collection:
 
 ```sh
-awesome --version
-awesome -v
+awesome install alexanderepstein/Bash-Snippets cheat/cheat
+awesome install alexanderepstein/Bash-Snippets movies/movies
 ```
 
-## What should I do when a repo has multiple scripts
+## Recommended Packages
 
-Alias is useful when a repo has multiple scripts.
+| Package | Installation | Description |
+| --- | --- | --- |
+| [tldr](https://github.com/raylee/tldr-sh-client) | `awesome install raylee/tldr-sh-client tldr` | Community-maintained help pages |
+| [has](https://github.com/kdabir/has) | `awesome install kdabir/has` | Check command-line tool versions |
+| [ddgr](https://github.com/jarun/ddgr) | `awesome install jarun/ddgr` | DuckDuckGo from terminal |
+| [googler](https://github.com/jarun/googler) | `awesome install jarun/googler` | Google Search from terminal |
+| [gitstart](https://github.com/shinokada/gitstart) | `awesome install shinokada/gitstart` | GitHub repository automation |
+| [gitig](https://github.com/shinokada/gitig) | `awesome install shinokada/gitig` | Fix gitignore problems |
+| [manop](https://github.com/shinokada/manop) | `awesome install shinokada/manop` | Man page viewer |
+| [spark](https://github.com/holman/spark) | `awesome install holman/spark` | Sparklines in shell |
+| [ansiweather](https://github.com/fcambus/ansiweather) | `awesome install fcambus/ansiweather` | Weather conditions display |
 
-Let's add aliases using [script-examples](https://github.com/shinokada/script-examples)
+Discover 20+ more scripts from [Bash Snippets](https://github.com/alexanderepstein/Bash-Snippets).
 
-Install it using php-example.php as the main script.
+## Creating Awesome-Compatible Scripts
 
-```sh
-awesome install shinokada/script-examples php-example.php
-```
+Best practices for script compatibility:
 
-Run it:
+1. Add shebang: `#!/usr/bin/env bash`
+2. Use executable name without `.sh` extension
+3. Match repository and main script names (e.g., `gitstart` repo → `gitstart` script)
+4. Include `-h` and `--help` options
+5. Make script executable: `chmod +x script-name`
 
-```sh
-php-example.php
-Hello world from PHP!%
-```
+## Testing
 
-The script-examples has multiple scripts in different languages.
-Let's add an alias to node-example.js using `alias ne`, where `ne` is an alias name:
-
-```sh
-# Create an alias to a different script
-awesome alias ne script-examples node-example.js
-```
-
-Run it:
-
-```sh
-ne
-Hello World! from Node.
-```
-
-You can try it for `perl-example.pl`, `python-example.py`, `ruby-example.rb`.
-
-## Some libraries you can install
-
-| Name                                                              | Installation                            | Description                                                                                 |
-| ----------------------------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------- |
-| [tldr](https://github.com/raylee/tldr-sh-client)                  | awesome -i raylee/tldr-sh-client tldr   | a collection of community-maintained help pages for command-line tools                      |
-| [has](https://github.com/kdabir/has)                              | awesome -i kdabir/has                   | Helps you to check the presence of various command line tools and their versions on a path. |
-| [ddgr](https://github.com/jarun/ddgr)                             | awesome -i jarun/ddgr                   | DuckDuckGo from the terminal.                                                               |
-| [desk](https://github.com/jamesob/desk)                           | awesome -i jamesob/desk                 | Lightweight workspace manager for the shell.                                                |
-| [gitstart](https://github.com/shinokada/gitstart)                 | awesome -i shinokada/gitstart           | GitHub repository automation.                                                               |
-| [gitig](https://github.com/shinokada/gitig)                       | awesome -i shinokada/gitig              | Fix a gitignore problem.                                                                    |
-| [googler](https://github.com/jarun/googler)                       | awesome -i jarun/googler                | Google Search, Google Site Search, Google News from the terminal.                           |
-| [hhighlighter](https://github.com/paoloantinori/hhighlighter)     | awesome -i paoloantinori/hhighlighter h | Colorize words in a command output.                                                         |
-| [backpack_install](https://github.com/shinokada/backpack_install) | awesome -i shinokada/backpack_install   | Backpack for Laravel installer.                                                             |
-| [hr](https://github.com/paoloantinori/hhighlighter)               | awesome -i LuRsT/hr                     | A horizontal ruler for your terminal.                                                       |
-| [manop](https://github.com/shinokada/manop)                       | awesome -i shinokada/manop              | Man page description and option viewer.                                                     |
-| [shml](https://github.com/odb/shml)                               | awesome -i odb/shml shml.sh             | A shell framework for faster and easier script development.                                 |
-| [slugify](https://github.com/benlinton/slugify)                   | awesome -i benlinton/slugify            | A bash command that converts filenames and directories to a web friendly format.            |
-| [spark](https://github.com/holman/spark)                          | awesome -i holman/spark                 | ▁▂▃▅▂▇ in your shell.                                                                       |
-| [spot](https://github.com/rauchg/spot)                            | awesome -i rauchg/spot                  | Tiny file search utility.                                                                   |
-| [v](https://github.com/rupa/v)                                    | awesome -i rupa/v                       | z for vim.                                                                                  |
-| [ansiweather](https://github.com/fcambus/ansiweather)             | awesome -i fcambus/ansiweather          | Display the current weather conditions.                                                     |
-
-
-You can use more than 20 scripts from [Bash Snippets](https://github.com/alexanderepstein/Bash-Snippets).
-
-## How to create a script for Awesome
-
-- Add a shebang for example `#!/usr/bin/env bash` at the beginning.
-- Recommend use a file name without `.sh` file extension for the main script
-- Recommend to have the same repo and main script name. e.g. `shinokada/gitstart` has `gitstart`.
-- Add `-h| --help` option.
-- Your command starts with your main script name.
-
-## Test
-
-Run:
+Run the test suite:
 
 ```sh
 shellspec -s bash
 ```
 
+## PWA: Offline Access
+
+This documentation is available as a Progressive Web App. Install it on your device for offline access using the "Add to Home Screen" option in your browser.
+
 ## Author
 
-@shinokada
-
-## PWA: Fast & Offline
-
-This website can be downloaded and installed on your device for offline access as a Progressive Web App.
-
-To install a PWA, look for the "Add to Home Screen" option in the browser's menu or settings. On most mobile devices, this option can be found by visiting the website, then selecting the "Options" or "Menu" button in the browser, and looking for the "Add to Home Screen" option. On some desktop browsers, right-click on the page and select "Install".
+Created by [@shinokada](https://twitter.com/shinokada)
 
 ## License
 
-MIT License
+MIT License - Copyright (c) 2021 Shinichi Okada
 
-Copyright (c) 2021 Shinichi Okada
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
+See the [LICENSE](../LICENSE) file for details.
