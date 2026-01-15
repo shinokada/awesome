@@ -173,8 +173,8 @@ validate_symlink() {
 }
 
 # Find broken symlinks
-# Usage: find_broken_symlinks
-find_broken_symlinks() {
+# Usage: validate_symlinks
+validate_symlinks() {
     local broken=()
     
     while IFS= read -r link; do
@@ -249,7 +249,10 @@ list_installed_packages() {
 # Usage: update_all_packages
 update_all_packages() {
     local packages
-    mapfile -t packages < <(list_installed_packages)
+    packages=()
+    while IFS= read -r pkg; do
+        [[ -n "$pkg" ]] && packages+=("$pkg")
+    done < <(list_installed_packages)
     
     if [ ${#packages[@]} -eq 0 ]; then
         printf "${YELLOW}%s${RESET}\n" "No packages installed."
@@ -313,7 +316,10 @@ update_single_package() {
 export_packages() {
     local output_file=${1:-"$HOME/awesome-packages.txt"}
     local packages
-    mapfile -t packages < <(list_installed_packages)
+    packages=()
+    while IFS= read -r pkg; do
+        [[ -n "$pkg" ]] && packages+=("$pkg")
+    done < <(list_installed_packages)
     
     if [ ${#packages[@]} -eq 0 ]; then
         printf "${YELLOW}%s${RESET}\n" "No packages to export."
@@ -354,27 +360,72 @@ export_packages() {
 # Usage: import_packages "input_file"
 import_packages() {
     local input_file=$1
-    
+
     if [[ ! -f "$input_file" ]]; then
         printf "${RED}%s${RESET}\n" "File not found: $input_file"
         return 1
     fi
-    
+
     printf "${CYAN}%s${RESET}\n" "Importing packages from: $input_file"
-    
+
+    # Read valid package lines once
+    mapfile -t packages < <(
+        grep -Ev '^\s*(#|$)' "$input_file"
+    )
+
+    local total=${#packages[@]}
+    if [[ $total -eq 0 ]]; then
+        printf "${YELLOW}%s${RESET}\n" "No packages found."
+        return 0
+    fi
+
+    printf "${CYAN}%s${RESET}\n" "Found $total package(s)"
+    echo ""
+
+    local success=0
+    local skipped=0
+    local failed=0
     local count=0
-    while IFS= read -r line; do
-        # Skip comments and empty lines
-        [[ "$line" =~ ^#.*$ ]] && continue
-        [[ -z "$line" ]] && continue
-        
+
+    for entry in "${packages[@]}"; do
         ((count++))
-        printf "\n${BOLD}Installing (%d): %s${RESET}\n" "$count" "$line"
-        # This would call the actual install function
-        echo "  Would install: $line"
-    done < "$input_file"
-    
-    log_message "INFO" "Imported $count packages from $input_file"
+        printf "${BOLD}[%d/%d] Installing: %s${RESET}\n" \
+            "$count" "$total" "$entry"
+
+        # Resolve repo name for installed check
+        repo_script "$entry" >/dev/null 2>&1
+        local pkg="$repo_name"
+
+        if [[ -n "$pkg" ]] && is_installed "$pkg"; then
+            printf "${YELLOW}%s${RESET}\n" "  ⚠ Already installed, skipping"
+            log_message "INFO" "Import skipped: $pkg already installed"
+            ((skipped++))
+            echo ""
+            continue
+        fi
+
+        # Delegate to the real installer
+        if fn_install "$entry"; then
+            ((success++))
+        else
+            printf "${RED}%s${RESET}\n" "  ✗ Failed"
+            log_message "ERROR" "Import failed: $entry"
+            ((failed++))
+        fi
+
+        echo ""
+    done
+
+    printf "\n${BOLD}Import Summary:${RESET}\n"
+    printf "  Total: %d\n" "$total"
+    printf "  ${GREEN}Installed: %d${RESET}\n" "$success"
+    printf "  ${YELLOW}Skipped: %d${RESET}\n" "$skipped"
+    printf "  ${RED}Failed: %d${RESET}\n" "$failed"
+
+    log_message "INFO" \
+        "Import completed: total=$total installed=$success skipped=$skipped failed=$failed"
+
+    [[ $failed -eq 0 ]]
 }
 
 # ============================================================================
@@ -546,7 +597,7 @@ myrealpath() {
     LINK=$(readlink "$(basename "$1")")
     while [ "$LINK" ]; do
         cd "$(dirname "$LINK")" || return 1
-        LINK=$(readlink "$(basename "$1")")
+        LINK=$(readlink "$(basename "$LINK")")
     done
     REALPATH="$PWD/$(basename "$1")"
     cd "$OURPWD" || return 1

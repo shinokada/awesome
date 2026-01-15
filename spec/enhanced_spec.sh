@@ -106,12 +106,13 @@ Describe 'Enhanced Awesome Functions'
     It 'detects broken symlink'
       ln -s "$AWESOME_DIR/nonexistent/file" "$BIN_DIR/broken-link"
       When call validate_symlink "broken-link"
+      The output should include "Broken symlink"
       The status should be failure
     End
 
     It 'finds broken symlinks'
       ln -s "$AWESOME_DIR/nonexistent/file" "$BIN_DIR/broken-link"
-      When call find_broken_symlinks
+      When call validate_symlinks
       The output should include "broken-link"
       The status should be failure
     End
@@ -186,6 +187,7 @@ Describe 'Enhanced Awesome Functions'
       
       output_file="$TEST_DIR/packages.txt"
       When call export_packages "$output_file"
+      The output should include "Exported"
       The file "$output_file" should be exist
       The status should be success
     End
@@ -195,6 +197,7 @@ Describe 'Enhanced Awesome Functions'
     It 'maintains original checkOrmkdir function'
       test_dir="$TEST_DIR/new-dir"
       When call checkOrmkdir "$test_dir"
+      The output should include "directory is created"
       The path "$test_dir" should be directory
       The status should be success
     End

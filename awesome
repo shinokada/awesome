@@ -295,7 +295,7 @@ fn_update() {
         exit 1
     fi
     
-    if [[ -L "$bin_dir/$repo" ]]; then symlink_dir="$(myrealpath "$bin_dir/$repo")"
+    if [[ -L "$bin_dir/$repo" ]]; then
         symlink_dir="$(myrealpath "$bin_dir/$repo")"
         dir="${symlink_dir%/*}"
         cd "$dir" || exit
@@ -369,7 +369,7 @@ fn_doctor() {
     
     # Check broken symlinks
     printf "\n${BOLD}%s${RESET}\n" "5. Checking for broken symlinks..."
-    if find_broken_symlinks; then
+    if validate_symlinks; then
         printf "${GREEN}%s${RESET}\n" "   ✓ No broken symlinks found"
     else
         ((issues++))
