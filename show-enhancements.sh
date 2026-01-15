@@ -56,11 +56,11 @@ pause
 
 # Demo 1: Health Check
 clear
-demo_command "./awesome-enhanced doctor" "Health Check System"
+demo_command "./awesome doctor" "Health Check System"
 
 # Demo 2: Help System
 clear
-demo_command "./awesome-enhanced --help" "Enhanced Help System"
+demo_command "./awesome --help" "Enhanced Help System"
 
 # Demo 3: Package Info (if packages installed)
 clear
@@ -73,9 +73,9 @@ echo
 if command -v awesome &>/dev/null; then
     PACKAGES=($(awesome ls 2>/dev/null | head -3))
     if [ ${#PACKAGES[@]} -gt 0 ]; then
-        echo -e "${CYAN}Command:${RESET} ./awesome-enhanced info ${PACKAGES[0]}"
+        echo -e "${CYAN}Command:${RESET} ./awesome info ${PACKAGES[0]}"
         echo
-        ./awesome-enhanced info "${PACKAGES[0]}" 2>/dev/null || echo -e "${YELLOW}Package info not available yet (need to migrate first)${RESET}"
+        ./awesome info "${PACKAGES[0]}" 2>/dev/null || echo -e "${YELLOW}Package info not available yet (need to migrate first)${RESET}"
     else
         echo -e "${YELLOW}No packages installed. Skipping info demo.${RESET}"
     fi
@@ -93,9 +93,9 @@ echo -e "${BOLD}${BLUE}═══════════════════
 echo
 
 if command -v awesome &>/dev/null; then
-    echo -e "${CYAN}Command:${RESET} ./awesome-enhanced stats"
+    echo -e "${CYAN}Command:${RESET} ./awesome stats"
     echo
-    ./awesome-enhanced stats 2>/dev/null || echo -e "${YELLOW}Stats not available yet (need to migrate first)${RESET}"
+    ./awesome stats 2>/dev/null || echo -e "${YELLOW}Stats not available yet (need to migrate first)${RESET}"
 else
     echo -e "${YELLOW}Awesome not in PATH. Skipping stats demo.${RESET}"
 fi
@@ -147,15 +147,6 @@ echo -e "${BOLD}Documentation:${RESET}"
 echo -e "  ${CYAN}QUICKSTART.md${RESET}           - Quick start guide"
 echo -e "  ${CYAN}ENHANCEMENTS.md${RESET}         - Detailed documentation"
 echo -e "  ${CYAN}IMPLEMENTATION_SUMMARY.md${RESET} - Overview of changes"
-echo
-echo -e "${BOLD}Migration:${RESET}"
-echo -e "  ${YELLOW}./migrate.sh${RESET}            - Automated migration script"
-echo
-echo -e "${BOLD}Next steps:${RESET}"
-echo -e "  1. Review documentation"
-echo -e "  2. Test features with ${CYAN}./awesome-enhanced${RESET}"
-echo -e "  3. Run ${CYAN}./migrate.sh${RESET} when ready"
-echo -e "  4. Run ${CYAN}awesome doctor${RESET} to verify"
 echo
 echo -e "${GREEN}Thank you for using Awesome Package Manager! 🚀${RESET}"
 echo

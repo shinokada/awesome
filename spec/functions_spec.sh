@@ -1,6 +1,6 @@
 #shellcheck shell=sh
 Describe 'Tests for check functions.'
-    Include ./utils/lib
+    Include ./utils/lib-enhanced
     # Include ./awesome
     dirname=$(openssl rand -hex 6)
     dir="/tmp/$dirname"

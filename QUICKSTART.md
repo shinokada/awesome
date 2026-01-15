@@ -1,64 +1,5 @@
 # Quick Start Guide - Awesome Enhanced v0.6.0
 
-## Installation
-
-### Step 1: Test Enhanced Version (Recommended)
-
-Test the enhanced version alongside your current installation:
-
-```bash
-# Navigate to your awesome directory
-cd ~/Bash/awesome
-
-# Make the enhanced files executable
-chmod +x awesome-enhanced utils/lib-enhanced
-
-# Test the new features
-./awesome-enhanced doctor
-./awesome-enhanced --help
-```
-
-### Step 2: Create Configuration (Optional)
-
-```bash
-# Create config directory
-mkdir -p ~/.config/awesome
-
-# Copy example config
-cp awesome.config.example ~/.config/awesome/config
-
-# Edit if needed
-nano ~/.config/awesome/config
-```
-
-### Step 3: Activate Enhanced Version
-
-Once you're satisfied with testing:
-
-**IMPORTANT:** Run these commands in your awesome source directory (`~/Bash/awesome`), NOT in `~/.local/share/bin/`!
-
-```bash
-# Navigate to source directory first
-cd ~/Bash/awesome
-
-# Backup originals
-cp awesome awesome.v0.5.3.backup
-cp utils/lib utils/lib.v0.5.3.backup
-
-# Activate enhanced versions
-mv awesome-enhanced awesome
-mv utils/lib-enhanced utils/lib
-
-# Ensure executable
-chmod +x awesome utils/lib
-```
-
-**OR use the automated migration script (recommended):**
-```bash
-cd ~/Bash/awesome
-./migrate.sh
-```
-
 ## New Commands at a Glance
 
 ### Health Check
@@ -189,32 +130,6 @@ NETWORK_TIMEOUT=30                         # Seconds before timeout
 RETRY_DELAY=2                              # Seconds between retries
 ```
 
-## What's Different?
-
-### More Reliable
-- ✅ Automatic retry on failures
-- ✅ Network checks before operations
-- ✅ Better error messages
-- ✅ Operation logging
-
-### More Informative
-- ✅ Package information command
-- ✅ Statistics and disk usage
-- ✅ Health diagnostics
-- ✅ Detailed help system
-
-### More Convenient
-- ✅ Batch operations (update all)
-- ✅ Backup and restore
-- ✅ Configuration file
-- ✅ Package manifests
-
-### Still Compatible
-- ✅ All old commands work exactly the same
-- ✅ Existing packages unchanged
-- ✅ No migration required
-- ✅ Falls back gracefully
-
 ## Common Tasks
 
 ### Install a Package
@@ -292,7 +207,7 @@ awesome info <package>  # Package details
 
 ### Documentation
 - Enhanced features: See `ENHANCEMENTS.md`
-- Original docs: https://awesome.codewithshin.com
+- Docs: https://awesome.codewithshin.com
 - GitHub: https://github.com/shinokada/awesome
 
 ### Logs

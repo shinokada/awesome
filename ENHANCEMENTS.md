@@ -241,54 +241,6 @@ Now includes:
 - More examples
 - Links to documentation
 
-## Migration Guide
-
-### From v0.5.3 to v0.6.0
-
-**Option 1: Side-by-Side Testing**
-1. Keep your current `awesome` installation
-2. Test the enhanced version:
-   ```bash
-   # Make enhanced version executable
-   chmod +x awesome-enhanced utils/lib-enhanced
-   
-   # Test commands
-   ./awesome-enhanced doctor
-   ./awesome-enhanced info gitstart
-   ```
-
-**Option 2: Full Migration**
-1. Backup your packages:
-   ```bash
-   # Using old version
-   awesome ls > ~/awesome-backup.txt
-   ```
-
-2. Replace files:
-   ```bash
-   # Backup originals
-   cp awesome awesome.backup
-   cp utils/lib utils/lib.backup
-   
-   # Install enhanced versions
-   cp awesome-enhanced awesome
-   cp utils/lib-enhanced utils/lib
-   
-   # Make executable
-   chmod +x awesome utils/lib
-   ```
-
-3. Create config file:
-   ```bash
-   mkdir -p ~/.config/awesome
-   cp awesome.config.example ~/.config/awesome/config
-   ```
-
-4. Test installation:
-   ```bash
-   awesome doctor
-   ```
-
 ## Backward Compatibility
 
 ✅ **All original commands work exactly the same:**
@@ -378,7 +330,7 @@ shellspec -s bash spec/functions_spec.sh
 
 ## Troubleshooting
 
-### Issue: Commands not found after migration
+### Issue: Commands not found
 ```bash
 # Check PATH
 echo $PATH | grep ".local/share/bin"

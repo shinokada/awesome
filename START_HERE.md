@@ -24,10 +24,8 @@ CHECKLIST.md                # Implementation checklist
 
 ### Tools & Scripts
 ```
-migrate.sh                  # Automated migration script
-demo.sh                     # Interactive feature demo
 spec/enhanced_spec.sh       # Test suite for new features
-completions/awesome-completion.bash  # Bash completion
+completions/awesome-completion.bash  # Bash auto completion
 ```
 
 ## 🚀 Key Improvements
@@ -65,50 +63,18 @@ awesome import          # Restore from backup
 - ✅ Disk space monitoring
 - ✅ Batch operations
 
-## ⚠️ IMPORTANT: Where to Run Commands
+## 🎯 Getting Started
 
-**Always work in your source directory:** `~/Bash/awesome`
-
-**NOT** in `~/.local/share/bin/` (that's just symlinks)
-
-👉 **Read:** [WHERE_TO_RUN_COMMANDS.md](WHERE_TO_RUN_COMMANDS.md) for detailed explanation
-
-## 🎯 Getting Started (3 Easy Steps)
-
-### Step 1: Quick Test
-```bash
-# Navigate to your awesome source directory
-cd ~/Bash/awesome
-
-# Make files executable
-chmod +x awesome-enhanced utils/lib-enhanced demo.sh migrate.sh
-
-# Run the demo
-./demo.sh
-```
-
-### Step 2: Try New Features
+### Try New Features
 ```bash
 # Health check
-./awesome-enhanced doctor
+awesome doctor
 
 # Enhanced help
-./awesome-enhanced --help
+awesome --help
 
 # If you have packages installed
-./awesome-enhanced info <package-name>
-```
-
-### Step 3: Migrate When Ready
-```bash
-# Automated migration (recommended)
-./migrate.sh
-
-# Or manual
-cp awesome awesome.backup
-cp awesome-enhanced awesome
-cp utils/lib utils/lib.backup  
-cp utils/lib-enhanced utils/lib
+awesome info <package-name>
 ```
 
 ## 📚 Documentation Guide
@@ -125,20 +91,6 @@ cp utils/lib-enhanced utils/lib
 5. **CHECKLIST.md** - Implementation checklist
 6. **awesome.config.example** - Configuration reference
 
-## 🎬 Demo Script
-
-Run the interactive demo to see all features:
-```bash
-./demo.sh
-```
-
-This will showcase:
-- Health check system
-- Enhanced help
-- Package information
-- Statistics
-- Configuration examples
-
 ## ✅ Backward Compatibility
 
 **100% compatible** with your existing installation:
@@ -153,17 +105,14 @@ This will showcase:
 ### Immediate (No Changes to Your System)
 ```bash
 # Test enhanced version
-./awesome-enhanced doctor
-./awesome-enhanced --help
-
-# Run demo
-./demo.sh
+awesome doctor
+awesome --help
 
 # Read documentation
 cat QUICKSTART.md
 ```
 
-### After Migration
+### After
 ```bash
 # Health check
 awesome doctor
@@ -183,21 +132,21 @@ awesome export ~/my-packages.txt
 
 ## 📊 Feature Comparison
 
-| Feature | Before (v0.5.3) | After (v0.6.0) |
-|---------|-----------------|----------------|
-| Install packages | ✅ | ✅ |
-| Remove packages | ✅ | ✅ |
-| Update packages | One at a time | ✅ Batch update all |
-| Configuration | Hardcoded | ✅ Config file |
-| Error handling | Basic | ✅ Retry logic |
-| Network checks | ❌ | ✅ |
-| Logging | ❌ | ✅ |
-| Health check | ❌ | ✅ `doctor` |
-| Package info | ❌ | ✅ `info` |
-| Statistics | ❌ | ✅ `stats` |
-| Backup/Restore | ❌ | ✅ `export`/`import` |
-| Shallow clones | ❌ | ✅ |
-| Completion | ❌ | ✅ |
+| Feature          | Before (v0.5.3) | After (v0.6.0)      |
+| ---------------- | --------------- | ------------------- |
+| Install packages | ✅               | ✅                   |
+| Remove packages  | ✅               | ✅                   |
+| Update packages  | One at a time   | ✅ Batch update all  |
+| Configuration    | Hardcoded       | ✅ Config file       |
+| Error handling   | Basic           | ✅ Retry logic       |
+| Network checks   | ❌               | ✅                   |
+| Logging          | ❌               | ✅                   |
+| Health check     | ❌               | ✅ `doctor`          |
+| Package info     | ❌               | ✅ `info`            |
+| Statistics       | ❌               | ✅ `stats`           |
+| Backup/Restore   | ❌               | ✅ `export`/`import` |
+| Shallow clones   | ❌               | ✅                   |
+| Completion       | ❌               | ✅                   |
 
 ## 🧪 Testing
 
@@ -293,7 +242,7 @@ nano ~/.config/awesome/config
 
 1. **Start with the demo**: `./demo.sh`
 2. **Read QUICKSTART.md**: Quick overview
-3. **Test before migrating**: Use `./awesome-enhanced`
+3. **Test before migrating**: Use `awesome`
 4. **Run health checks**: `awesome doctor` regularly
 5. **Enable logging**: Helpful for troubleshooting
 
@@ -335,4 +284,4 @@ You now have a **significantly enhanced** package manager with:
 ---
 
 **All files are ready. No further action needed from me.**
-**The ball is in your court - test, review, and migrate when ready!** 🎉
+**The ball is in your court - test, and review when ready!** 🎉

@@ -36,30 +36,44 @@ All your existing commands work exactly the same. Nothing breaks.
 
 ## Quick Start
 
-### Try It Now (No Installation Required)
+### Installation
 
-```bash
-# Make enhanced version executable
-chmod +x awesome-enhanced utils/lib-enhanced
-
-# Run health check
-./awesome-enhanced doctor
-
-# See new help system
-./awesome-enhanced --help
-
-# Try the demo
-chmod +x demo.sh
-./demo.sh
+```sh
+curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
 ```
 
-### Migrate When Ready
+Or using wget:
 
-```bash
-# Automated migration
-chmod +x migrate.sh
-./migrate.sh
+```sh
+wget -qO - https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s install
 ```
+
+Add to your shell config (`.zshrc`, `.bashrc`, etc.):
+
+```sh
+export PATH=$HOME/.local/share/bin:$PATH
+```
+
+Then reload your shell:
+
+```sh
+source ~/.zshrc  # or source ~/.bashrc
+```
+
+The installer will:
+- Verify prerequisites (Git, network)
+- Create necessary directories
+- Clone the awesome repository
+- Set up symlinks
+- Run diagnostics (optional)
+
+### Uninstallation
+
+```sh
+curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s uninstall
+```
+
+This removes all packages, symlinks, configuration, and logs.
 
 ## Examples
 
@@ -175,18 +189,16 @@ awesome export ~/backup.txt
 
 ## Files Created
 
-| File | Description |
-|------|-------------|
-| `awesome-enhanced` | Enhanced main script |
-| `utils/lib-enhanced` | Enhanced library |
-| `awesome.config.example` | Configuration template |
-| `QUICKSTART.md` | Quick start guide |
-| `ENHANCEMENTS.md` | Full documentation |
-| `IMPLEMENTATION_SUMMARY.md` | Summary of changes |
-| `migrate.sh` | Automated migration |
-| `demo.sh` | Interactive demo |
-| `spec/enhanced_spec.sh` | Test suite |
-| `completions/awesome-completion.bash` | Bash completion |
+| File                                  | Description            |
+| ------------------------------------- | ---------------------- |
+| `awesome`                             | Enhanced main script   |
+| `utils/lib-enhanced`                  | Enhanced library       |
+| `awesome.config.example`              | Configuration template |
+| `QUICKSTART.md`                       | Quick start guide      |
+| `ENHANCEMENTS.md`                     | Full documentation     |
+| `IMPLEMENTATION_SUMMARY.md`           | Summary of changes     |
+| `spec/enhanced_spec.sh`               | Test suite             |
+| `completions/awesome-completion.bash` | Bash completion        |
 
 ## Configuration
 
@@ -219,36 +231,6 @@ shellspec -s bash spec/enhanced_spec.sh
 shellspec -s bash
 ```
 
-## Migration Options
-
-### Option 1: Test First (Recommended)
-```bash
-chmod +x awesome-enhanced
-./awesome-enhanced doctor
-./awesome-enhanced --help
-```
-
-### Option 2: Run Demo
-```bash
-chmod +x demo.sh
-./demo.sh
-```
-
-### Option 3: Automated Migration
-```bash
-chmod +x migrate.sh
-./migrate.sh
-```
-
-### Option 4: Manual Migration
-```bash
-cp awesome awesome.backup
-cp awesome-enhanced awesome
-cp utils/lib utils/lib.backup
-cp utils/lib-enhanced utils/lib
-chmod +x awesome utils/lib
-```
-
 ## Requirements
 
 Same as original awesome:
@@ -265,18 +247,18 @@ Same as original awesome:
 
 ## Comparison Chart
 
-| Feature | v0.5.3 | v0.6.0 |
-|---------|--------|--------|
-| Install packages | ✅ | ✅ |
-| Network retry | ❌ | ✅ |
-| Health check | ❌ | ✅ |
-| Package info | ❌ | ✅ |
-| Batch update | ❌ | ✅ |
-| Backup/Restore | ❌ | ✅ |
-| Configuration | ❌ | ✅ |
-| Logging | ❌ | ✅ |
-| Statistics | ❌ | ✅ |
-| Completion | ❌ | ✅ |
+| Feature          | v0.5.3 | v0.6.0 |
+| ---------------- | ------ | ------ |
+| Install packages | ✅      | ✅      |
+| Network retry    | ❌      | ✅      |
+| Health check     | ❌      | ✅      |
+| Package info     | ❌      | ✅      |
+| Batch update     | ❌      | ✅      |
+| Backup/Restore   | ❌      | ✅      |
+| Configuration    | ❌      | ✅      |
+| Logging          | ❌      | ✅      |
+| Statistics       | ❌      | ✅      |
+| Completion       | ❌      | ✅      |
 
 ## Getting Help
 
@@ -311,5 +293,3 @@ Enhanced by request for the Awesome Package Manager project by Shinichi Okada.
 Original: https://github.com/shinokada/awesome
 
 ---
-
-**Ready to try it?** Run `./demo.sh` to see all the new features! 🎉
