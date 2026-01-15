@@ -2,7 +2,7 @@
 # Tests for enhanced awesome features
 
 Describe 'Enhanced Awesome Functions'
-  Include ./utils/lib
+  Include ./utils/lib-enhanced
   
   setup() {
     TEST_DIR="$SHELLSPEC_TMPBASE/awesome-test"

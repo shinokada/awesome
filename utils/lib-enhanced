@@ -63,7 +63,20 @@ log_operation() {
 
 # Check network connectivity
 check_network() {
-    if ! ping -c 1 -W 2 github.com &>/dev/null; then
+    local timeout_flag
+    local timeout_value=2000  # milliseconds for macOS
+    local count_flag="-c 1"
+    
+    if [[ "$(uname)" == "Darwin" ]]; then
+        # macOS ping expects -W in milliseconds
+        timeout_flag="-W"
+    else
+        # Assume Linux or others with seconds timeout
+        timeout_flag="-W"
+        timeout_value=2  # seconds
+    fi
+
+    if ! ping $count_flag $timeout_flag $timeout_value github.com &>/dev/null; then
         printf "${RED}%s${RESET}\n" "Error: No network connection to GitHub." >&2
         log_message "ERROR" "Network check failed"
         return 1
@@ -197,11 +210,7 @@ validate_symlinks() {
 # Usage: check_disk_space
 check_disk_space() {
     local available
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        available=$(df -k "$AWESOME_DIR" 2>/dev/null | awk 'NR==2 {print $4}')
-    else
-        available=$(df -k "$AWESOME_DIR" 2>/dev/null | awk 'NR==2 {print $4}')
-    fi
+    available=$(df -k "$AWESOME_DIR" 2>/dev/null | awk 'NR==2 {print $4}')
     
     local min_required=102400  # 100MB in KB
     
@@ -369,9 +378,10 @@ import_packages() {
     printf "${CYAN}%s${RESET}\n" "Importing packages from: $input_file"
 
     # Read valid package lines once
-    mapfile -t packages < <(
-        grep -Ev '^\s*(#|$)' "$input_file"
-    )
+    local packages=()
+    while IFS= read -r pkg; do
+        [[ -n "$pkg" ]] && packages+=("$pkg")
+    done < <(grep -Ev '^\s*(#|$)' "$input_file")
 
     local total=${#packages[@]}
     if [[ $total -eq 0 ]]; then

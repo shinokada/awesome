@@ -13,7 +13,7 @@ myrealpath() {
     LINK=$(readlink "$(basename "$1")")
     while [ "$LINK" ]; do
         cd "$(dirname "$LINK")" || exit
-        LINK=$(readlink "$(basename "$1")")
+        LINK=$(readlink "$(basename "$LINK")")
     done
     REALPATH="$PWD/$(basename "$1")"
     cd "$OURPWD" || exit
@@ -34,15 +34,12 @@ fi
 
 script_dir="${script_path%/*}"
 
-# Try to load enhanced lib first, fallback to original
+# Try to load enhanced lib first
 if [[ -f "${script_dir}/utils/lib-enhanced" ]]; then
     # shellcheck disable=SC1091
     source "${script_dir}/utils/lib-enhanced"
-elif [[ -f "${script_dir}/utils/lib" ]]; then
-    # shellcheck disable=SC1091
-    source "${script_dir}/utils/lib"
 else
-    echo "Error: Cannot find lib or lib-enhanced in ${script_dir}/utils/" >&2
+    echo "Error: Cannot find lib-enhanced in ${script_dir}/utils/" >&2
     exit 1
 fi
 
@@ -493,7 +490,10 @@ fn_stats() {
     printf "${BOLD}${CYAN}%s${RESET}\n\n" "=== Awesome Statistics ==="
     
     local packages
-    mapfile -t packages < <(list_installed_packages)
+    packages=()
+    while IFS= read -r pkg; do
+        [[ -n "$pkg" ]] && packages+=("$pkg")
+    done < <(list_installed_packages)
     local count=${#packages[@]}
     
     printf "${BOLD}%s${RESET}\n" "Total packages installed: $count"

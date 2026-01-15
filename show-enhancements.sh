@@ -70,7 +70,11 @@ echo
 
 # Check if any packages installed
 if command -v awesome &>/dev/null; then
-    mapfile -t PACKAGES < <(awesome ls 2>/dev/null | head -3)
+    local PACKAGES=()
+    while IFS= read -r line; do
+        [[ -n "$line" ]] && PACKAGES+=("$line")
+    done < <(awesome ls 2>/dev/null | head -3)
+
     if [ ${#PACKAGES[@]} -gt 0 ]; then
         echo -e "${CYAN}Command:${RESET} ./awesome info ${PACKAGES[0]}"
         echo

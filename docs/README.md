@@ -171,7 +171,7 @@ ENABLE_LOGGING=true
 LOG_DIR="$HOME/.local/share/awesome/logs"
 ```
 
-See `awesome.config.example` for all options.
+See [`awesome.config.example`](../awesome.config.example) for all options.
 
 ## Documentation
 

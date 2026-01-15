@@ -23,7 +23,7 @@ echo
 # Check if we're in the right directory
 if [[ ! -f "$SCRIPT_DIR/awesome" ]] || [[ ! -f "$SCRIPT_DIR/awesome-enhanced" ]]; then
     echo -e "${RED}Error: Run this script from the awesome directory${RESET}"
-    echo "Expected files: awesome, awesome-enhanced, utils/lib, utils/lib-enhanced"
+    echo "Expected files: awesome, awesome-enhanced, utils/lib-enhanced"
     exit 1
 fi
 
@@ -53,11 +53,6 @@ mkdir -p "$BACKUP_DIR"
 if [[ -f "$SCRIPT_DIR/awesome" ]]; then
     cp "$SCRIPT_DIR/awesome" "$BACKUP_DIR/awesome"
     echo -e "  ${GREEN}✓${RESET} Backed up awesome script"
-fi
-
-if [[ -f "$SCRIPT_DIR/utils/lib" ]]; then
-    cp "$SCRIPT_DIR/utils/lib" "$BACKUP_DIR/lib"
-    echo -e "  ${GREEN}✓${RESET} Backed up utils/lib"
 fi
 
 if [[ -f "$HOME/.config/awesome/config" ]]; then
@@ -105,9 +100,9 @@ cp "$SCRIPT_DIR/awesome-enhanced" "$SCRIPT_DIR/awesome"
 chmod +x "$SCRIPT_DIR/awesome"
 echo -e "  ${GREEN}✓${RESET} Installed enhanced awesome script"
 
-cp "$SCRIPT_DIR/utils/lib-enhanced" "$SCRIPT_DIR/utils/lib"
-chmod +x "$SCRIPT_DIR/utils/lib"
-echo -e "  ${GREEN}✓${RESET} Installed enhanced utils/lib"
+cp "$SCRIPT_DIR/utils/lib-enhanced" "$SCRIPT_DIR/utils/lib-enhanced"
+chmod +x "$SCRIPT_DIR/utils/lib-enhanced"
+echo -e "  ${GREEN}✓${RESET} Installed enhanced utils/lib-enhanced"
 echo
 
 # Step 4: Configuration

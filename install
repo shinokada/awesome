@@ -129,14 +129,7 @@ verify_installation() {
     if [[ -f "$awesome_dir/awesome/utils/lib-enhanced" ]]; then
         print_success "Enhanced library found"
     else
-        print_warning "Enhanced library not found (will use basic lib)"
-    fi
-    
-    if [[ -f "$awesome_dir/awesome/utils/lib" ]]; then
-        print_success "Basic library found"
-    else
-        print_error "Basic library not found"
-        ((++issues))
+        print_warning "Enhanced library not found"
     fi
     
     # Check symlink
