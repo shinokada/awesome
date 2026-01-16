@@ -37,7 +37,7 @@ curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash 
 You can update your current `awesome` package:
 
 ```bash
-curl -s https://raw.githubusercontent.com/shinokada/awesome/main/update | bash -s update
+curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s update
 ```
 
 Add to your shell config:
@@ -50,6 +50,12 @@ Reload your shell:
 
 ```bash
 source ~/.zshrc  # or source ~/.bashrc
+```
+
+### Uninstallation
+
+```bash
+curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s uninstall
 ```
 
 ### Basic Usage
