@@ -145,7 +145,7 @@ verify_installation() {
         print_success "Awesome is accessible in PATH"
     else
         print_warning "Awesome not found in PATH (you may need to update your shell config)"
-        ((++issues))
+        # Don't increment issues - this is expected until user updates their shell config
     fi
 
     echo
@@ -394,13 +394,26 @@ fn_update() {
     cd "$awesome_dir/awesome" || exit
 
     print_info "Fetching updates..."
-    if git pull; then
-        print_success "Awesome updated successfully"
-        print_info "New version: $(git describe --tags 2>/dev/null || git rev-parse --short HEAD)"
-    else
-        print_error "Update failed"
-        exit 1
-    fi
+    local max_retries=${MAX_RETRIES:-3}
+    local retry_count=0
+
+    while :; do
+        if git pull; then
+            print_success "Awesome updated successfully"
+            print_info "New version: $(git describe --tags 2>/dev/null || git rev-parse --short HEAD)"
+            return 0
+        fi
+
+        ((++retry_count))
+
+        if ((retry_count >= max_retries)); then
+            print_error "Update failed after $max_retries attempts"
+            exit 1
+        fi
+
+        print_warning "Update failed, retrying ($retry_count/$max_retries)..."
+        sleep 2
+    done
 }
 
 # ============================================================================

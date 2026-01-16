@@ -45,7 +45,8 @@ log_message() {
 
     local level=$1
     local message=$2
-    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    local timestamp
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S') || timestamp="unknown"
     local log_file="$LOG_DIR/awesome.log"
 
     echo "[$timestamp] [$level] $message" >>"$log_file"
@@ -161,7 +162,7 @@ read_manifest() {
 # Usage: is_installed "package_name"
 is_installed() {
     local package_name=$1
-    [[ -L "$BIN_DIR/$package_name" ]] && [[ -d "$AWESOME_DIR/$package_name" ]]
+    [[ -L "$BIN_DIR/$package_name" ]] && [[ -d "$AWESOME_DIR/$package_name" ]] && [[ -e "$BIN_DIR/$package_name" ]]
 }
 
 # ============================================================================
@@ -466,12 +467,12 @@ repo_script() {
     slash_num=$(echo "$link_arg" | grep -o "/" | wc -l)
     if [[ $link_arg =~ "@" ]]; then
         echo "Please use URL or https, not ssh." >&2
-        exit 1
+        return 1
     fi
     if [[ -z $script_arg ]]; then
         if ((slash_num < 1)); then
             echo "Not valid parameter." >&2
-            exit 1
+            return 1
         fi
         git_user=$(basename "${link_arg%/*}")
         repo_name=$(basename "${link_arg##*/}" .git)
@@ -689,7 +690,7 @@ function bannerColor() {
     white) color=7 ;;
     *)
         echo "color is not set"
-        exit 1
+        return 1
         ;;
     esac
 

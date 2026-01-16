@@ -441,7 +441,10 @@ fn_info() {
     # Get symlink info
     local symlink_path="$bin_dir/$package"
     local real_path
-    real_path=$(myrealpath "$symlink_path")
+    real_path=$(myrealpath "$symlink_path") || {
+        printf "${YELLOW}%s${RESET}\n" "Warning: Could not resolve symlink path"
+        exit 0
+    }
 
     printf "\n${BOLD}%s${RESET}\n" "Location:"
     printf "  Symlink: %s\n" "$symlink_path"
