@@ -20,25 +20,25 @@ echo
 
 # Function to pause
 pause() {
-    echo -e "\n${YELLOW}Press Enter to continue...${RESET}"
-    read -r
+  echo -e "\n${YELLOW}Press Enter to continue...${RESET}"
+  read -r
 }
 
 # Function to run command and show output
 demo_command() {
-    local cmd=$1
-    local description=$2
-    
-    echo -e "${BOLD}${BLUE}═══════════════════════════════════════════════════════════${RESET}"
-    echo -e "${BOLD}Demo: ${description}${RESET}"
-    echo -e "${BOLD}${BLUE}═══════════════════════════════════════════════════════════${RESET}"
-    echo -e "${CYAN}Command:${RESET} ${cmd}"
-    echo
-    
-    # Execute command
-    eval "$cmd"
-    
-    pause
+  local cmd=$1
+  local description=$2
+
+  echo -e "${BOLD}${BLUE}═══════════════════════════════════════════════════════════${RESET}"
+  echo -e "${BOLD}Demo: ${description}${RESET}"
+  echo -e "${BOLD}${BLUE}═══════════════════════════════════════════════════════════${RESET}"
+  echo -e "${CYAN}Command:${RESET} ${cmd}"
+  echo
+
+  # Execute command
+  eval "$cmd"
+
+  pause
 }
 
 echo -e "${BOLD}This demo will showcase the new features of Awesome v0.6.0${RESET}"
@@ -70,20 +70,20 @@ echo
 
 # Check if any packages installed
 if command -v awesome &>/dev/null; then
-    local PACKAGES=()
-    while IFS= read -r line; do
-        [[ -n "$line" ]] && PACKAGES+=("$line")
-    done < <(awesome ls 2>/dev/null | head -3)
+  PACKAGES=()
+  while IFS= read -r line; do
+    [[ -n "$line" ]] && PACKAGES+=("$line")
+  done < <(awesome ls 2>/dev/null | head -3)
 
-    if [ ${#PACKAGES[@]} -gt 0 ]; then
-        echo -e "${CYAN}Command:${RESET} ./awesome info ${PACKAGES[0]}"
-        echo
-        ./awesome info "${PACKAGES[0]}" 2>/dev/null || echo -e "${YELLOW}Package info not available yet (need to migrate first)${RESET}"
-    else
-        echo -e "${YELLOW}No packages installed. Skipping info demo.${RESET}"
-    fi
+  if [ ${#PACKAGES[@]} -gt 0 ]; then
+    echo -e "${CYAN}Command:${RESET} ./awesome info ${PACKAGES[0]}"
+    echo
+    ./awesome info "${PACKAGES[0]}" 2>/dev/null || echo -e "${YELLOW}Package info not available yet (need to migrate first)${RESET}"
+  else
+    echo -e "${YELLOW}No packages installed. Skipping info demo.${RESET}"
+  fi
 else
-    echo -e "${YELLOW}Awesome not in PATH. Skipping info demo.${RESET}"
+  echo -e "${YELLOW}Awesome not in PATH. Skipping info demo.${RESET}"
 fi
 
 pause
@@ -96,11 +96,11 @@ echo -e "${BOLD}${BLUE}═══════════════════
 echo
 
 if command -v awesome &>/dev/null; then
-    echo -e "${CYAN}Command:${RESET} ./awesome stats"
-    echo
-    ./awesome stats 2>/dev/null || echo -e "${YELLOW}Stats not available yet (need to migrate first)${RESET}"
+  echo -e "${CYAN}Command:${RESET} ./awesome stats"
+  echo
+  ./awesome stats 2>/dev/null || echo -e "${YELLOW}Stats not available yet (need to migrate first)${RESET}"
 else
-    echo -e "${YELLOW}Awesome not in PATH. Skipping stats demo.${RESET}"
+  echo -e "${YELLOW}Awesome not in PATH. Skipping stats demo.${RESET}"
 fi
 
 pause
@@ -115,7 +115,11 @@ echo -e "${CYAN}Configuration file:${RESET} ~/.config/awesome/config"
 echo
 echo -e "${BOLD}Example configuration:${RESET}"
 echo
-head -20 awesome.config.example
+if [[ -f "awesome.config.example" ]]; then
+  head -20 awesome.config.example
+else
+  echo -e "${YELLOW}Config example not found (run from repo root)${RESET}"
+fi
 echo "..."
 
 pause

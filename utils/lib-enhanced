@@ -63,20 +63,14 @@ log_operation() {
 
 # Check network connectivity
 check_network() {
-    local timeout_flag
-    local timeout_value=2000  # milliseconds for macOS
-    local count_flag="-c 1"
-    
-    if [[ "$(uname)" == "Darwin" ]]; then
-        # macOS ping expects -W in milliseconds
-        timeout_flag="-W"
-    else
-        # Assume Linux or others with seconds timeout
-        timeout_flag="-W"
-        timeout_value=2  # seconds
-    fi
-
-    if ! ping $count_flag $timeout_flag $timeout_value github.com &>/dev/null; then
+    # Prefer curl for reliability (works in containers/firewalls)
+    if command -v curl &>/dev/null; then
+        if ! curl -sf --connect-timeout 5 --max-time 10 "https://github.com" -o /dev/null 2>/dev/null; then
+            printf "${RED}%s${RESET}\n" "Error: No network connection to GitHub." >&2
+            log_message "ERROR" "Network check failed"
+            return 1
+        fi
+    elif ! ping -c 1 github.com &>/dev/null; then
         printf "${RED}%s${RESET}\n" "Error: No network connection to GitHub." >&2
         log_message "ERROR" "Network check failed"
         return 1

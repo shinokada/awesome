@@ -3,7 +3,7 @@
 # Enhanced Awesome Package Manager Installer
 # Version: 0.2.0
 
-set -e  # Exit on error
+set -e # Exit on error
 
 # Colors for output
 RED='\033[0;31m'
@@ -106,9 +106,9 @@ fn_find_symlinks() {
 # Verify installation
 verify_installation() {
     print_header "Verifying Installation"
-    
+
     local issues=0
-    
+
     # Check awesome directory
     if [[ -d "$awesome_dir/awesome" ]]; then
         print_success "Awesome repository cloned"
@@ -116,7 +116,7 @@ verify_installation() {
         print_error "Awesome repository not found"
         ((++issues))
     fi
-    
+
     # Check for main script
     if [[ -f "$awesome_dir/awesome/awesome" ]]; then
         print_success "Main awesome script found"
@@ -124,14 +124,14 @@ verify_installation() {
         print_error "Main awesome script not found"
         ((++issues))
     fi
-    
+
     # Check for utility libraries
     if [[ -f "$awesome_dir/awesome/utils/lib-enhanced" ]]; then
         print_success "Enhanced library found"
     else
         print_warning "Enhanced library not found"
     fi
-    
+
     # Check symlink
     if [[ -L "$bin_dir/awesome" ]]; then
         print_success "Awesome symlink created"
@@ -139,7 +139,7 @@ verify_installation() {
         print_error "Awesome symlink not found"
         ((++issues))
     fi
-    
+
     # Check if awesome is in PATH
     if command -v awesome &>/dev/null; then
         print_success "Awesome is accessible in PATH"
@@ -147,7 +147,7 @@ verify_installation() {
         print_warning "Awesome not found in PATH (you may need to update your shell config)"
         ((++issues))
     fi
-    
+
     echo
     if [ "$issues" -eq 0 ]; then
         print_success "All checks passed!"
@@ -161,7 +161,7 @@ verify_installation() {
 # Run post-install diagnostics
 run_diagnostics() {
     print_header "Running Diagnostics"
-    
+
     if command -v awesome &>/dev/null; then
         awesome --version
         echo
@@ -178,30 +178,30 @@ run_diagnostics() {
 
 fn_install() {
     print_header "Installing Awesome Package Manager"
-    
+
     # Check prerequisites
     print_info "Checking prerequisites..."
     fn_check_cmd git
-    
+
     # Check network
     if ! check_network; then
         exit 1
     fi
-    
+
     # Create directories
     print_info "Setting up directories..."
     fn_checkDir "$awesome_dir"
     fn_checkDir "$bin_dir"
     fn_checkDir "$log_dir"
     fn_checkDir "$config_dir"
-    
+
     # Clone repository
     cd "$awesome_dir" || exit
     local url="https://github.com/shinokada/awesome.git"
     local repo="awesome"
-    
+
     print_info "Cloning awesome repository..."
-    
+
     if [[ -d "$awesome_dir/$repo" ]]; then
         print_warning "Awesome directory already exists"
         read -rp "Do you want to remove it and reinstall? (yes/y or no/n): " response
@@ -217,7 +217,7 @@ fn_install() {
             exit 0
         fi
     fi
-    
+
     local max_retries=${MAX_RETRIES:-3}
     local retry_count=0
 
@@ -229,7 +229,7 @@ fn_install() {
 
         ((++retry_count))
 
-        if (( retry_count >= max_retries )); then
+        if ((retry_count >= max_retries)); then
             print_error "Failed to clone repository after $max_retries attempts"
             exit 1
         fi
@@ -238,18 +238,17 @@ fn_install() {
         sleep 2
     done
 
-    
     # Create symlink
     print_info "Creating symlink..."
     fn_create_symlink "${repo}"
     print_success "Symlink created"
-    
+
     # Verify installation
     verify_installation
-    
+
     # Print usage instructions
     print_header "Installation Complete!"
-    
+
     echo "To use awesome, ensure your PATH includes the bin directory:"
     print_color "$YELLOW" "  export PATH=\$HOME/.local/share/bin:\$PATH"
     echo
@@ -267,7 +266,7 @@ fn_install() {
     print_info "  awesome install <repo>  # Install a package"
     echo
     print_success "Visit https://awesome.codewithshin.com for documentation"
-    
+
     # Ask if user wants to run diagnostics
     echo
     read -rp "Would you like to run diagnostics now? (yes/y or no/n): " run_diag
@@ -286,7 +285,7 @@ fn_install() {
 
 fn_uninstall() {
     print_header "Uninstalling Awesome Package Manager"
-    
+
     # Show what will be removed
     echo "This will remove:"
     print_info "  - All installed packages in $awesome_dir"
@@ -294,10 +293,10 @@ fn_uninstall() {
     print_info "  - Configuration files in $config_dir"
     print_info "  - Log files in $log_dir"
     echo
-    
+
     print_warning "This action cannot be undone!"
     echo
-    
+
     if [[ $(fn_confirm "awesome and all its data") != "Y" ]]; then
         print_info "Uninstall cancelled"
         exit 0
@@ -308,15 +307,15 @@ fn_uninstall() {
     if [[ -d "$awesome_dir" ]]; then
         remove_awesome_dir=$(fn_confirm "awesome directory")
     fi
-    
+
     # Only remove symlinks if user confirmed directory removal
     if [[ "$remove_awesome_dir" == "Y" ]]; then
         print_info "Finding and removing symlinks..."
         if [[ -d "$bin_dir" ]]; then
             links=()
-        while IFS= read -r link; do
-            links+=("$link")
-        done < <(fn_find_symlinks 2>/dev/null)
+            while IFS= read -r link; do
+                links+=("$link")
+            done < <(fn_find_symlinks 2>/dev/null)
             if [ ${#links[@]} -gt 0 ]; then
                 for link in "${links[@]}"; do
                     if [[ -L "$link" ]]; then
@@ -330,7 +329,7 @@ fn_uninstall() {
             fi
         fi
     fi
-    
+
     if [[ "$remove_awesome_dir" == "Y" ]]; then
         if [[ -d "$awesome_dir" ]]; then
             print_info "Removing awesome directory..."
@@ -338,7 +337,7 @@ fn_uninstall() {
             print_success "Removed $awesome_dir"
         fi
     fi
-    
+
     # Remove config directory
     if [[ -d "$config_dir" ]]; then
         read -rp "Remove configuration directory? (yes/y or no/n): " remove_config
@@ -349,7 +348,7 @@ fn_uninstall() {
             print_success "Removed $config_dir"
         fi
     fi
-    
+
     # Remove bin directory if empty
     if [[ -d "$bin_dir" ]] && [[ -z "$(ls -A "$bin_dir")" ]]; then
         read -rp "Bin directory is empty. Remove it? (yes/y or no/n): " remove_bin
@@ -360,7 +359,7 @@ fn_uninstall() {
             print_success "Removed empty bin directory"
         fi
     fi
-    
+
     print_header "Uninstallation Complete"
     print_info "Remember to remove the PATH export from your shell config file:"
     print_color "$YELLOW" "  export PATH=\$HOME/.local/share/bin:\$PATH"
@@ -372,7 +371,7 @@ fn_uninstall() {
 
 fn_update() {
     print_header "Updating Awesome Package Manager"
-    
+
     if [[ ! -d "$awesome_dir/awesome" ]]; then
         print_error "Awesome is not installed"
         print_info "Run: ./install install"
@@ -383,9 +382,9 @@ fn_update() {
     if ! check_network; then
         exit 1
     fi
-    
+
     cd "$awesome_dir/awesome" || exit
-    
+
     print_info "Fetching updates..."
     if git pull; then
         print_success "Awesome updated successfully"
@@ -412,7 +411,7 @@ fn_main() {
         echo "  update      - Update awesome to latest version"
         exit 1
     fi
-    
+
     case $1 in
     install)
         fn_install
