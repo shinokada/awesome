@@ -64,17 +64,18 @@ End
 
 Describe 'Testing src_path().'
 myrealpath() {
-  local LINK REALPATH
-  local OURPWD=$PWD
-  cd "$(dirname "$1")" || exit
-  LINK=$(readlink "$(basename "$1")")
-  while [ "$LINK" ]; do
-    cd "$(dirname "$LINK")" || exit
+  (
+    OURPWD=$PWD
+    cd "$(dirname "$1")" || exit
     LINK=$(readlink "$(basename "$1")")
-  done
-  REALPATH="$PWD/$(basename "$1")"
-  cd "$OURPWD" || exit
-  echo "$REALPATH"
+    while [ "$LINK" ]; do
+      cd "$(dirname "$LINK")" || exit
+      LINK=$(readlink "$(basename "$1")")
+    done
+    REALPATH="$PWD/$(basename "$1")"
+    cd "$OURPWD" || exit
+    echo "$REALPATH"
+  )
 }
 It 'outputs source path.'
 When run src_path "$(myrealpath "$link")"

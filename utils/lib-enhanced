@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Enhanced utility library for awesome package manager
 
+# Version - Single source of truth for awesome version
+AWESOME_VERSION="0.6.0"
+
 # Load configuration
 load_config() {
     local config_file="${HOME}/.config/awesome/config"
@@ -8,7 +11,7 @@ load_config() {
         # shellcheck disable=SC1090
         source "$config_file"
     fi
-    
+
     # Set defaults if not configured
     AWESOME_DIR="${AWESOME_DIR:-$HOME/.local/share/awesome}"
     BIN_DIR="${BIN_DIR:-$HOME/.local/share/bin}"
@@ -39,13 +42,13 @@ log_message() {
     if [[ "$ENABLE_LOGGING" != "true" ]]; then
         return
     fi
-    
+
     local level=$1
     local message=$2
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     local log_file="$LOG_DIR/awesome.log"
-    
-    echo "[$timestamp] [$level] $message" >> "$log_file"
+
+    echo "[$timestamp] [$level] $message" >>"$log_file"
 }
 
 # Log operation
@@ -85,26 +88,31 @@ git_clone_with_retry() {
     local target_dir=$2
     local attempt=1
     local depth_flag=""
-    
+
     if [[ "$GIT_CLONE_DEPTH" != "0" ]]; then
         depth_flag="--depth=$GIT_CLONE_DEPTH"
     fi
-    
+
     while [ $attempt -le "$MAX_RETRY_ATTEMPTS" ]; do
         printf "${CYAN}%s${RESET}\n" "Cloning (attempt $attempt/$MAX_RETRY_ATTEMPTS)..."
-        
+
         # shellcheck disable=SC2086
         if git clone $depth_flag "$url" "$target_dir" 2>/dev/null; then
             log_message "INFO" "Clone succeeded: $url"
             return 0
         fi
-        
+
+        # Cleanup partial clone so retries can succeed
+        if [[ -d "$target_dir" ]]; then
+            rm -rf "$target_dir"
+        fi
+
         printf "${YELLOW}%s${RESET}\n" "Clone attempt $attempt failed. Retrying in ${RETRY_DELAY}s..."
         log_message "WARN" "Clone attempt $attempt failed: $url"
         ((attempt++))
         sleep "$RETRY_DELAY"
     done
-    
+
     printf "${RED}%s${RESET}\n" "Failed to clone after $MAX_RETRY_ATTEMPTS attempts." >&2
     log_message "ERROR" "Clone failed after retries: $url"
     return 1
@@ -123,8 +131,8 @@ create_manifest() {
     local manifest_file="$AWESOME_DIR/$package_name/.awesome-manifest"
 
     mkdir -p "$AWESOME_DIR/$package_name"
-    
-    cat > "$manifest_file" <<EOF
+
+    cat >"$manifest_file" <<EOF
 {
   "name": "$package_name",
   "version": "$version",
@@ -141,7 +149,7 @@ EOF
 read_manifest() {
     local package_name=$1
     local manifest_file="$AWESOME_DIR/$package_name/.awesome-manifest"
-    
+
     if [[ -f "$manifest_file" ]]; then
         cat "$manifest_file"
     else
@@ -165,17 +173,17 @@ is_installed() {
 validate_symlink() {
     local package_name=$1
     local link_path="$BIN_DIR/$package_name"
-    
+
     if [[ ! -L "$link_path" ]]; then
         return 1
     fi
-    
+
     local target=$(readlink "$link_path")
     if [[ ! -f "$target" ]]; then
-        printf "${RED}%s${RESET}\n" "Broken symlink: $package_name -> $target"
+        printf "${RED}%s${RESET}\n" "Broken symlink: $package_name -> $target" >&2
         return 1
     fi
-    
+
     return 0
 }
 
@@ -183,20 +191,20 @@ validate_symlink() {
 # Usage: validate_symlinks
 validate_symlinks() {
     local broken=()
-    
+
     while IFS= read -r link; do
         local name=$(basename "$link")
         if ! validate_symlink "$name"; then
             broken+=("$name")
         fi
     done < <(find "$BIN_DIR" -type l 2>/dev/null)
-    
+
     if [ ${#broken[@]} -gt 0 ]; then
         printf "${YELLOW}%s${RESET}\n" "Found ${#broken[@]} broken symlink(s):"
         printf '%s\n' "${broken[@]}"
         return 1
     fi
-    
+
     return 0
 }
 
@@ -205,14 +213,14 @@ validate_symlinks() {
 check_disk_space() {
     local available
     available=$(df -k "$AWESOME_DIR" 2>/dev/null | awk 'NR==2 {print $4}')
-    
-    local min_required=102400  # 100MB in KB
-    
+
+    local min_required=102400 # 100MB in KB
+
     if [[ -n "$available" ]] && [[ "$available" -lt "$min_required" ]]; then
-        printf "${YELLOW}%s${RESET}\n" "Warning: Low disk space ($(( available / 1024 ))MB available)"
+        printf "${YELLOW}%s${RESET}\n" "Warning: Low disk space ($((available / 1024))MB available)"
         return 1
     fi
-    
+
     return 0
 }
 
@@ -221,7 +229,7 @@ check_disk_space() {
 get_package_size() {
     local package_name=$1
     local package_dir="$AWESOME_DIR/$package_name"
-    
+
     if [[ -d "$package_dir" ]]; then
         du -sh "$package_dir" 2>/dev/null | awk '{print $1}'
     else
@@ -237,14 +245,14 @@ get_package_size() {
 # Usage: list_installed_packages
 list_installed_packages() {
     local packages=()
-    
+
     while IFS= read -r link; do
         local name=$(basename "$link")
         if validate_symlink "$name" 2>/dev/null; then
             packages+=("$name")
         fi
     done < <(find "$BIN_DIR" -type l 2>/dev/null)
-    
+
     printf '%s\n' "${packages[@]}"
 }
 
@@ -256,27 +264,27 @@ update_all_packages() {
     while IFS= read -r pkg; do
         [[ -n "$pkg" ]] && packages+=("$pkg")
     done < <(list_installed_packages)
-    
+
     if [ ${#packages[@]} -eq 0 ]; then
         printf "${YELLOW}%s${RESET}\n" "No packages installed."
         return
     fi
-    
+
     printf "${CYAN}%s${RESET}\n" "Updating ${#packages[@]} package(s)..."
-    
+
     local success=0
     local failed=0
-    
+
     for package in "${packages[@]}"; do
         printf "\n${BOLD}Updating: %s${RESET}\n" "$package"
-        
+
         if update_single_package "$package"; then
             ((success++))
         else
             ((failed++))
         fi
     done
-    
+
     printf "\n${GREEN}%s${RESET}\n" "Update complete: $success succeeded, $failed failed"
     log_message "INFO" "Batch update: $success succeeded, $failed failed"
 }
@@ -284,21 +292,21 @@ update_all_packages() {
 # Update single package (internal function)
 update_single_package() {
     local package=$1
-    
+
     if ! is_installed "$package"; then
         printf "${RED}%s${RESET}\n" "Package $package is not installed."
         return 1
     fi
-    
+
     local symlink_dir
     symlink_dir="$(myrealpath "$BIN_DIR/$package")"
     local dir="${symlink_dir%/*}"
-    
+
     if [[ ! -d "$dir/.git" ]]; then
         printf "${YELLOW}%s${RESET}\n" "Skipping $package (not a git repository)"
         return 1
     fi
-    
+
     if (cd "$dir" && git pull --quiet); then
         printf "${GREEN}%s${RESET}\n" "✓ $package updated"
         log_operation "update" "$package" "success"
@@ -323,22 +331,22 @@ export_packages() {
     while IFS= read -r pkg; do
         [[ -n "$pkg" ]] && packages+=("$pkg")
     done < <(list_installed_packages)
-    
+
     if [ ${#packages[@]} -eq 0 ]; then
         printf "${YELLOW}%s${RESET}\n" "No packages to export."
         return
     fi
-    
+
     {
         echo "# Awesome Package Manager - Package List"
         echo "# Generated: $(date '+%Y-%m-%d %H:%M:%S')"
         echo ""
-        
+
         for package in "${packages[@]}"; do
             local symlink_path="$BIN_DIR/$package"
             local real_path
             real_path=$(myrealpath "$symlink_path" 2>/dev/null)
-            
+
             if [[ -n "$real_path" ]]; then
                 local repo_path="${real_path%/*}"
                 if [[ -d "$repo_path/.git" ]]; then
@@ -353,8 +361,8 @@ export_packages() {
                 fi
             fi
         done
-    } > "$output_file"
-    
+    } >"$output_file"
+
     printf "${GREEN}%s${RESET}\n" "Exported ${#packages[@]} package(s) to: $output_file"
     log_message "INFO" "Exported packages to $output_file"
 }
@@ -396,9 +404,19 @@ import_packages() {
         printf "${BOLD}[%d/%d] Installing: %s${RESET}\n" \
             "$count" "$total" "$entry"
 
-        # Resolve repo name for installed check
-        repo_script "$entry" >/dev/null 2>&1
-        local pkg="$repo_name"
+        # Resolve repo name safely for installed check (avoid repo_script exit)
+        local pkg=""
+        if [[ "$entry" =~ github\.com[:/]+[^/]+/([^/]+)(\.git)?$ ]]; then
+            pkg="${BASH_REMATCH[1]%.git}"
+        elif [[ "$entry" =~ ^[^/]+/[^/]+$ ]]; then
+            pkg="${entry##*/}"
+        else
+            printf "${RED}%s${RESET}\n" "  ✗ Invalid entry, skipping"
+            log_message "ERROR" "Import invalid entry: $entry"
+            ((failed++))
+            echo ""
+            continue
+        fi
 
         if [[ -n "$pkg" ]] && is_installed "$pkg"; then
             printf "${YELLOW}%s${RESET}\n" "  ⚠ Already installed, skipping"

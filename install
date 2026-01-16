@@ -182,6 +182,7 @@ fn_install() {
     # Check prerequisites
     print_info "Checking prerequisites..."
     fn_check_cmd git
+    fn_check_cmd curl
 
     # Check network
     if ! check_network; then
@@ -244,7 +245,9 @@ fn_install() {
     print_success "Symlink created"
 
     # Verify installation
-    verify_installation
+    if ! verify_installation; then
+        print_warning "Installation completed with warnings. Review the messages above."
+    fi
 
     # Print usage instructions
     print_header "Installation Complete!"

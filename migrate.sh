@@ -55,6 +55,17 @@ if [[ -f "$SCRIPT_DIR/awesome" ]]; then
   echo -e "  ${GREEN}✓${RESET} Backed up awesome script"
 fi
 
+if [[ -f "$SCRIPT_DIR/utils/lib" ]]; then
+  cp "$SCRIPT_DIR/utils/lib" "$BACKUP_DIR/lib"
+  echo -e "  ${GREEN}✓${RESET} Backed up utils/lib"
+fi
+
+# Optionally back up lib-enhanced if you want to roll it back too
+if [[ -f "$SCRIPT_DIR/utils/lib-enhanced" ]]; then
+  cp "$SCRIPT_DIR/utils/lib-enhanced" "$BACKUP_DIR/lib-enhanced"
+  echo -e "  ${GREEN}✓${RESET} Backed up utils/lib-enhanced"
+fi
+
 if [[ -f "$HOME/.config/awesome/config" ]]; then
   cp "$HOME/.config/awesome/config" "$BACKUP_DIR/config"
   echo -e "  ${GREEN}✓${RESET} Backed up configuration"
@@ -100,9 +111,9 @@ cp "$SCRIPT_DIR/awesome-enhanced" "$SCRIPT_DIR/awesome"
 chmod +x "$SCRIPT_DIR/awesome"
 echo -e "  ${GREEN}✓${RESET} Installed enhanced awesome script"
 
-cp "$SCRIPT_DIR/utils/lib-enhanced" "$SCRIPT_DIR/utils/lib-enhanced"
-chmod +x "$SCRIPT_DIR/utils/lib-enhanced"
-echo -e "  ${GREEN}✓${RESET} Installed enhanced utils/lib-enhanced"
+cp "$SCRIPT_DIR/utils/lib-enhanced" "$SCRIPT_DIR/utils/lib"
+chmod +x "$SCRIPT_DIR/utils/lib"
+echo -e "  ${GREEN}✓${RESET} Installed enhanced utils/lib"
 echo
 
 # Step 4: Configuration
@@ -177,5 +188,6 @@ echo
 echo -e "${BOLD}Rollback (if needed):${RESET}"
 echo "  cp $BACKUP_DIR/awesome $SCRIPT_DIR/awesome"
 echo "  cp $BACKUP_DIR/lib $SCRIPT_DIR/utils/lib"
+echo "  cp $BACKUP_DIR/lib-enhanced $SCRIPT_DIR/utils/lib-enhanced"
 echo
 echo -e "${GREEN}Happy scripting! 🚀${RESET}"

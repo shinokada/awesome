@@ -2,7 +2,6 @@
 # shellcheck disable=SC2154
 # Enhanced awesome package manager
 
-version="0.6.0"
 awesome_dir="$HOME/.local/share/awesome"
 bin_dir="$HOME/.local/share/bin"
 
@@ -42,6 +41,14 @@ else
     echo "Error: Cannot find lib-enhanced in ${script_dir}/utils/" >&2
     exit 1
 fi
+
+# Align main script dirs with config-loaded defaults
+# Config overrides take precedence over hard-coded defaults
+awesome_dir="${AWESOME_DIR:-$awesome_dir}"
+bin_dir="${BIN_DIR:-$bin_dir}"
+
+# Use version from lib-enhanced (single source of truth)
+version="${AWESOME_VERSION}"
 
 # ============================================================================
 # CONFIRMATION & UTILITY FUNCTIONS
