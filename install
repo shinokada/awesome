@@ -177,6 +177,8 @@ run_diagnostics() {
 # ============================================================================
 
 fn_install() {
+    local force_install="${FORCE_INSTALL:-false}"
+    
     print_header "Installing Awesome Package Manager"
 
     # Check prerequisites
@@ -205,17 +207,36 @@ fn_install() {
 
     if [[ -d "$awesome_dir/$repo" ]]; then
         print_warning "Awesome directory already exists"
-        read -rp "Do you want to remove it and reinstall? (yes/y or no/n): " response
-        # Convert to lowercase for Bash 3.2 compatibility
-        response=$(echo "$response" | tr '[:upper:]' '[:lower:]')
-        if [[ "$response" =~ ^(yes|y)$ ]]; then
+        
+        # Check if stdin is a terminal
+        if [[ ! -t 0 ]] && [[ "$force_install" != "true" ]]; then
+            print_error "Cannot run install interactively through pipe when directory exists"
+            print_info "Please download and run the installer directly:"
+            print_color "$YELLOW" "  curl -O https://raw.githubusercontent.com/shinokada/awesome/main/install"
+            print_color "$YELLOW" "  bash install install"
+            echo
+            print_info "Or use force mode (overwrites existing installation):"
+            print_color "$YELLOW" "  curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | FORCE_INSTALL=true bash -s install"
+            exit 1
+        fi
+        
+        if [[ "$force_install" == "true" ]]; then
+            print_warning "Force mode: Removing existing installation"
             rm -rf "$awesome_dir/$repo"
             print_info "Removed existing installation"
         else
-            print_info "Keeping existing installation"
-            fn_create_symlink "$repo"
-            print_success "Symlink updated"
-            exit 0
+            read -rp "Do you want to remove it and reinstall? (yes/y or no/n): " response
+            # Convert to lowercase for Bash 3.2 compatibility
+            response=$(echo "$response" | tr '[:upper:]' '[:lower:]')
+            if [[ "$response" =~ ^(yes|y)$ ]]; then
+                rm -rf "$awesome_dir/$repo"
+                print_info "Removed existing installation"
+            else
+                print_info "Keeping existing installation"
+                fn_create_symlink "$repo"
+                print_success "Symlink updated"
+                exit 0
+            fi
         fi
     fi
 
@@ -277,13 +298,18 @@ fn_install() {
 
     # Ask if user wants to run diagnostics
     echo
-    read -rp "Would you like to run diagnostics now? (yes/y or no/n): " run_diag
-    # Convert to lowercase for Bash 3.2 compatibility
-    run_diag=$(echo "$run_diag" | tr '[:upper:]' '[:lower:]')
-    if [[ "$run_diag" =~ ^(yes|y)$ ]]; then
-        # Temporarily add to PATH for this session
-        export PATH="$bin_dir:$PATH"
-        run_diagnostics
+    if [[ ! -t 0 ]]; then
+        # Non-interactive mode - skip diagnostics
+        print_info "Run 'awesome doctor' later to verify your installation"
+    else
+        read -rp "Would you like to run diagnostics now? (yes/y or no/n): " run_diag
+        # Convert to lowercase for Bash 3.2 compatibility
+        run_diag=$(echo "$run_diag" | tr '[:upper:]' '[:lower:]')
+        if [[ "$run_diag" =~ ^(yes|y)$ ]]; then
+            # Temporarily add to PATH for this session
+            export PATH="$bin_dir:$PATH"
+            run_diagnostics
+        fi
     fi
 }
 
@@ -292,6 +318,8 @@ fn_install() {
 # ============================================================================
 
 fn_uninstall() {
+    local force_uninstall="${FORCE_UNINSTALL:-false}"
+    
     print_header "Uninstalling Awesome Package Manager"
 
     # Show what will be removed
@@ -305,15 +333,35 @@ fn_uninstall() {
     print_warning "This action cannot be undone!"
     echo
 
-    if [[ $(fn_confirm "awesome and all its data") != "Y" ]]; then
-        print_info "Uninstall cancelled"
-        exit 0
+    # Check if stdin is a terminal
+    if [[ ! -t 0 ]] && [[ "$force_uninstall" != "true" ]]; then
+        print_error "Cannot run uninstall interactively through pipe"
+        print_info "Please download and run the installer directly:"
+        print_color "$YELLOW" "  curl -O https://raw.githubusercontent.com/shinokada/awesome/main/install"
+        print_color "$YELLOW" "  bash install uninstall"
+        echo
+        print_info "Or use force mode (skips all confirmations):"
+        print_color "$YELLOW" "  curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | FORCE_UNINSTALL=true bash -s uninstall"
+        exit 1
+    fi
+
+    if [[ "$force_uninstall" != "true" ]]; then
+        if [[ $(fn_confirm "awesome and all its data") != "Y" ]]; then
+            print_info "Uninstall cancelled"
+            exit 0
+        fi
+    else
+        print_warning "Force mode: Skipping confirmations"
     fi
 
     # Ask about directory removal first
     local remove_awesome_dir="N"
     if [[ -d "$awesome_dir" ]]; then
-        remove_awesome_dir=$(fn_confirm "awesome directory")
+        if [[ "$force_uninstall" == "true" ]]; then
+            remove_awesome_dir="Y"
+        else
+            remove_awesome_dir=$(fn_confirm "awesome directory")
+        fi
     fi
 
     # Only remove symlinks if user confirmed directory removal
@@ -348,23 +396,33 @@ fn_uninstall() {
 
     # Remove config directory
     if [[ -d "$config_dir" ]]; then
-        read -rp "Remove configuration directory? (yes/y or no/n): " remove_config
-        # Convert to lowercase for Bash 3.2 compatibility
-        remove_config=$(echo "$remove_config" | tr '[:upper:]' '[:lower:]')
-        if [[ "$remove_config" =~ ^(yes|y)$ ]]; then
+        if [[ "$force_uninstall" == "true" ]]; then
             rm -rf "$config_dir"
             print_success "Removed $config_dir"
+        else
+            read -rp "Remove configuration directory? (yes/y or no/n): " remove_config
+            # Convert to lowercase for Bash 3.2 compatibility
+            remove_config=$(echo "$remove_config" | tr '[:upper:]' '[:lower:]')
+            if [[ "$remove_config" =~ ^(yes|y)$ ]]; then
+                rm -rf "$config_dir"
+                print_success "Removed $config_dir"
+            fi
         fi
     fi
 
     # Remove bin directory if empty
     if [[ -d "$bin_dir" ]] && [[ -z "$(ls -A "$bin_dir")" ]]; then
-        read -rp "Bin directory is empty. Remove it? (yes/y or no/n): " remove_bin
-        # Convert to lowercase for Bash 3.2 compatibility
-        remove_bin=$(echo "$remove_bin" | tr '[:upper:]' '[:lower:]')
-        if [[ "$remove_bin" =~ ^(yes|y)$ ]]; then
+        if [[ "$force_uninstall" == "true" ]]; then
             rm -rf "$bin_dir"
             print_success "Removed empty bin directory"
+        else
+            read -rp "Bin directory is empty. Remove it? (yes/y or no/n): " remove_bin
+            # Convert to lowercase for Bash 3.2 compatibility
+            remove_bin=$(echo "$remove_bin" | tr '[:upper:]' '[:lower:]')
+            if [[ "$remove_bin" =~ ^(yes|y)$ ]]; then
+                rm -rf "$bin_dir"
+                print_success "Removed empty bin directory"
+            fi
         fi
     fi
 

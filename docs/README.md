@@ -56,8 +56,14 @@ curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash 
 ### Uninstallation
 Use the following to uninstall `awesome` package:
 
+Interactive mode:
 ```bash
 curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | bash -s uninstall
+```
+
+The following skips all confirmations and removes everything:
+```bash
+curl -s https://raw.githubusercontent.com/shinokada/awesome/main/install | FORCE_UNINSTALL=true bash -s uninstall
 ```
 
 ### Basic Usage
