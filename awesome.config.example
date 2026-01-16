@@ -1,0 +1,38 @@
+# Awesome Package Manager Configuration File
+# Copy this file to ~/.config/awesome/config and customize as needed
+
+# Installation directories
+AWESOME_DIR="${HOME}/.local/share/awesome"
+BIN_DIR="${HOME}/.local/share/bin"
+
+# Git settings
+DEFAULT_BRANCH="main"
+GIT_CLONE_DEPTH="1"  # Use shallow clone (0 for full clone)
+
+# Update settings
+AUTO_UPDATE_CHECK=false
+UPDATE_CHECK_INTERVAL=7  # days
+
+# Logging
+ENABLE_LOGGING=true
+LOG_DIR="${HOME}/.local/share/awesome/logs"
+LOG_LEVEL="INFO"  # DEBUG, INFO, WARN, ERROR
+
+# Network settings
+NETWORK_TIMEOUT=30  # seconds
+MAX_RETRY_ATTEMPTS=3
+RETRY_DELAY=2  # seconds
+
+# UI settings
+USE_COLORS=true
+SHOW_PROGRESS=true
+CONFIRM_REMOVALS=true
+
+# Parallel operations
+PARALLEL_UPDATES=false
+MAX_PARALLEL_JOBS=4
+
+# Advanced
+CACHE_API_RESPONSES=true
+CACHE_DURATION=3600  # seconds
+VERIFY_SSL=true
