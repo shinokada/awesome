@@ -124,7 +124,7 @@ fn_remove_symlink() {
 
     if no_symlink "$repo" "$bin_dir"; then
         printf "${YELLOW}%s${RESET}\n" "No symlink found for $repo"
-        exit
+        exit 0 # Not an error - symlink simply doesn't exist
     else
         cd "$bin_dir" || exit
         rm "${repo}" 2>/dev/null || exit
@@ -443,7 +443,7 @@ fn_info() {
     local real_path
     real_path=$(myrealpath "$symlink_path") || {
         printf "${YELLOW}%s${RESET}\n" "Warning: Could not resolve symlink path"
-        exit 0
+        exit 1
     }
 
     printf "\n${BOLD}%s${RESET}\n" "Location:"

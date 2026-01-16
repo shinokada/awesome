@@ -49,6 +49,16 @@ log_message() {
     timestamp=$(date '+%Y-%m-%d %H:%M:%S') || timestamp="unknown"
     local log_file="$LOG_DIR/awesome.log"
 
+    # Simple size-based rotation (rotate at ~1MB)
+    local max_size=1048576
+    if [[ -f "$log_file" ]]; then
+        local size
+        size=$(stat -f%z "$log_file" 2>/dev/null || stat -c%s "$log_file" 2>/dev/null || echo 0)
+        if [[ "$size" -gt "$max_size" ]]; then
+            mv "$log_file" "$log_file.1"
+        fi
+    fi
+
     echo "[$timestamp] [$level] $message" >>"$log_file"
 }
 
@@ -217,7 +227,8 @@ validate_symlinks() {
 # Usage: check_disk_space
 check_disk_space() {
     local available
-    available=$(df -k "$AWESOME_DIR" 2>/dev/null | awk 'NR==2 {print $4}')
+    # Use tail to skip header, handle potential line wrapping
+    available=$(df -Pk "$AWESOME_DIR" 2>/dev/null | tail -1 | awk '{print $4}')
 
     local min_required=102400 # 100MB in KB
 
@@ -500,7 +511,7 @@ repo_script() {
 checkOrmkdir() {
     if [[ -z $1 ]]; then
         echo "Specify the directory." >&2
-        exit 1
+        return 1
     fi
     if [[ ! -d $1 ]]; then
         mkdir -p "$1"
@@ -537,7 +548,7 @@ check_link() {
         return 0
     else
         echo "There is no $1 link in $2 dir."
-        exit 1
+        return 1
     fi
 }
 
@@ -549,7 +560,7 @@ src_path() {
 check_cmd() {
     if [ ! "$(command -v "$1")" ]; then
         echo "Please install $1" >&2
-        exit 1
+        return 1
     fi
 }
 
@@ -696,12 +707,12 @@ function bannerColor() {
 
     local msg="${3} ${1} ${3}"
     local edge=$(echo "${msg}" | sed "s/./${3}/g")
-    tput setaf ${color}
+    tput setaf "${color}"
     tput bold
     echo "${edge}"
     echo "${msg}"
     echo "${edge}"
-    tput sgr 0
+    tput sgr0
     echo
 }
 
