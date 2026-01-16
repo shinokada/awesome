@@ -230,6 +230,11 @@ fn_install() {
 
         ((++retry_count))
 
+        # Cleanup partial clone so retries can succeed
+        if [[ -d "$awesome_dir/$repo" ]]; then
+            rm -rf "$awesome_dir/$repo"
+        fi
+
         if ((retry_count >= max_retries)); then
             print_error "Failed to clone repository after $max_retries attempts"
             exit 1

@@ -99,8 +99,8 @@ fn_remove_dir() {
     elif [ "$slash_num" = 7 ]; then
         path_to_delete=$(first "$src_path")
     else
-        echo "Unknown src path."
-        exit
+        echo "Unknown src path." >&2
+        exit 1
     fi
 
     printf "${CYAN}%s${RESET}\n" "Removing the ${src_path} directory ..."

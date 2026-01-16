@@ -1,4 +1,4 @@
-#shellcheck shell=sh
+#shellcheck shell=bash
 Describe 'Tests for check functions.'
 Include ./utils/lib-enhanced
 # Include ./awesome

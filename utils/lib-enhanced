@@ -138,7 +138,7 @@ create_manifest() {
   "version": "$version",
   "repo_url": "$repo_url",
   "install_date": "$(date '+%Y-%m-%d %H:%M:%S')",
-  "installed_by": "awesome $version"
+  "installed_by": "awesome $AWESOME_VERSION"
 }
 EOF
     log_message "INFO" "Created manifest for $package_name"
@@ -178,7 +178,11 @@ validate_symlink() {
         return 1
     fi
 
-    local target=$(readlink "$link_path")
+    local target
+    target=$(readlink "$link_path") || return 1
+    if [[ "$target" != /* ]]; then
+        target="$(dirname "$link_path")/$target"
+    fi
     if [[ ! -f "$target" ]]; then
         printf "${RED}%s${RESET}\n" "Broken symlink: $package_name -> $target" >&2
         return 1
@@ -383,7 +387,7 @@ import_packages() {
     local packages=()
     while IFS= read -r pkg; do
         [[ -n "$pkg" ]] && packages+=("$pkg")
-    done < <(grep -Ev '^\s*(#|$)' "$input_file")
+    done < <(grep -Ev '^[[:space:]]*(#|$)' "$input_file")
 
     local total=${#packages[@]}
     if [[ $total -eq 0 ]]; then
@@ -427,7 +431,7 @@ import_packages() {
         fi
 
         # Delegate to the real installer
-        if fn_install "$entry"; then
+        if (fn_install "$entry"); then
             ((success++))
         else
             printf "${RED}%s${RESET}\n" "  ✗ Failed"
